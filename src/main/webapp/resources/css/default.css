@@ -1,0 +1,110 @@
+.crop{
+	width:200px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap; /*this one is must */
+	height:50px;
+	line-height:50px;	
+}
+
+.loader {
+	
+	background: url(../img/ajax-loader.gif);
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 100px;
+
+}
+
+.loader-256-gray {
+	
+	background: url(../img/ajax_loader_gray_256.gif);
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 100px;
+
+}
+
+.loader-128-gray {
+	
+	background: url(../img/ajax_loader_gray_128.gif);
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 100px;
+
+}
+
+.min-height-256 {
+	min-height: 256px;
+}
+
+.image-checkbox-container input[type="checkbox"]{
+    display: none;
+    
+}
+
+.image-checkbox-container img{
+    border: 0;
+    margin: 4px;
+}
+
+.image_block{
+	
+	padding:8px;
+	
+	float:left;
+	
+}
+
+.image_block_container{
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	margin:15px;
+}
+
+.image_block_inner{
+	position:relative;
+	margin:  5px;
+	
+	
+}
+
+.image_block_inner input[type="checkbox"]{
+    position: absolute;
+    z-index: 2;
+    background: white;
+    padding: 2px;
+    border-bottom-right-radius : 3px;
+    box-shadow: 1px 1px rgba(0, 0, 0, .2);
+    
+	color: #404040;
+	cursor: pointer;
+    
+    
+}
+
+.image_block_inner .title{
+	
+}
+
+.linkable {
+     background:none!important;
+     border:none; 
+     padding:0!important;
+     font: inherit;
+     /*border is optional*/
+     border-bottom:1px solid #444; 
+     cursor: pointer;
+}
+
+.autocomplete-suggestions { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; border: 1px solid #999; background: #FFF; cursor: default; overflow: auto; -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64); -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64); box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64); }
+.autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+.autocomplete-no-suggestion { padding: 2px 5px;}
+.autocomplete-selected { background: #F0F0F0; }
+.autocomplete-suggestions strong { font-weight: bold; color: #000; }
+.autocomplete-group { padding: 2px 5px; }
+.autocomplete-group strong { font-weight: bold; font-size: 16px; color: #000; display: block; border-bottom: 1px solid #000; }
+.autoCompleteDiv{
+	position: relative; 
+	height: 80px;
+}

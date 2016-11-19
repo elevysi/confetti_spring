@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven >
+		<mvc:message-converters>
+            <!-- Use the HibernateAware mapper instead of the default -->
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.elevysi.site.jackson.HibernateAwareObjectMapper" />
+                </property>
+            </bean>
+        </mvc:message-converters>
+	</mvc:annotation-driven>
+	<mvc:resources mapping="/resources/**" location="/resources/assets/" />
+	<mvc:resources mapping="/resources_1_8/**" location="/resources/assets1.8/" />
+	<mvc:resources mapping="/resources_1_9/**" location="/resources/assets1.9/" />
+	<mvc:resources mapping="/resources_1_9_5/**" location="/resources/assets1.9.5/" />
+	<mvc:resources mapping="/thematic_1_9/**" location="/resources/thematic1.9/" />
+	<mvc:resources mapping="/js/**" location="/resources/js/" />
+	<mvc:resources mapping="/img/**" location="/resources/img/" />
+	<mvc:resources mapping="/css/**" location="/resources/css/" />
+	<mvc:resources mapping="/ng/**" location="/resources/ng/" />
+	<mvc:resources mapping="/assests/**" location="/resources/assets1.8/" />
+	
+	
+	
+	<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+	    <property name="definitions">
+	        <list>
+	            <value>/WEB-INF/views/defs/default.xml</value>
+	        </list>
+	    </property>
+	</bean>
+	
+	<!-- Exception Views -->
+	
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+	  <property name="exceptionMappings">
+		<props>
+			<!-- <prop key="com.mkyong.wb.exception.CustomGenericException">
+				error/generic_error
+			</prop> -->
+			<prop key="java.lang.Exception">error/exception_error</prop>
+			
+		</props>
+	  </property>
+	  <property name="defaultErrorView" value="error/exception_error"/>
+	</bean>
+	
+	<!-- <beans:bean id="simpleMappingExceptionResolver" class="com.journaldev.spring.resolver.MySimpleMappingExceptionResolver">
+		<beans:property name="exceptionMappings">
+			<beans:map>
+				<beans:entry key="Exception" value="generic_error"></beans:entry>
+			</beans:map>
+		</beans:property>
+		<beans:property name="defaultErrorView" value="generic_error"/>
+	</beans:bean> -->
+	
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+	    <property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
+	</bean>
+	
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/jsp/nullLayouts/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	
+	<bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- max upload size in bytes -->
+        <property name="maxUploadSize" value="20971520" /> <!-- 20MB -->
+         
+        <!-- max size of file in memory (in bytes) -->
+        <property name="maxInMemorySize" value="1048576" /> <!-- 1MB -->
+ 
+    </bean>
+     
+    <!-- <bean
+        class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="java.lang.Exception">Error</prop>
+            </props>
+        </property>
+    </bean>  -->
+	
+	<!-- This bean is defined in both Application-context and Dispatcher Servlet
+	Because in Dispatcher servlet we scan controller, so the properties file will be defined in controllers, @Value will be retrieved
+	In Application context we scan everything except controllers, so @Value can only be in other components other than Controller -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:META-INF\application.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	
+	<beans:bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <beans:property name="basename" value="classpath:META-INF/messages/messages" />
+        <beans:property name="defaultEncoding" value="UTF-8" />
+    </beans:bean>
+ 
+    <beans:bean id="localeResolver"
+        class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <beans:property name="defaultLocale" value="en" />
+        <beans:property name="cookieName" value="myAppLocaleCookie"></beans:property>
+        <beans:property name="cookieMaxAge" value="3600"></beans:property>
+    </beans:bean>
+    
+    
+    
+    <!-- Needed to exclude the interceptor from applying to mapped resources -->
+ 
+    <mvc:interceptors>
+        <beans:bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <beans:property name="paramName" value="locale" />
+        </beans:bean>
+        
+        <mvc:interceptor>
+	        <mvc:mapping path="/**" />
+	        <mvc:exclude-mapping path="/resources/**" />
+	        <mvc:exclude-mapping path="/resources_1_8/**" />
+	        <mvc:exclude-mapping path="/js/**" />
+	        <mvc:exclude-mapping path="/img/**" />
+	        <mvc:exclude-mapping path="/css/**" />
+	        <mvc:exclude-mapping path="/ng/**" />
+	        <bean class="com.elevysi.site.interceptor.AbstractInterceptor" />
+	    </mvc:interceptor>
+    </mvc:interceptors>
+	
+	
+	<context:component-scan base-package="com.elevysi.site.controller" />	
+	
+</beans>

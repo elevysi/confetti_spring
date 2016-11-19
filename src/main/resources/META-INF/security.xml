@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+xmlns:beans="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security.xsd">
+<!-- 	Spring Security PreAuthorize Annotations Video 33 -->
+	<global-method-security pre-post-annotations="enabled" />
+	
+	<http security="none" pattern="/resources/**"/>
+	<http security="none" pattern="/resources_1_8/**"/>
+	<http security="none" pattern="/js/**"/>
+	<http security="none" pattern="/css/**"/>
+	<http security="none" pattern="/img/**"/>
+	<http security="none" pattern="/ng/**"/>
+	<http security="none" pattern="/assets/**"/>
+	<http security="none" pattern="/resources_1_9/**"/>
+	<http security="none" pattern="/resources_1_9_5/**"/>
+	<http security="none" pattern="/thematic_1_9/**"/>
+	
+	<!-- Authentication policy for modal pages only  -->
+	<http use-expressions="true" auto-config="false" pattern="/modal/**" authentication-manager-ref="dao-auth">
+	    <form-login login-page="/modal/login"
+	    			login-processing-url="/modal/doLogIn"
+				     authentication-failure-url="/auth/modal/failure"
+				     authentication-success-handler-ref="modalAuthenticationSuccessHandler"
+				     password-parameter="password"
+					 username-parameter="username"
+    />
+     	<intercept-url pattern="/modal/login" access="permitAll"/>
+	    <intercept-url pattern="/modal/**" access="isAuthenticated()" />
+	    <csrf disabled="true"/>
+	</http>
+	
+	
+	<!-- Authentication policy for explicit login request pages only  -->
+	<http use-expressions="true" auto-config="false" pattern="/auth/rqstd/**" authentication-manager-ref="dao-auth">
+	    <form-login login-page="/auth/rqstd/login"
+	    			login-processing-url="/auth/rqstd/doLogIn"
+				     authentication-failure-url="/auth/rqstd/failure"
+				     authentication-success-handler-ref="roleAuthenticationSuccessHandler"
+				     password-parameter="password"
+					 username-parameter="username"
+    />
+     	<intercept-url pattern="/auth/rqstd/login" access="permitAll"/>
+     	<intercept-url pattern="/auth/rqstd/failure" access="permitAll"/>
+     	<intercept-url pattern="/auth/rqstd/**" access="isAuthenticated()"/>
+	    
+	    <csrf disabled="true"/>
+	</http>
+	
+	<http auto-config="true"  use-expressions="true" authentication-manager-ref="dao-auth">
+		
+		
+	 <intercept-url pattern="/logout" access="permitAll"/>
+	 <intercept-url pattern="/logout/**" access="permitAll"/>
+	  
+	 <intercept-url pattern="/posts/indexpublic/**" access="permitAll"/>
+	 <intercept-url pattern="/posts/latestPosts" access="permitAll"/>
+	 <intercept-url pattern="/posts/view/**" access="permitAll"/>
+	 
+	 <intercept-url pattern="/comments/public/**" access="permitAll"/>
+	 <intercept-url pattern="/uploads/download/**" access="permitAll"/>
+	 <intercept-url pattern="/posts/add" access="hasRole('ROLE_USER')"/>
+	 
+	 <intercept-url pattern="/plays/view/**" access="permitAll"/>
+	 <intercept-url pattern="/plays/section/post/**" access="permitAll"/>
+	 <intercept-url pattern="/plays/add" access="hasRole('ROLE_USER')"/>
+	 
+	 <intercept-url pattern="/login/**" access="permitAll"/>
+	  <intercept-url pattern="/register/**" access="permitAll"/>
+	 <intercept-url pattern="/auth/**" access="permitAll"/>
+	 
+	 
+	 <intercept-url pattern="/" access="permitAll"/>
+	 <intercept-url pattern="/public/**" access="permitAll"/>
+	 <intercept-url pattern="/cv" access="permitAll"/>
+	 
+	 <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+	 
+	 
+	 <intercept-url pattern="/admin/*" access="hasRole('ROLE_ADMIN')" />
+	 <intercept-url pattern="/moderator/*" access="hasRole('ROLE_MODERATOR')" />
+		
+		
+		<!-- Removed the login-processing-url="/login" because it was processing its own calls -->
+		
+		<form-login login-page="/login" 
+			authentication-failure-url="/auth/failure" 
+			default-target-url="/auth/successlogin"
+		    password-parameter="password"
+		    username-parameter="username"
+		/>
+			
+		<access-denied-handler error-page="/denied"/>
+		
+		<logout invalidate-session="true" 
+			logout-success-url="/logout/success" 
+			logout-url="/logout"/>
+		<csrf disabled="true"/>
+		
+		<access-denied-handler error-page="/denied"/>
+		
+	</http>
+	
+	<beans:bean id="roleAuthenticationSuccessHandler" class="com.elevysi.site.security.RoleUrlAuthenticationSuccessHandler" />
+	<beans:bean id="modalAuthenticationSuccessHandler" class="com.elevysi.site.security.ModalUrlAuthenticationSuccessHandler" />
+	<beans:bean id="mySavedAuthenticationSuccessHandler" class="com.elevysi.site.security.MySavedUrlAuthenticationSuccessHandler" />
+	
+	<authentication-manager  id="dao-auth" alias="authenticationManager">
+	        <authentication-provider user-service-ref="customUserDetailsService">
+	        	<password-encoder hash="bcrypt"></password-encoder>
+	        </authentication-provider>
+	</authentication-manager>
+	
+	
+	<beans:bean id="userDetailsService" class="com.elevysi.site.service.CustomUserDetailsService" />
+	
+</beans:beans>

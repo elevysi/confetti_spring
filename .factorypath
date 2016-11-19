@@ -1,0 +1,8 @@
+<factorypath>
+    <factorypathentry kind="PLUGIN" id="org.eclipse.jst.ws.annotations.core" enabled="false" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/elvis/Desktop/sts-bundle/sts-3.8.2.RELEASE/C:\Users\elvishatungimana\Documents\JARS\hibernate-jpa-2.1-api-1.0.0.Final.jar" enabled="false" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/elvis/Desktop/sts-bundle/sts-3.8.2.RELEASE/C:\Users\elvishatungimana\Documents\JARS\hibernate-jpamodelgen-4.3.0.Final.jar" enabled="false" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/elvis/Desktop/sts-bundle/sts-3.8.2.RELEASE/C:\Users\elvishatungimana\Documents\JARS\javax.persistence_2.0.0.v200911271158.jar" enabled="false" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/elvis/Desktop/sts-bundle/sts-3.8.2.RELEASE/D:\Development\JARS\hibernate-jpamodelgen-4.3.0.Final.jar" enabled="false" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/media/elvis/DataHDD1/Development/JARS/hibernate-jpamodelgen-4.3.0.Final.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>
