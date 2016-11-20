@@ -1,5 +1,6 @@
 package com.elevysi.site.service;
 
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
@@ -44,8 +45,8 @@ public class UploadService extends AbstractService{
 	@Autowired
 	private UploadDAO uploadDAO;
 	
-	private static final int IMG_WIDTH = 600;
-	private static final int IMG_HEIGHT = 600;
+	private static final int IMG_WIDTH = 1500;
+	private static final int IMG_HEIGHT = 1000;
 
 	public Upload saveUpload(Upload upload) {
 		
@@ -293,7 +294,10 @@ public class UploadService extends AbstractService{
 			/**
              * Resize the image
              */
-			BufferedImage bI = getScaledInstance(bImageFromConvert, IMG_WIDTH, IMG_HEIGHT, true);
+			Dimension boundaryDimension = new Dimension(IMG_WIDTH, IMG_HEIGHT);
+			Dimension imageDimension = new Dimension(bImageFromConvert.getWidth(), bImageFromConvert.getHeight());
+			Dimension scaledDimension = getScaledDimension(imageDimension, boundaryDimension);
+			BufferedImage bI = getScaledInstance(bImageFromConvert, (int)scaledDimension.getWidth(), (int)scaledDimension.getHeight(), false);
 			
 			String avatarDirPath = this.avatarUploadPath+item+this.ds+uuid+this.ds+"image"+this.ds+timeofUpload+this.ds;
 			File avatarDir = new File(avatarDirPath);
@@ -318,5 +322,34 @@ public class UploadService extends AbstractService{
 			throw e;
 		}
 
+	}
+	
+	//http://stackoverflow.com/questions/10245220/java-image-resize-maintain-aspect-ratio
+	public static Dimension getScaledDimension(Dimension imgSize, Dimension boundary) {
+
+	    int original_width = imgSize.width;
+	    int original_height = imgSize.height;
+	    int bound_width = boundary.width;
+	    int bound_height = boundary.height;
+	    int new_width = original_width;
+	    int new_height = original_height;
+
+	    // first check if we need to scale width
+	    if (original_width > bound_width) {
+	        //scale width to fit
+	        new_width = bound_width;
+	        //scale height to maintain aspect ratio
+	        new_height = (new_width * original_height) / original_width;
+	    }
+
+	    // then check if we need to scale even with the new height
+	    if (new_height > bound_height) {
+	        //scale height to fit instead
+	        new_height = bound_height;
+	        //scale width to maintain aspect ratio
+	        new_width = (new_height * original_width) / original_height;
+	    }
+
+	    return new Dimension(new_width, new_height);
 	}
 }
