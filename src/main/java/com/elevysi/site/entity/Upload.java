@@ -373,7 +373,7 @@ public class Upload implements Serializable{
 		
 	}
 	
-	public String generateUUID(){
+	public static String generateUUID(){
 		 UUID uniqueKey = UUID.randomUUID();   
 		 return uniqueKey.toString();
 		 

@@ -5,16 +5,22 @@ import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.persistence.metamodel.SingularAttribute;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +33,7 @@ import com.elevysi.site.pojo.Page;
 import com.elevysi.site.pojo.Page.SortDirection;
 import com.elevysi.site.repository.UploadDAO;
 import com.elevysi.site.repository.UploadRepository;
+import com.elevysi.site.security.ActiveUser;
 
 @Service
 public class UploadService extends AbstractService{
@@ -36,6 +43,9 @@ public class UploadService extends AbstractService{
 	
 	@Autowired
 	private UploadDAO uploadDAO;
+	
+	private static final int IMG_WIDTH = 600;
+	private static final int IMG_HEIGHT = 600;
 
 	public Upload saveUpload(Upload upload) {
 		
@@ -168,8 +178,9 @@ public class UploadService extends AbstractService{
 //	ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 //	BufferedImage bufferedImage = ImageIO.read(bis);
 //	http://forum.spring.io/forum/spring-projects/web/37507-resizing-a-uploaded-image-file
+//https://www.mkyong.com/java/how-to-resize-an-image-in-java/
 	
-	private static BufferedImage getScaledInstance(BufferedImage img, int targetWidth, int targetHeight, Object hint, boolean higherQuality) {
+	private static BufferedImage getScaledInstance(BufferedImage img, int targetWidth, int targetHeight, boolean higherQuality) {
 		int type = (img.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
 		BufferedImage ret = (BufferedImage) img;
 		if (ret.getHeight() < targetHeight || ret.getWidth() < targetWidth) {
@@ -206,7 +217,7 @@ public class UploadService extends AbstractService{
 
 			BufferedImage tmp = new BufferedImage(w, h, type);
 			Graphics2D g2 = tmp.createGraphics();
-			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
+//			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
 			g2.drawImage(ret, 0, 0, w, h, null);
 			g2.dispose();
 
@@ -224,30 +235,85 @@ public class UploadService extends AbstractService{
 		uploadDAO.updateUploadForDisplay(id, display);
 	}
 	
-	public void uploadImage(MultipartFile image, String path) throws RuntimeException, IOException {
+	public Upload uploadImageToItem(MultipartFile image, String uuid, String item) throws RuntimeException, IOException {
 		
 		try{
-			byte[] bytes = image.getBytes();
-            BufferedOutputStream buffStream = 
-                    new BufferedOutputStream(new FileOutputStream(new File((path))));
-            buffStream.write(bytes);
-            buffStream.close();
-            
-            
-            String avatarDirPath = this.avatarUploadPath+"originals"+this.ds;
-			File avatarDir = new File(avatarDirPath);
-			if (!avatarDir.exists()) {
-				if (avatarDir.mkdirs()) {
-					
+			
+			String fileName = image.getOriginalFilename();
+			Upload upload = new Upload();
+			upload.setFilename(fileName);
+			upload.setFilesize((int)image.getSize());
+			upload.setFilemine(image.getContentType());
+			upload.setLinkTable(item);
+			upload.setUuid(uuid);
+			upload.setDisplay(true);
+			String uploadKey = Upload.generateUUID();
+			upload.setKeyIdentification(uploadKey);
+			
+			Profile owningProfile = getActiveProfile();
+			if(owningProfile != null){
+				upload.setUploadOwner(owningProfile);
+			}
+			Long timeofUpload  = System.currentTimeMillis();
+			String originalDirPath = this.avatarUploadPath+"originals"+timeofUpload+ds;
+			File originalsDir = new File(originalDirPath);
+			if (!originalsDir.exists()) {
+				if (originalsDir.mkdirs()) {
 					
 				} else {
 					
 				}
 			}
+			String saveRelativeOriginalPath = "originals"+timeofUpload+ds+fileName;
+			upload.setPathOriginal(saveRelativeOriginalPath);
+			/**
+			 * Upload both the original and resized versions
+			 */
+			
+			byte[] bytes = image.getBytes();
+            BufferedOutputStream buffStream = 
+                    new BufferedOutputStream(new FileOutputStream(new File((originalDirPath+fileName))));
+            buffStream.write(bytes);
+            buffStream.close();
             
-//            if (!image.getOriginalFilename().equals("")) {
-//            	image.transferTo(new File(saveDirectory + image.getOriginalFilename()));
-//            }
+            byte[] imageInByte;
+            BufferedImage originalImage = ImageIO.read(new File(originalDirPath+fileName));
+         
+            // convert BufferedImage to byte array
+ 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+ 			ImageIO.write(originalImage, "jpg", baos);
+ 			baos.flush();
+ 			imageInByte = baos.toByteArray();
+ 			baos.close();
+ 			
+ 			// convert byte array back to BufferedImage
+			InputStream in = new ByteArrayInputStream(imageInByte);
+			BufferedImage bImageFromConvert = ImageIO.read(in);
+
+			/**
+             * Resize the image
+             */
+			BufferedImage bI = getScaledInstance(bImageFromConvert, IMG_WIDTH, IMG_HEIGHT, true);
+			
+			String avatarDirPath = this.avatarUploadPath+item+this.ds+uuid+this.ds+"image"+this.ds+timeofUpload+this.ds;
+			File avatarDir = new File(avatarDirPath);
+			if (!avatarDir.exists()) {
+				if (avatarDir.mkdirs()) {
+					
+				} else {
+					
+				}
+			}
+			
+			String saveRelativePath = item+this.ds+uuid+this.ds+"image"+this.ds+timeofUpload+this.ds+fileName;
+			upload.setPath(saveRelativePath);
+			
+//			int type = (bI.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+			String type = (bI.getTransparency() == Transparency.OPAQUE) ? "jpg" : "png";
+			ImageIO.write(bI, type, new File(avatarDirPath+fileName));
+			
+			return saveUpload(upload);
+			
 		}catch(IOException e){
 			throw e;
 		}

@@ -675,8 +675,6 @@ public class UploadController extends AbstractController{
 		returnValue.setMessage("Failed to Upload the file.");
 		
 		LinkedList<Upload> files = new LinkedList<Upload>();
-	    Upload upload = null;
-		
 	    //1. Build an Iterator
 		Iterator<String> itr = request.getFileNames();
 		MultipartFile mpf = null;
@@ -691,59 +689,11 @@ public class UploadController extends AbstractController{
 				files.pop();
 			
 			//2.3 Create new Upload
-			String fileName = mpf.getOriginalFilename();
-			upload = new Upload();
 			
-			upload.setFilename(fileName);
-			upload.setFilesize((int)mpf.getSize());
-			upload.setFilemine(mpf.getContentType());
-			upload.setLinkTable("albums");
-			upload.setUuid(uuid);
-			upload.setDisplay(true);
-			String uploadKey = this.generateUUID();
-			upload.setKeyIdentification(uploadKey);
-			
-			
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			boolean isAuthenticated =  SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
-			
-			if(auth != null && isAuthenticated){
-				ActiveUser activeUser = (ActiveUser)auth.getPrincipal();
-				Profile owningProfile = activeUser.getActiveProfile();
-				upload.setUploadOwner(owningProfile);
+			Upload savedUpload = uploadService.uploadImageToItem(mpf, uuid, "albums");
+			if(savedUpload != null){
+				files.add(savedUpload);
 			}
-			
-			Long timeofUpload  = System.currentTimeMillis();
-			try{
-				String avatarDirPath = this.avatarUploadPath+"albums"+this.ds+uuid+this.ds+"image"+this.ds+timeofUpload+this.ds;
-				File avatarDir = new File(avatarDirPath);
-				if (!avatarDir.exists()) {
-					if (avatarDir.mkdirs()) {
-						
-						
-					} else {
-						
-					}
-				}
-				
-				String saveRelativePath = "albums"+this.ds+uuid+this.ds+"image"+this.ds+timeofUpload+this.ds+fileName;
-				upload.setPath(saveRelativePath);
-				uploadService.saveImage(mpf, avatarDirPath+fileName);
-				
-				
-				Upload savedUpload = uploadService.saveUpload(upload);
-				if(savedUpload != null){
-					files.add(savedUpload);
-				}
-
-				
-			}catch(Exception e){
-				throw e;
-			}	
-			
-			
-			
-			
 		}
 		
 		if(files.size() > 0){
@@ -752,9 +702,6 @@ public class UploadController extends AbstractController{
 		}
 		
 		return returnValue;
-		
 	}
-	
-	
 	
 }
