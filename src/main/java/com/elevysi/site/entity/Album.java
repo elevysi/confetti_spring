@@ -161,6 +161,7 @@ public class Album implements Serializable {
 	
 	@OneToMany(cascade = CascadeType.MERGE, mappedBy = "album", fetch=FetchType.LAZY)
 	@Fetch(FetchMode.SUBSELECT)
+	@org.hibernate.annotations.Filter(name="itemTableIs", condition="link_table=:link_tableValue and display=:displayValue")
 	private Set<Upload> uploads = new HashSet<Upload>();
 	
 	public Set<Upload> getUploads() {

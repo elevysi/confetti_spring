@@ -14,6 +14,7 @@ import java.util.List;
 import javax.persistence.metamodel.SingularAttribute;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +29,7 @@ import com.elevysi.site.repository.UploadDAO;
 import com.elevysi.site.repository.UploadRepository;
 
 @Service
-public class UploadService {
+public class UploadService extends AbstractService{
 	
 	@Autowired
 	private UploadRepository uploadRepository;
@@ -59,7 +60,13 @@ public class UploadService {
 		
 		return uploadRepository.findById(id);
 	}
-	
+	/**
+	 * We need to save both the original image and the 
+	 * @param image
+	 * @param path
+	 * @throws RuntimeException
+	 * @throws IOException
+	 */
 	public void saveImage(MultipartFile image, String path) throws RuntimeException, IOException {
 		try {
 			
@@ -111,6 +118,10 @@ public class UploadService {
 		
 		return uploadRepository.findByKeyIdentification(key);
 	}
+	
+	public Upload getUpload(int id){
+		return uploadDAO.getUpload(id);
+	}
 
 	public Upload save(Upload upload) {
 		return uploadRepository.save(upload);
@@ -145,10 +156,13 @@ public class UploadService {
 		
 	}
 	
-
-
 	public List<Upload> getAllAlbumUploads(Album album){
-		return uploadDAO.findAllbumUploads(album);
+		return uploadDAO.findAllAbumUploads(album);
+	}
+	
+	public List<Upload> findPaginatedAlbumUploads(Album album, com.elevysi.site.pojo.Page page) {
+		return uploadDAO.findPaginatedAlbumUploads(album, page);
+		
 	}
 	
 //	ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
@@ -201,5 +215,42 @@ public class UploadService {
 
 		return ret;
 	}
+	
+	public void setAllAlbumUploads(Album album, boolean display){
+		uploadDAO.findAllAbumUploadsForUpdate(album, display);
+	}
+	
+	public void updateUploadForDisplay(int id, boolean display){
+		uploadDAO.updateUploadForDisplay(id, display);
+	}
+	
+	public void uploadImage(MultipartFile image, String path) throws RuntimeException, IOException {
+		
+		try{
+			byte[] bytes = image.getBytes();
+            BufferedOutputStream buffStream = 
+                    new BufferedOutputStream(new FileOutputStream(new File((path))));
+            buffStream.write(bytes);
+            buffStream.close();
+            
+            
+            String avatarDirPath = this.avatarUploadPath+"originals"+this.ds;
+			File avatarDir = new File(avatarDirPath);
+			if (!avatarDir.exists()) {
+				if (avatarDir.mkdirs()) {
+					
+					
+				} else {
+					
+				}
+			}
+            
+//            if (!image.getOriginalFilename().equals("")) {
+//            	image.transferTo(new File(saveDirectory + image.getOriginalFilename()));
+//            }
+		}catch(IOException e){
+			throw e;
+		}
 
+	}
 }

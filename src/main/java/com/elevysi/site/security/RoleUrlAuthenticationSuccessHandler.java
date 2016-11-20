@@ -62,8 +62,7 @@ public class RoleUrlAuthenticationSuccessHandler extends SavedRequestAwareAuthen
 			
 			ActiveUser loggedUser = (ActiveUser)authentication.getPrincipal();
 			
-			String msg = "Welcome "+loggedUser.getFirst_name()+". You are successfully logged in.";
-			return "/profile?message="+msg;
+			return "/profile";
 		} else if (isAdmin) {
 			
 			return "/admin/dashboard";

@@ -144,8 +144,11 @@ public class ProfileController extends AbstractController{
 	
 	@RequestMapping({"/profile/", "/profile"})
 	public String profile(Model model, 
-			@ModelAttribute("sessionMessage") SessionMessage sessionMessage, @RequestParam(required = false, value="message")String msg,
-			Principal principal, @RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber){
+			@ModelAttribute("sessionMessage")SessionMessage sessionMessage, 
+			@RequestParam(required = false, value="message")String msg,
+			Principal principal, 
+			@RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber
+	){
 		
 		
 		if(sessionMessage.getMsgText() == null && msg != null){
@@ -591,6 +594,7 @@ public class ProfileController extends AbstractController{
 			
 			/**
 			 * Create a new Active User with Profile
+			 * 
 			 */
 			
 

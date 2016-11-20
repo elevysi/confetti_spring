@@ -4,6 +4,7 @@ package com.elevysi.site.service;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,6 +23,12 @@ public abstract class AbstractService {
 	
 	@Autowired
 	private PublicationService publicationService;
+	
+	@Value("${upload.img.path}")
+	protected String avatarUploadPath;
+	
+	@Value("${ds}")
+	protected String ds;
 	
 	/**
      * Returns a new object which specifies the the wanted result page.

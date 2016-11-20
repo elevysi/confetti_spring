@@ -7,9 +7,9 @@
 <c:url var="album_post" value="/albums/edit" />
 <c:url var="uploadLink" value="/uploads/album/add" />
 <c:url var="uploadDeleteLink" value="/uploads/profileDelete" />
-<c:set var="albumUuid" value="${album.uuid}" />
+<c:set var="albumUuid" value="${albumEdit.uuid}" />
 
-<form:form commandName="album" cssClass="sky-form addAlbumPost" method="post" action="${album_post}">
+<form:form commandName="albumEdit" cssClass="sky-form addAlbumPost" method="post" action="${album_post}">
 <form:hidden path="id"/>
 <form:hidden path="uuid"/>
 <header><spring:message code="label.albums.add.heading" /></header>	
@@ -157,7 +157,7 @@
 					<div class="col-sm-4 sm-margin-bottom-30 image_block">
 						<div class=" image_block_container">
 							<div class="image_block_inner">
-								<div class=""><form:checkbox path="uploads" value="${savedUpload.display}"/></div>
+								<div class=""><form:checkbox path="uploads" value="${savedUpload.id}"/></div>
 								<img class="img-responsive" src="<c:url value='/uploads/download?key=${savedUpload.keyIdentification}' />" alt="${savedUpload.altText}">
 							</div>
 							<div class="title"><c:out value="${savedUpload.filename}" /></div>

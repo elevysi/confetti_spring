@@ -58,8 +58,17 @@ public class Upload implements Serializable{
 	private String filemine;
 	private String path;
 	private String file_identificator;
+	private String pathOriginal;
 	
 	
+	public String getPathOriginal() {
+		return pathOriginal;
+	}
+
+	public void setPathOriginal(String pathOriginal) {
+		this.pathOriginal = pathOriginal;
+	}
+
 	@Column(name="link_table")
 	private String linkTable;
 	
@@ -362,6 +371,12 @@ public class Upload implements Serializable{
 		
 		return newUpload;
 		
+	}
+	
+	public String generateUUID(){
+		 UUID uniqueKey = UUID.randomUUID();   
+		 return uniqueKey.toString();
+		 
 	}
 	
 	

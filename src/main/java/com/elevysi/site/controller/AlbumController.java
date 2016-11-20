@@ -1,5 +1,6 @@
 package com.elevysi.site.controller;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -20,10 +21,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.elevysi.site.entity.Album;
+import com.elevysi.site.entity.Album_;
 import com.elevysi.site.entity.Dossier;
 import com.elevysi.site.entity.Dossier_;
 import com.elevysi.site.entity.Profile;
 import com.elevysi.site.entity.Upload;
+import com.elevysi.site.entity.Upload_;
+import com.elevysi.site.form.AlbumEdit;
+import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.SessionMessage;
 import com.elevysi.site.pojo.Page.SortDirection;
 import com.elevysi.site.service.AlbumService;
@@ -104,7 +109,7 @@ public class AlbumController extends AbstractController{
 			model.addAttribute("pageTitle", album.getName());
 			model.addAttribute("pageDescription", album.getDescription());
 			
-			List<Upload> albumUploads = albumService.getPaginatedAlbumUploads(album, pageNumber, NO_ALBUM_UPLOADS, SORT_FIELD, SORT_DIRECTION);
+			List<Upload> albumUploads = uploadService.getAllAlbumUploads(album);
 			
 			boolean canEditAlbum = false;
 			Profile albumProfile = album.getProfileOwner();
@@ -133,6 +138,22 @@ public class AlbumController extends AbstractController{
 			List<Upload> albumUploads = uploadService.getAllAlbumUploads(album);
 			model.addAttribute("albumUploads", albumUploads);
 			
+			AlbumEdit albumEdit = new AlbumEdit();
+			List<Integer> selected = new ArrayList<Integer>();
+			for(Upload albumUpload : albumUploads){
+				selected.add(albumUpload.getId());
+			}
+			albumEdit.setName(album.getName());
+			albumEdit.setDescription(album.getDescription());
+			albumEdit.setPlace(album.getPlace());
+			albumEdit.setPublicAlbum(album.getPublicAlbum());
+			albumEdit.setDossier(album.getDossier());
+			albumEdit.setUploads(selected);
+			albumEdit.setId(album.getId());
+			albumEdit.setUuid(album.getUuid());
+			
+			model.addAttribute("albumEdit", albumEdit);
+			
 			com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_ITEMS, Dossier_.created, SortDirection.DESC);		
 			List<Dossier> dossiers = dossierService.getDossiers(dossiersPage);
 			model.addAttribute("dossiers", dossiers);
@@ -141,24 +162,37 @@ public class AlbumController extends AbstractController{
 	}
 	
 	@RequestMapping(value="/edit", method=RequestMethod.POST)
-	public String doEdit(Model model, @Valid @ModelAttribute("abum")Album album, BindingResult result, RedirectAttributes redirectAttributes){
+	public String doEdit(Model model, @Valid @ModelAttribute("abumEdit")AlbumEdit albumEdit, BindingResult result, RedirectAttributes redirectAttributes){
 //		if(result.hasErrors()){
 //			return "redirect:/albums/edit/"+album.getId();
 //		}
 		
-		Album originalAlbum = albumService.findOne(album.getId());
-		originalAlbum.setPublicAlbum(album.getPublicAlbum());
-		originalAlbum.setName(album.getName());
-		originalAlbum.setPlace(album.getPlace());
+		Album originalAlbum = albumService.findOne(albumEdit.getId());
+		originalAlbum.setPublicAlbum(albumEdit.getPublicAlbum());
+		originalAlbum.setName(albumEdit.getName());
+		originalAlbum.setPlace(albumEdit.getPlace());
 		
-		if(album.getDossier().getId() == null){
-			album.setDossier(null);
+		if(albumEdit.getDossier().getId() == null){
+			albumEdit.setDossier(null);
 			originalAlbum.setDossier(null);
 		}else{
-			originalAlbum.setDossier(album.getDossier());
+			originalAlbum.setDossier(albumEdit.getDossier());
 		}
 		
+		/**
+		 * Find all this album uploads and set their display to false
+		 */
+		uploadService.setAllAlbumUploads(originalAlbum, false);
 		
+		/**
+		 * Check which uploads have been kept or not
+		 */
+		List<Integer> selectedUploads = albumEdit.getUploads();
+		if(selectedUploads != null){
+			for(Integer upload_id : selectedUploads){
+				uploadService.updateUploadForDisplay(upload_id, true);
+			}
+		}
 		
 		/**
 		 * Record the post to the profile Editing it
@@ -173,7 +207,7 @@ public class AlbumController extends AbstractController{
 		sessionMessage.setSuccessClass();
 		
 		redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
-		return "redirect:/albums/view/"+album.getId()+"/";
+		return "redirect:/albums/view/"+albumEdit.getId()+"/";
 	}
 	
 	@RequestMapping(value="delete/{id}", method=RequestMethod.POST)

@@ -1,5 +1,7 @@
 package com.elevysi.site.repository;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -11,7 +13,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
-import org.hibernate.Hibernate;
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,20 +99,88 @@ public class UploadDAOImplement implements UploadDAO{
 		
 	}
 	
-	public List<Upload> findAllbumUploads(Album album){
+	public List<Upload> findAllAbumUploads(Album album){
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Upload> criteria = cb.createQuery(Upload.class);
 		
 		Root<Upload> uploadRoot = criteria.from(Upload.class);
 		criteria.select(uploadRoot);
-		Predicate condition = cb.equal(uploadRoot.get(Upload_.album), album);
-		criteria.where(condition);
+		
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		Predicate condition1 = cb.equal(uploadRoot.get(Upload_.album), album);
+		Predicate condition2 = cb.equal(uploadRoot.get(Upload_.display), true);
+		predicates.add(cb.and(condition1, condition2));
+		criteria.where(predicates.toArray(new Predicate[] {}));
 		
 		TypedQuery<Upload> query = em.createQuery(criteria);
 		List<Upload> uploads =  query.getResultList();
 		
 		return uploads;
+	}
+	
+	public List<Upload> findPaginatedAlbumUploads(Album album, Page page){
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Upload> criteria = cb.createQuery(Upload.class);
+		
+		Root<Upload> uploadRoot = criteria.from(Upload.class);
+		criteria.select(uploadRoot);
+		
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		Predicate condition1 = cb.equal(uploadRoot.get(Upload_.album), album);
+		Predicate condition2 = cb.equal(uploadRoot.get(Upload_.display), true);
+		predicates.add(cb.and(condition1, condition2));
+		criteria.where(predicates.toArray(new Predicate[] {}));
+
+		
+		TypedQuery<Upload> query = page.createQuery(em, criteria, uploadRoot);
+		List<Upload> uploads =  query.getResultList();
+		
+		return uploads;
+	}
+	
+	public void findAllAbumUploadsForUpdate(Album album, Boolean display){
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Upload> criteria = cb.createQuery(Upload.class);
+		
+		Root<Upload> uploadRoot = criteria.from(Upload.class);
+		criteria.select(uploadRoot);
+		
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		Predicate condition1 = cb.equal(uploadRoot.get(Upload_.album), album);
+		Predicate condition2 = cb.equal(uploadRoot.get(Upload_.display), true);
+		predicates.add(cb.and(condition1, condition2));
+		criteria.where(predicates.toArray(new Predicate[] {}));
+		
+		TypedQuery<Upload> query = em.createQuery(criteria);
+		List<Upload> uploads =  query.getResultList();
+		if(uploads != null){
+			for(Upload upload : uploads){
+				upload.setDisplay(display);
+				Date now = new Date();
+				upload.setModified(now);
+				em.merge(upload);
+			}
+				
+		}
+	}
+	
+	public void updateUploadForDisplay(int id, boolean display){
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Upload> criteria = cb.createQuery(Upload.class);
+		Root<Upload> uploadRoot = criteria.from(Upload.class);
+		criteria.select(uploadRoot);
+		Predicate condition = cb.equal(uploadRoot.get(Upload_.id), id);
+		criteria.where(condition);
+		TypedQuery<Upload> query = em.createQuery(criteria);
+		Upload upload = query.getSingleResult();
+		Date now = new Date();
+		upload.setDisplay(display);
+		upload.setModified(now);
+		em.merge(upload);
 	}
 
 }

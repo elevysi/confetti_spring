@@ -22,7 +22,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-@Profile("devWin")
+@Profile("devOSX")
 @Configuration
 @PropertySource("classpath:META-INF/application-devOSX.properties")
 //@PropertySource("classpath:/com/acme/app.properties")
