@@ -142,7 +142,6 @@ public class HomeController extends AbstractController{
 		
 		List<Play> videoPlays = playService.findLatestFeaturedPlaysByType(1, 1, NO_FEATURED_PLAYS_VIDEO, SORT_FIELD, SORT_DIRECTION);
 		List<Dossier> dossiers = dossierService.getDossiers(dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_ITEMS, Dossier_.created, SortDirection.DESC));		
-		List<Album> albums = albumService.getAlbums(albumService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_ITEMS, Album_.created, SortDirection.DESC));
 		for (Post post : posts) {
 			
 			if(sliderPosts.size() >= NO_SLIDER_POSTS) break;
@@ -195,7 +194,6 @@ public class HomeController extends AbstractController{
 		model.addAttribute("sliderPosts", sliderPosts);
 		model.addAttribute("videoPlays", videoPlays);
 		model.addAttribute("dossiers", dossiers);
-		model.addAttribute("albums", albums);
 		String currentDate = new SimpleDateFormat("EEE, d MMMMM yyyy").format(new Date());
 		model.addAttribute("currentDate", currentDate);
 		model.addAttribute("sessionMessage", sessionMessage);

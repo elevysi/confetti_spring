@@ -249,48 +249,6 @@
 				</div>
 				<!-- End Blog Thumb v4 -->
 
-<fmt:parseNumber var="count" value="0"/>
-<fmt:parseNumber var="noColumns" value="2"/>
-				<div class="margin-bottom-50">
-					<h2 class="title-v4">Albums</h2>
-					<c:forEach items="${albums}" var="album">
-
-					<c:if test="${count == starter || (count%noColumns)==starter}">
-						<!-- Blog Grid -->
-						<div class="row margin-bottom-50">
-					</c:if>
-					
-					
-					<div class="col-sm-6 sm-margin-bottom-50">
-						<div class="blog-grid">
-						
-							<c:choose>
-								<c:when test="${not empty album.uploads && fn:length(album.uploads) >= 1}">
-									<img alt="" src="<c:url value='/uploads/download?key=${album.uploads.iterator().next().keyIdentification}'/>" class="img-responsive">
-								</c:when>
-								<c:otherwise>
-									<img alt="" src="<c:url value='/resources_1_9_5/img/team/img10-md.jpg'/>" class="img-responsive">
-								</c:otherwise>
-							</c:choose>
-						
-							
-							<h3><a href="<c:url value='/albums/view/${album.id}/' />"><c:out value="${album.name}" /></a></h3>
-							<ul class="blog-grid-info">
-								<li><c:out value="${fn:length(album.uploads)} photos by ${album.profileOwner.name}" /></li>
-								<li><fmt:formatDate pattern="dd MMMM yy" value="${album.created}" /></li>
-								<li><a href="#"><i class="fa fa-comments"></i> 0</a></li>
-							</ul>
-						</div>
-					</div>
-						
-					<c:if test="${((count+unit) == albumsSize) || ((count+unit)%noColumns==starter)}">
-						</div><!--/end row--><!-- End Blog Grid -->
-					</c:if>
-					<fmt:parseNumber var="count" value="${count + 1}" />
-					</c:forEach>
-
-				
-				</div>
 				
 
 				<!-- Pager v4
