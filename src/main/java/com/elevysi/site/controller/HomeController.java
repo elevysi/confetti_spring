@@ -150,7 +150,17 @@ public class HomeController extends AbstractController{
 			
 			Set<Upload> postUploads = post.getUploads();
 			if(postUploads != null && postUploads.size() > 0){
-				imageKey = postUploads.iterator().next().getKeyIdentification();
+				/**
+				 * Only images to be shown should be considered
+				 */
+				Iterator<Upload> it = postUploads.iterator();
+				while(it.hasNext()){
+					Upload nextUpload = it.next();
+					if(nextUpload.isDisplay()){
+						imageKey = nextUpload.getKeyIdentification();
+						break;
+					}
+				}
 			}			
 						
 			String postCat = null;

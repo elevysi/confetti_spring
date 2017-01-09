@@ -102,6 +102,10 @@ public class PostService extends AbstractService{
 		Date now = new Date();
 		post.setModified(now);
 		
+		if(post.getCreated() == null){
+			post.setCreated(now);
+		}
+		
 		/**
 		 * Retrieve all the uploads related to this post
 		 */

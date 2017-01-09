@@ -51,6 +51,10 @@ public class PlayService extends AbstractService{
 		Date now = new Date();
 		play.setModified(now);
 		
+		if(play.getCreated() == null){
+			play.setCreated(now);
+		}
+		
 		
 		Publication publication = savePublication(play.getPlayProfile());
 		if(publication != null){

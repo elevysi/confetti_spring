@@ -173,22 +173,39 @@ public class PlayController extends AbstractController{
 		/**
 		 * Record the post to the profile Editing it
 		 */
+		Play dbPlay = playService.getPlay(id);
 		Profile owningProfile = playService.getActiveProfile();
-		
-		play.setPlayProfile(owningProfile);
-		
-		if(play.getDossier().getId() == null){
-			play.setDossier(null);
+		if(dbPlay != null){
+			dbPlay.setTitle(play.getTitle());
+			dbPlay.setPlayProfile(owningProfile);
+			dbPlay.setUrl(play.getUrl());
+			dbPlay.setEmbeddedUrl(play.getEmbeddedUrl());
+			dbPlay.setDescription(play.getDescription());
+			dbPlay.setPlayType(play.getPlayType());
+			
+			if(play.getDossier().getId() == null){
+				dbPlay.setDossier(null);
+			}else{
+				dbPlay.setDossier(play.getDossier());
+			}
+			
+			Play savedPlay = playService.saveEditedPlay(dbPlay);
+			
+			SessionMessage sessionMessage = new SessionMessage("The play was successfully saved!");
+			sessionMessage.setSuccessClass();
+			
+			redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
+			
+			return "redirect:/plays/view/"+savedPlay.getId()+"/";
 		}
 		
-		Play savedPlay = playService.saveEditedPlay(play);
-		
-		SessionMessage sessionMessage = new SessionMessage("The play was successfully saved!");
-		sessionMessage.setSuccessClass();
+		SessionMessage sessionMessage = new SessionMessage("Failed to edit the play!");
+		sessionMessage.setDangerClass();
 		
 		redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
 		
-		return "redirect:/plays/view/"+savedPlay.getId()+"/";
+		return "redirect:edit/"+id;
+		
 	}
 	
 	@RequestMapping(value="delete/{id}", method=RequestMethod.POST)

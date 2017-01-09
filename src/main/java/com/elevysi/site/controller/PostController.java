@@ -398,6 +398,7 @@ public class PostController extends AbstractController{
 			dbPost.setDescription(post.getDescription());
 			dbPost.setCategories(post.getCategories());
 			dbPost.setContent(post.getContent());
+			
 			if(post.getDossier().getId() != null){
 				dbPost.setDossier(post.getDossier());
 			}else{
