@@ -47,6 +47,9 @@
 	<link rel="stylesheet" href="<c:url value='/resources_1_9_5/css/app.css'/>">
 	<link rel="stylesheet" href="<c:url value='/resources_1_9_5/css/blocks.css'/>">
 	
+	<!-- Own Css -->
+	<link rel="stylesheet" href="<c:url value='/css/default.css'/>">
+	
 	<!-- JS Global Compulsory -->
 	<script src="<c:url value='/thematic_1_9/Blog/assets/plugins/jquery/jquery.min.js'/>"></script>
 	<script src="<c:url value='/thematic_1_9/Blog/assets/plugins/jquery/jquery-migrate.min.js'/>"></script>

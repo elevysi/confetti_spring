@@ -85,8 +85,7 @@ public class PostService extends AbstractService{
 		Date now = new Date();
 		post.setCreated(now);
 		post.setModified(now);
-		
-		Publication publication = savePublication(post.getProfile());
+		Publication publication = savePublication(post.getProfile(), post.getTitle());
 		if(publication != null){
 			post.setPublication(publication);
 		}
@@ -105,6 +104,18 @@ public class PostService extends AbstractService{
 		if(post.getCreated() == null){
 			post.setCreated(now);
 		}
+		
+		return this.doSaveEditedPost(post);
+		
+	}
+	
+	
+	public Post doSaveEditedPost(Post post){
+		
+		/**
+		 * Save edited slug
+		 */
+		saveEditedPublication(post.getPublication().getId(), post.getTitle());
 		
 		/**
 		 * Retrieve all the uploads related to this post
@@ -155,6 +166,15 @@ public class PostService extends AbstractService{
 		}
 		
 		return requestedPage.getContent();
+	}
+	
+	public List<Post> getLatestPostsForProfile(Profile profile, Post post, com.elevysi.site.pojo.Page page){
+		Integer viewedPostId = post.getId();
+		if(viewedPostId != null){
+			return postDao.getAllLatestForProfileExcept(profile, post.getId(), page);
+		}else{
+			return postDao.getAllLatestForProfile(profile, page);
+		}
 	}
 	
 	

@@ -190,13 +190,14 @@ public class PlayController extends AbstractController{
 			}
 			
 			Play savedPlay = playService.saveEditedPlay(dbPlay);
+			Play reloadPlay = playService.getPlay(savedPlay.getId());
 			
 			SessionMessage sessionMessage = new SessionMessage("The play was successfully saved!");
 			sessionMessage.setSuccessClass();
 			
 			redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
 			
-			return "redirect:/plays/view/"+savedPlay.getId()+"/";
+			return "redirect:/plays/view/"+savedPlay.getId()+"/"+reloadPlay.getPublication().getFriendlyUrl();
 		}
 		
 		SessionMessage sessionMessage = new SessionMessage("Failed to edit the play!");

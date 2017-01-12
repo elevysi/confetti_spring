@@ -9,6 +9,9 @@ import com.elevysi.site.entity.Album;
 import com.elevysi.site.entity.Play;
 import com.elevysi.site.entity.Post;
 import com.elevysi.site.entity.Publication;
+import com.elevysi.site.entity.Publication_;
+import com.elevysi.site.pojo.Page;
+import com.elevysi.site.pojo.Page.SortDirection;
 import com.elevysi.site.service.AlbumService;
 import com.elevysi.site.service.CommentService;
 import com.elevysi.site.service.PlayService;
@@ -18,23 +21,25 @@ import com.elevysi.site.service.PublicationService;
 @Component
 public class JobsBatch {
 	
-//	@Autowired
-//	private PostService postService;
-//	@Autowired
-//	private PlayService playService;
+	@Autowired
+	private PostService postService;
+	@Autowired
+	private PlayService playService;
 //	@Autowired
 //	private AlbumService albumService;
 //	
 //	@Autowired
 //	private PublicationService publicationService;
 //	
-//	@Autowired
-//	private CommentService commentService;
-//	
-////	private Publi
-//	
+	@Autowired
+	private CommentService commentService;
+	
+	@Autowired
+	private PublicationService publicationService;
+
 	public void run(){
 //		createPublicationsForAllItems();
+		handlePublications();
 	}
 //	
 //	public void createPublicationsForAllItems(){
@@ -135,8 +140,47 @@ public class JobsBatch {
 		
 //	}
 	
-	public void updateCommentsCountForItems(){
-		
+	public void handlePublications(){
+		Page publicationPage = publicationService.buildOffsetPage(1, 100, Publication_.modified, SortDirection.DESC);
+		List<Publication> publications = publicationService.getAllPublications(publicationPage);
+		if(publications != null){
+			for (Publication publication : publications) {
+				/**
+				 * Create slug if not existing
+				 * Update number of comments
+				 */
+				Post post = publication.getPost();
+				if(post != null){
+					int postCommentsCount = commentService.itemCommentsCount(post.getId(), "posts");
+					post.setCommentCount(postCommentsCount);
+					postService.doSaveEditedPost(post);
+					
+					if(publication.getFriendlyUrl() == null){
+						String postTitle = post.getTitle();
+						if(postTitle != null){
+							String slug = publicationService.toSlug(postTitle);
+							publication.setFriendlyUrl(slug);
+							publicationService.doSaveEditedPublication(publication);
+						}
+					}
+				}
+				
+				Play play = publication.getPlay();
+				if(play != null){
+					int playCommentsCount = commentService.itemCommentsCount(play.getId(), "plays");
+					play.setCommentCount(playCommentsCount);
+					playService.doSaveEditedPlay(play);
+					
+					if(publication.getFriendlyUrl() == null){
+						String playTitle = play.getTitle();
+						if(playTitle != null){
+							String slug = publicationService.toSlug(playTitle);
+							publication.setFriendlyUrl(slug);
+							publicationService.doSaveEditedPublication(publication);
+						}
+					}
+				}
+			}
+		}
 	}
-
 }

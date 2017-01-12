@@ -50,14 +50,14 @@
 												</c:otherwise>
 												</c:choose>
 												
-												<h3><a href="<spring:url value='/posts/view/${featuredItem.post.id}/'/>"><c:out value="${featuredItem.post.title}" /></a></h3>
+												<h3><a href="<spring:url value='/posts/view/${featuredItem.post.id}/${featuredItem.friendlyUrl}'/>"><c:out value="${featuredItem.post.title}" /></a></h3>
 												<ul class="blog-grid-info">
 													<li><c:out value="${featuredItem.profile.name}"/></li>
 													<li><c:out value="${featuredItem.post.created}" /></li>
 													<li><a href="#"><i class="fa fa-comments"></i> 0</a></li>
 												</ul>
 												<p><c:out value="${featuredItem.post.description}" escapeXml="false"/></p>
-												<a class="r-more" href="<spring:url value='/posts/view/${featuredItem.post.id}'/>">Read More</a>
+												<a class="r-more" href="<spring:url value='/posts/view/${featuredItem.post.id}/${featuredItem.friendlyUrl}'/>">Read More</a>
 											</div>
 								
 									
@@ -83,7 +83,7 @@
 									
 									<div class="news-v2-desc">
 										<h3>
-											<a href='<c:url value='/plays/view/${featuredItem.play.id}/'/>'><c:out value="${featuredItem.play.title}" /></a>
+											<a href='<c:url value='/plays/view/${featuredItem.play.id}/${featuredItem.friendlyUrl}'/>'><c:out value="${featuredItem.play.title}" /></a>
 										</h3>
 										<small>By <a href="<c:url value='/profile/${featuredItem.profile.name}' />" ><c:out value="${featuredItem.profile.name}" /></a> | In <a href="#"><c:out value="${featuredItem.play.playType.name}" /></a></small>
 									</div>
@@ -225,7 +225,7 @@
 							
 							<div class="news-v2-desc">
 								<h3>
-									<a href='<c:url value='/plays/view/${featuredVideo.id}/'/>'><c:out value="${featuredVideo.title}" /></a>
+									<a href='<c:url value='/plays/view/${featuredVideo.id}/${featuredVideo.publication.friendlyUrl}'/>'><c:out value="${featuredVideo.title}" /></a>
 								</h3>
 								<small>By <a href="<c:url value='/profile/${featuredVideo.playProfile.name}' />" ><c:out value="${featuredVideo.playProfile.name}" /></a> | In <a href="#"><c:out value="${featuredVideo.playType.name}" /></a></small>
 							</div>

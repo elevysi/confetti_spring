@@ -66,7 +66,7 @@ public class AlbumService extends AbstractService{
 		album.setModified(now);
 		
 
-		Publication publication = savePublication(album.getProfileOwner());
+		Publication publication = savePublication(album.getProfileOwner(), album.getName());
 		if(publication != null){
 			album.setPublication(publication);
 		}

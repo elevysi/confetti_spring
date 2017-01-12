@@ -16,7 +16,7 @@
 					<div class="ms-info"></div>
 					<div class="blog-slider-title">
 						<span class="blog-slider-posted"><c:out value="${sliderPost.created}" /></span>
-						<h2><a href="<spring:url value='/posts/view/${sliderPost.id}/'/>"><c:out value="${sliderPost.title}"/></a></h2>
+						<h2><a href="<spring:url value='/posts/view/${sliderPost.id}/${sliderPost.slug}'/>"><c:out value="${sliderPost.title}"/></a></h2>
 					</div>
 				</div>
 			

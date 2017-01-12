@@ -36,6 +36,7 @@ import com.elevysi.site.entity.Dossier;
 import com.elevysi.site.entity.Dossier_;
 import com.elevysi.site.entity.Post;
 import com.elevysi.site.entity.PostStatus;
+import com.elevysi.site.entity.Post_;
 import com.elevysi.site.entity.Profile;
 import com.elevysi.site.entity.Upload;
 import com.elevysi.site.entity.User;
@@ -243,7 +244,7 @@ public class PostController extends AbstractController{
 		sessionMessage.setSuccessClass();
 		redirectAttributes.addFlashAttribute("sessionMessage",sessionMessage);
 		
-		return "redirect:/posts/view/"+savedPost.getId();
+		return "redirect:/posts/view/"+savedPost.getId()+"/";
 		
 	}
 	
@@ -270,7 +271,9 @@ public class PostController extends AbstractController{
 				 * Must not be the one in viewing
 				 */
 				Profile postOwner = post.getProfile();
-				List<Post> profileLatestPosts = postService.findLatestPostsForProfile(postOwner, post, 0, NO_LATEST_OWN_POSTS, SORT_FIELD, SORT_DIRECTION);
+				com.elevysi.site.pojo.Page page = postService.buildOffsetPage(FIRST_PAGE, NO_LATEST_OWN_POSTS, Post_.created, SortDirection.DESC);
+//				List<Post> profileLatestPosts = postService.findLatestPostsForProfile(postOwner, post, 0, NO_LATEST_OWN_POSTS, SORT_FIELD, SORT_DIRECTION);
+				List<Post> profileLatestPosts = postService.getLatestPostsForProfile(postOwner, post, page);
 				
 				/**
 				 * Can edit post
@@ -391,7 +394,7 @@ public class PostController extends AbstractController{
 		if(! postService.canEditPost(postOwner, activeProfile)){
 			dangerMsg.setMsgText("You do not have the right to execute this action.");
 			redirectAttributes.addFlashAttribute("sessionMessage", dangerMsg);
-			return "redirect:/posts/view/"+postID+"/";
+			return "redirect:/posts/view/"+postID+"/"+dbPost.getPublication().getFriendlyUrl();
 		}else{
 						
 			dbPost.setTitle(post.getTitle());
@@ -405,13 +408,14 @@ public class PostController extends AbstractController{
 				dbPost.setDossier(null);
 			}
 			
-			postService.saveEditedPost(dbPost);
+			Post savedPost = postService.saveEditedPost(dbPost);
+			Post reloadPost = postService.getPost(savedPost.getId());
 			
 			SessionMessage successMsg = new SessionMessage("The post was successfully edited.");
 			successMsg.setSuccessClass();
 			redirectAttributes.addFlashAttribute("sessionMessage",successMsg);
 			
-			return "redirect:/posts/view/"+postID+"/";
+			return "redirect:/posts/view/"+postID+"/"+reloadPost.getPublication().getFriendlyUrl();
 			
 		}
 		

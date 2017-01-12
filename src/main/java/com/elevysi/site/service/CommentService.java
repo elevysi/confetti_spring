@@ -155,6 +155,10 @@ public class CommentService extends AbstractService{
 		return comments;
 	}
 	
+	public int itemCommentsCount(Integer itemId, String itemType){
+		return this.itemComments(itemId, itemType).size();
+	}
+	
 	public List<Comment> getAllComments(com.elevysi.site.pojo.Page page){
 		return commentDAO.getComments(page);
 	}

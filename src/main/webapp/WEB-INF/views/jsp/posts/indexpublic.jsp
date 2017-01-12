@@ -45,10 +45,10 @@
 					</c:choose>
 					
 					
-					<a class="btn-more hover-effect" href="<c:url value='/posts/view/${post.id}/'/>">read more +</a>
+					<a class="btn-more hover-effect" href="<c:url value='/posts/view/${post.id}/${post.publication.friendlyUrl}'/>">read more +</a>
 				</div>
 				<div class="caption">
-					<h3><a class="hover-effect" href="<c:url value='/posts/view/${post.id}/'/>"><c:out value="${post.title}" /></a></h3>
+					<h3><a class="hover-effect" href="<c:url value='/posts/view/${post.id}/${post.publication.friendlyUrl}'/>"><c:out value="${post.title}" /></a></h3>
 					<small>By <c:out value="${post.profile.name}" /> | Comments | <fmt:formatDate pattern="dd MMMM yy" value="${post.created}" /></small>
 					<p><c:out value="${post.description}" /></p>
 				</div>

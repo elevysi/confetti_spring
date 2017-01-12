@@ -9,8 +9,19 @@ public class PostHighlight {
 	private String imageKey;
 	private String resume;
 	private String postCategory;
+	private String slug;
 	
 	
+	public String getSlug() {
+		return slug;
+	}
+
+
+	public void setSlug(String slug) {
+		this.slug = slug;
+	}
+
+
 	public String getPostCategory() {
 		return postCategory;
 	}
@@ -81,16 +92,17 @@ public class PostHighlight {
 	}
 
 
-	public PostHighlight(Integer id, String title, String imageKey, String created, String author, String resume){
+	public PostHighlight(Integer id, String title, String imageKey, String created, String author, String resume, String slug){
 		this.id = id;
 		this.title = title;
 		this.imageKey = imageKey;
 		this.created = created;
 		this.author = author;
 		this.resume = resume;
+		this.slug = slug;
 	}
 	
-	public PostHighlight(Integer id, String title, String imageKey, String created, String author, String resume, String postCategory){
+	public PostHighlight(Integer id, String title, String imageKey, String created, String author, String resume, String postCategory, String slug){
 		this.id = id;
 		this.title = title;
 		this.imageKey = imageKey;
@@ -98,6 +110,7 @@ public class PostHighlight {
 		this.author = author;
 		this.resume = resume;
 		this.postCategory = postCategory;
+		this.slug = slug;
 	}
 
 }

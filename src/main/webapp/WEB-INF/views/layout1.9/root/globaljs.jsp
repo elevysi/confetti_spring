@@ -75,7 +75,7 @@ $(document).ready(function(){
 					if (latestPosts.hasOwnProperty(key)) {
 						var latestPost = latestPosts[key];
 						
-						_footerSubstitutionHtml += "<li><a href='${viewPostUrl}"+latestPost.id+"/'>"+latestPost.title+"</a><small>"+latestPost.created+"</small></li>";
+						_footerSubstitutionHtml += "<li><a href='${viewPostUrl}"+latestPost.id+"/"+latestPost.slug+"'>"+latestPost.title+"</a><small>"+latestPost.created+"</small></li>";
 						
 						
 						var _encloserDlStart = '<dl class="dl-horizontal">';

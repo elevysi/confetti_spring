@@ -17,6 +17,7 @@ public interface PlayRepository extends JpaRepository<Play, Integer>{
 	@Query(value="SELECT play FROM Play play"
 			+ " INNER JOIN play.playType as playType"
 			+ " LEFT JOIN FETCH play.playProfile as playProfile"
+			+ " LEFT JOIN FETCH play.publication as playPublication"
 			+ " WHERE playType.id =:typeID AND play.featured=1",
 			countQuery = " SELECT COUNT(play) FROM Play play WHERE playType.id =:typeID AND play.featured=1")
 	Page<Play> findFeaturedPlaywithType(@Param("typeID") Integer typeID, Pageable p);
@@ -28,6 +29,7 @@ public interface PlayRepository extends JpaRepository<Play, Integer>{
 
 	@Query(value="SELECT play from Play play"
 			+ " LEFT JOIN FETCH play.playType as playType"
+			+ " LEFT JOIN FETCH play.publication as playPublication"
 			+ " INNER JOIN play.playProfile as playProfile"
 			+ " WHERE playProfile.id =:profileId AND play.id !=:playId", 
 			countQuery = "SELECT COUNT(play) FROM Play play WHERE playProfile.id =:profileId AND play.id !=:playId")
@@ -35,6 +37,7 @@ public interface PlayRepository extends JpaRepository<Play, Integer>{
 	
 	@Query(value="SELECT play from Play play"
 			+ " LEFT JOIN FETCH play.playType as playType"
+			+ " LEFT JOIN FETCH play.publication as playPublication"
 			+ " INNER JOIN play.playProfile as playProfile"
 			+ " WHERE playProfile.id =:profileId", 
 			countQuery = "SELECT COUNT(play) FROM Play play WHERE playProfile.id =:profileId")

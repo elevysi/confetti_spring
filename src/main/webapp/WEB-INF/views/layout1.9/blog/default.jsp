@@ -9,7 +9,7 @@
 
 <c:choose>
 	<c:when test="${not empty  pageTitle}">
-		<title><c:out value="Elevysi - ${pageTitle}"/></title>
+		<title><c:out value="${pageTitle} - Elevysi"/></title>
 	</c:when>
 	<c:otherwise>
 		<title><tiles:getAsString name="title" ignore="true"/></title>

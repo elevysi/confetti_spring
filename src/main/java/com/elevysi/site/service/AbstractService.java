@@ -53,7 +53,7 @@ public abstract class AbstractService {
         
     }
     
-    protected Publication savePublication(Profile profile){
+    protected Publication savePublication(Profile profile, String toSlug){
     	
     	/**
 		 * Create Publication for this post
@@ -65,9 +65,18 @@ public abstract class AbstractService {
 		publication.setModified(now);
 		publication.setPublicPublication(true);
 		publication.setProfile(profile);
+		String slug = publicationService.toSlug(toSlug);
+		if(slug != null){
+			publication.setFriendlyUrl(slug);
+		}
     	return publicationService.savePublication(publication);
     	
     }
+    
+    protected Publication saveEditedPublication(int id, String toSlug){
+    	return publicationService.updateItemPublicationWithSlug(id, toSlug);
+    }
+    
     
     public Profile getActiveProfile(){
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();

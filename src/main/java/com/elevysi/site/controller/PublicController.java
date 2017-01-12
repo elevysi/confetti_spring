@@ -94,7 +94,8 @@ public class PublicController extends AbstractController{
 					post.getTitle(),
 					imageKey,
 					new SimpleDateFormat("EEE, d MMMMM yyyy HH:mm").format(post.getCreated()), 
-					post.getProfile().getName()
+					post.getProfile().getName(),
+					post.getPublication().getFriendlyUrl()
 					);
 			latestPosts.add(posted);
 		}

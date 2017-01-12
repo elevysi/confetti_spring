@@ -37,7 +37,7 @@
 							
 							<div class="news-v2-desc">
 								<h3>
-									<a href='<c:url value='/plays/view/${play.id}/'/>'><c:out value="${play.title}" /></a>
+									<a href='<c:url value='/plays/view/${play.id}/${play.publication.friendlyUrl}'/>'><c:out value="${play.title}" /></a>
 								</h3>
 								<small>By <a href="<c:url value='/profile/${play.playProfile.name}' />" ><c:out value="${play.playProfile.name}" /></a> | In <a href="#"><c:out value="${play.playType.name}" /></a></small>
 							</div>

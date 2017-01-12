@@ -70,10 +70,10 @@
 	
 	<!-- Task Schedulers  -->
 	
-	<!-- <bean id="jobsBatch" class="com.elevysi.site.component.JobsBatch" />
+	<bean id="jobsBatch" class="com.elevysi.site.component.JobsBatch" />
 	<task:scheduled-tasks>
-		<task:scheduled ref="jobsBatch" method="run" cron="0 */30 * * * *"/>
-	</task:scheduled-tasks> -->
+		<task:scheduled ref="jobsBatch" method="run" cron="0 */10 * * * *"/>
+	</task:scheduled-tasks>
 	
 	
 </beans>

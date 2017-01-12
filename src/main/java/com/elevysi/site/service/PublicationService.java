@@ -1,7 +1,11 @@
 package com.elevysi.site.service;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 import javax.persistence.metamodel.SingularAttribute;
 
@@ -32,7 +36,8 @@ public class PublicationService{
 	@Autowired
 	private PublicationDAO publicationDAO;
 	
-	
+	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
+	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
 	
 	public Publication findOne(Integer id){
 		return publicationRepository.findOne(id);
@@ -88,6 +93,10 @@ public class PublicationService{
 	public Publication saveEditedPublication(Publication publication){
 		Date now = new Date();
 		publication.setModified(now);
+		return this.doSaveEditedPublication(publication);
+	}
+	
+	public Publication doSaveEditedPublication(Publication publication){
 		return publicationRepository.save(publication);
 	}
 	
@@ -113,5 +122,29 @@ public class PublicationService{
 	
 	public List<Publication> getFeaturedPublications(com.elevysi.site.pojo.Page page){
 		return publicationDAO.getFeaturedPublications(page);
+	}
+	
+	/**
+	 * http://stackoverflow.com/questions/1657193/java-code-library-for-generating-slugs-for-use-in-pretty-urls
+	 * @param input
+	 * @return
+	 */
+	public String toSlug(String input) {
+	    String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
+	    String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
+	    String slug = NONLATIN.matcher(normalized).replaceAll("");
+	    return slug.toLowerCase(Locale.ENGLISH);
+    }
+	
+	public Publication updateItemPublicationWithSlug(int id, String toSlug){
+		Publication publication = getPublication(id);
+		if(publication != null){
+			Date now = new Date();
+			publication.setModified(now);
+			String slug = toSlug(toSlug);
+			publication.setFriendlyUrl(slug);
+			return publicationRepository.save(publication);
+		}
+		return null;
 	}
 }

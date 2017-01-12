@@ -47,6 +47,7 @@ public interface PostRepository extends JpaRepository<Post, Integer>, JpaSpecifi
 	
 	@Query(value="SELECT post FROM Post post "
 			+ " LEFT JOIN FETCH post.profile as postProfile "
+			+ " LEFT JOIN FETCH post.publication as postPublication "
 			+ " LEFT JOIN FETCH post.categories postCategories "
 			+ " LEFT JOIN FETCH post.uploads as uploads ",
 			countQuery = " SELECT COUNT(post) FROM Post post "	
@@ -65,6 +66,7 @@ public interface PostRepository extends JpaRepository<Post, Integer>, JpaSpecifi
 	@Query(value="SELECT post FROM Post post "
 			+ " INNER JOIN FETCH post.profile as profile "
 			+ " LEFT JOIN FETCH post.categories postCategories "
+			+ " LEFT JOIN FETCH post.publication postPublication "
 			+ " LEFT JOIN FETCH post.uploads as uploads "
 			+ " WHERE profile.id = :profileID AND post.id != :viewedPostID ",
 			countQuery = " SELECT COUNT(post) FROM Post post WHERE profile.id = :profileID AND post.id != :viewedPostID "	

@@ -8,7 +8,7 @@
 <security:authorize access="hasRole('ROLE_ADMIN')" var="isAdmin" />
 
 <!-- Blog Posts -->
-<div class="news-v3 bg-color-white margin-bottom-60">
+<div class="news-v3 bg-color-white margin-bottom-60" id="blogRead">
 	<div class="responsive-video">
 		<iframe src="<c:out value='${play.url}'/>" frameborder="0" allowfullscreen></iframe>
 	</div>
@@ -125,7 +125,7 @@
 			
 			<div class="news-v2-desc">
 				<h3>
-					<a href='<c:url value='/plays/view/${latestProfilePlay.id}/'/>'><c:out value="${latestProfilePlay.title}" /></a>
+					<a href='<c:url value='/plays/view/${latestProfilePlay.id}/${latestProfilePlay.publication.friendlyUrl}'/>'><c:out value="${latestProfilePlay.title}" /></a>
 				</h3>
 				<small>By <a href="<c:url value='/profile/${play.playProfile.name}'/>"><c:out value="${play.playProfile.name}" /></a> | In <a href="<c:url value='/playTypes/${play.playType.name}'/>"><c:out value="${play.playType.name}" /></a></small>
 				

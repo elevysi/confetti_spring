@@ -185,7 +185,8 @@ public class HomeController extends AbstractController{
 					new SimpleDateFormat("EEE, d MMMMM yyyy HH:mm").format(post.getCreated()), 
 					post.getProfile().getName(),
 					postService.truncate(post.getContent(), post.getContent().length() > NO_RESUME_CHARS? NO_RESUME_CHARS : post.getContent().length()-1),
-					postCat
+					postCat,
+					post.getPublication().getFriendlyUrl()
 					);
 			if(imageKey != ""){
 				sliderPosts.add(posted);

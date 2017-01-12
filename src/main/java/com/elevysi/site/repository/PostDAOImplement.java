@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.elevysi.site.entity.AbstractEntity;
 import com.elevysi.site.entity.Post;
 import com.elevysi.site.entity.Post_;
+import com.elevysi.site.entity.Profile;
 import com.elevysi.site.entity.Publication;
 import com.elevysi.site.entity.Publication_;
 import com.elevysi.site.pojo.OffsetPage;
@@ -105,6 +106,10 @@ public class PostDAOImplement extends AbstractDAO implements PostDAO {
 	
 	public List<Post> searchByTerm(String term){
 		
+		org.hibernate.Filter filter = em.unwrap(Session.class).enableFilter("itemTableIs");
+		filter.setParameter("link_tableValue", "posts");
+		filter.setParameter("displayValue", 1);
+		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Post> criteria = cb.createQuery(Post.class);
 		Root<Post> postRoot = criteria.from(Post.class);
@@ -132,6 +137,10 @@ public class PostDAOImplement extends AbstractDAO implements PostDAO {
 	
 	public List<Post> getPosts(Page page){
 		
+		org.hibernate.Filter filter = em.unwrap(Session.class).enableFilter("itemTableIs");
+		filter.setParameter("link_tableValue", "posts");
+		filter.setParameter("displayValue", 1);
+		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Post> criteria = cb.createQuery(Post.class);
 		Root<Post> post = criteria.from(Post.class);
@@ -144,6 +153,7 @@ public class PostDAOImplement extends AbstractDAO implements PostDAO {
 			Hibernate.initialize(postItem.getUploads());
 			Hibernate.initialize(postItem.getProfile());
 			Hibernate.initialize(postItem.getCategories());
+			Hibernate.initialize(postItem.getPublication());
 		}
 		
 		return posts;
@@ -205,5 +215,64 @@ public class PostDAOImplement extends AbstractDAO implements PostDAO {
 		
 	}
 	
+	public List<Post> getAllLatestForProfileExcept(Profile profile, Integer postId, Page page){
+		
+		org.hibernate.Filter filter = em.unwrap(Session.class).enableFilter("itemTableIs");
+		filter.setParameter("link_tableValue", "posts");
+		filter.setParameter("displayValue", 1);
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Post> criteria = cb.createQuery(Post.class);
+		Root<Post> postRoot = criteria.from(Post.class);
+		criteria.select(postRoot);
+		
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		
+		predicates.add(cb.notEqual(postRoot.get(Post_.id), postId));
+		predicates.add(cb.notEqual(postRoot.get(Post_.profile), profile));
+		
+		criteria.where(cb.or(predicates.toArray(new Predicate[predicates.size()])));
+		
+		TypedQuery<Post> query = page.createQuery(em, criteria, postRoot);
+		List<Post> posts =  query.getResultList();
+		
+		for(Post post: posts){
+			Hibernate.initialize(post.getProfile());
+			Hibernate.initialize(post.getPublication());
+			Hibernate.initialize(post.getCategories());
+			Hibernate.initialize(post.getUploads());
+		}
+		
+		return posts;
+	}
+	
+	public List<Post> getAllLatestForProfile(Profile profile, Page page){
+		
+		org.hibernate.Filter filter = em.unwrap(Session.class).enableFilter("itemTableIs");
+		filter.setParameter("link_tableValue", "posts");
+		filter.setParameter("displayValue", 1);
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Post> criteria = cb.createQuery(Post.class);
+		Root<Post> postRoot = criteria.from(Post.class);
+		criteria.select(postRoot);
+		
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		predicates.add(cb.notEqual(postRoot.get(Post_.profile), profile));
+		
+		criteria.where(cb.or(predicates.toArray(new Predicate[predicates.size()])));
+		
+		TypedQuery<Post> query = page.createQuery(em, criteria, postRoot);
+		List<Post> posts =  query.getResultList();
+		
+		for(Post post: posts){
+			Hibernate.initialize(post.getProfile());
+			Hibernate.initialize(post.getPublication());
+			Hibernate.initialize(post.getCategories());
+			Hibernate.initialize(post.getUploads());
+		}
+		
+		return posts;
+	}
 	
 }

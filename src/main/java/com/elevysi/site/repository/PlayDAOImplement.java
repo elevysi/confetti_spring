@@ -45,6 +45,7 @@ public class PlayDAOImplement implements PlayDAO{
 		
 		for(Play play : plays){
 			Hibernate.initialize(play.getPlayProfile());
+			Hibernate.initialize(play.getPublication());
 		}
 		
 		return plays;

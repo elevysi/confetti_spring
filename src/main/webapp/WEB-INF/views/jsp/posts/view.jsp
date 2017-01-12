@@ -9,7 +9,7 @@
 <security:authorize access="hasRole('ROLE_ADMIN')" var="isAdmin" />
 
 <!-- News v3 -->
-<div class="news-v3 bg-color-white margin-bottom-30">
+<div class="news-v3 bg-color-white margin-bottom-30" id="blogRead">
 	<c:choose>
 		<c:when test="${not empty post.uploads && fn:length(post.uploads) > 1}">
 			<div class="carousel slide carousel-v2" id="portfolio-carousel">
@@ -204,7 +204,7 @@
 	            </p>
 	        </div>
 	        <div class="news-v2-desc">
-	            <h3><a href="<c:url value='/posts/view/${latestProfilePost.id}/'/> "><c:out value="${latestProfilePost.title}" /></a></h3>
+	            <h3><a href="<c:url value='/posts/view/${latestProfilePost.id}/${latestProfilePost.publication.friendlyUrl}'/> "><c:out value="${latestProfilePost.title}" /></a></h3>
 	            <small>By <c:out value="${latestProfilePost.profile.name}"></c:out> | California, US 
 	            
 	            <c:if test="${not empty latestProfilePost.categories}">| In

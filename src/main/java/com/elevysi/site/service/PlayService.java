@@ -35,7 +35,7 @@ public class PlayService extends AbstractService{
 		
 		play.setFeatured(true);
 		
-		Publication publication = savePublication(play.getPlayProfile());
+		Publication publication = savePublication(play.getPlayProfile(), play.getTitle());
 		if(publication != null){
 			play.setPublication(publication);
 		}
@@ -55,15 +55,18 @@ public class PlayService extends AbstractService{
 			play.setCreated(now);
 		}
 		
+		return this.doSaveEditedPlay(play);
 		
-		Publication publication = savePublication(play.getPlayProfile());
-		if(publication != null){
-			play.setPublication(publication);
-		}
+	}
+	
+	public Play doSaveEditedPlay(Play play){
 		
+		/**
+		 * Save edited slug
+		 */
+		saveEditedPublication(play.getPublication().getId(), play.getTitle());
 		
 		return playRepository.save(play);
-		
 	}
 	
 	public List<Play> findLatestFeaturedPlaysByType(Integer playTypeID, Integer pageNumber, Integer limit, String sortField, String sortDirection){

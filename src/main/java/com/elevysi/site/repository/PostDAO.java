@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.elevysi.site.entity.Post;
+import com.elevysi.site.entity.Profile;
 import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.Page;
 import com.elevysi.site.pojo.Page.SortDirection;
@@ -25,5 +26,8 @@ public interface PostDAO {
 	public long getCount();
 	public OffsetPage buildOffsetPage(int pageIndex, int size,  SingularAttribute sortField, SortDirection sortDirection);
 	public void deletePost(int id);
+	public List<Post> getAllLatestForProfileExcept(Profile profile, Integer postId, Page page);
+	public List<Post> getAllLatestForProfile(Profile profile, Page page);
+	
 	
 }

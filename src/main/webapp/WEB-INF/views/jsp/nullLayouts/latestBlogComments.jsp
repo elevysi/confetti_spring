@@ -12,8 +12,7 @@
 		</small>
 
 		<h3>
-			<a href="<spring:url value='/posts/view/${comment.post.id}/'/>"><c:out
-					value="${comment.message}" /></a>
+			<a href="<spring:url value='/posts/view/${comment.post.id}/'/>"><c:out value="${comment.message}" /></a>
 		</h3>
 	</div>
 
