@@ -23,38 +23,34 @@
 			<c:out value="${play.description}" escapeXml="false" />
 		</p>
 		
-		<div class="row">
-			<div class="col-md-4">
-			
-				<c:if test="${canEditPlay || isAdmin}">
-					<a class="btn-u rounded btn-u-dark-blue btn-u-xs"  href="<spring:url value='/plays/edit/${play.id}' />"><i class="fa fa-magic"></i> Edit play</a>
-				</c:if>
-			</div>
-			
-			<div class="col-md-4">
-			
-				<c:if test="${canEditPlay || isAdmin}">
-					<form:form method="post" action="${deletePlayUrl}" onsubmit="return confirmDelete(this, '${deletePlayUrl}')">
-						<button class="btn-u rounded btn-u-dark-blue btn-u-xs"><i class="fa fa-magic"></i> Delete play</button>
-					</form:form>
+		<c:if test="${canEditPlay || isAdmin}">
+			<div class="clearfix margin-bottom-20"><hr></div>
+			<div class="btn-group">
+				<a class="btn-u btn-brd btn-u-blue"  href="<spring:url value='/plays/edit/${play.id}' />"><i class="fa fa-edit"></i> Edit play</a>
 				
-				</c:if>
-			</div>
-			
-			<div class="col-md-4">
+				<form:form method="post" action="${deletePlayUrl}" onsubmit="return confirmDelete(this, '${deletePlayUrl}')">
+						<button class="btn-u btn-brd btn-u-blue"><i class="fa fa-trash"></i> Delete play</button>
+				</form:form>
+				
 				<c:if test="${isAdmin}">
+				
 					<c:choose>
 						<c:when test="${play.publication.featured}">
-							<a class="btn-u rounded btn-u-dark-blue btn-u-xs" id="unfeatureBtn"  href="<spring:url value='/admin/unfeatureItem' />"><i class="fa fa-magic"></i> Unfeature publication</a>
+							<a class="btn-u btn-brd btn-u-blue" id="unfeatureBtn"  href="<spring:url value='/admin/unfeatureItem' />"><i class="fa fa-magic"></i> Unfeature publication</a>
 						</c:when>
 						<c:otherwise>
-							<a class="btn-u rounded btn-u-dark-blue btn-u-xs" id="unfeatureBtn"  href="<spring:url value='/admin/featureItem' />"><i class="fa fa-magic"></i> Feature publication</a>
+							<a class="btn-u btn-brd btn-u-blue" id="unfeatureBtn"  href="<spring:url value='/admin/featureItem' />"><i class="fa fa-magic"></i> Feature publication</a>
 						</c:otherwise>
 					
 					</c:choose>
+				
 				</c:if>
-			</div>			
-		</div>
+					
+			</div>
+			<div class="clearfix margin-bottom-20"><hr></div>
+		</c:if>
+		
+		
 		
 		
 		<div id="postViewSection">

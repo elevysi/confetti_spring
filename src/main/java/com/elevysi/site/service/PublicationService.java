@@ -108,8 +108,8 @@ public class PublicationService{
 		return publicationDAO.getPublications(page);
 	}
 
-	public List<Publication> getProfilePublication(Profile profile, com.elevysi.site.pojo.Page page){
-		return publicationDAO.getProfilePublication(profile, page);
+	public List<Publication> getProfilePublications(Profile profile, com.elevysi.site.pojo.Page page){
+		return publicationDAO.getProfilePublications(profile, page);
 	}
 	
 	public List<Publication> searchByTerm(String term){

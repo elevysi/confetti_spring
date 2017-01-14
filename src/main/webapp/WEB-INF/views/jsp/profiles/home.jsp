@@ -2,17 +2,17 @@
 
 <div class="" style="margin-left: 20px;">
 <h2><c:out value="${actingProfile.name}"/></h2>
-
-<!-- Button trigger modal -->
-<a class="btn-u btn-u-green"  href="<spring:url value='/uploads/profile' />">Profile Picture</a>
-<a class="btn-u btn-u-green modalOpen"  href="<spring:url value='/posts/addModal' />">New Post Modal</a>
-<a class="btn-u btn-u-green"  href="<spring:url value='/posts/add' />">New Post</a>
-<a class="btn-u btn-u-green"  href="<spring:url value='/plays/add' />">New Play</a>
-<a class="btn-u btn-u-green"  href="<spring:url value='/albums/add' />">New Album</a>
-<a class="btn-u btn-u-green"  href="<spring:url value='/products/add' />">New Product</a>
-<a class="btn-u btn-u-green"  href="<spring:url value='/messages/add' />">New Message</a>
-<a class="btn-u btn-u-green"  href="<spring:url value='/dossiers/add' />">New Dossier</a>
-
+<div class="btn-group">
+	<!-- Button trigger modal -->
+	<a class="btn-u btn-brd btn-u-blue btn-u-xs"  href="<spring:url value='/uploads/profile' />">Profile Picture</a>
+	<a class="btn-u btn-brd btn-u-blue btn-u-xs modalOpen"  href="<spring:url value='/posts/addModal' />">New Post Modal</a>
+	<a class="btn-u btn-brd btn-u-blue btn-u-xs"  href="<spring:url value='/posts/add' />">New Post</a>
+	<a class="btn-u btn-brd btn-u-blue btn-u-xs"  href="<spring:url value='/plays/add' />">New Play</a>
+	<a class="btn-u btn-brd btn-u-blue btn-u-xs"  href="<spring:url value='/albums/add' />">New Album</a>
+	<a class="btn-u btn-brd btn-u-blue btn-u-xs"  href="<spring:url value='/products/add' />">New Product</a>
+	<a class="btn-u btn-brd btn-u-blue btn-u-xs"  href="<spring:url value='/messages/add' />">New Message</a>
+	<a class="btn-u btn-brd btn-u-blue btn-u-xs"  href="<spring:url value='/dossiers/add' />">New Dossier</a>
+</div>
 <hr>
 
 

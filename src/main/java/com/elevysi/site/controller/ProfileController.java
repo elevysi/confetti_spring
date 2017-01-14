@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -151,6 +152,7 @@ public class ProfileController extends AbstractController{
 	){
 		
 		
+		
 		if(sessionMessage.getMsgText() == null && msg != null){
 			sessionMessage = new SessionMessage();
 			sessionMessage.setMsgText(msg);
@@ -234,7 +236,7 @@ public class ProfileController extends AbstractController{
 		if(profile != null){
 			
 			com.elevysi.site.pojo.Page publicationsPage = publicationService.buildOffsetPage(pageNumber, DEFAULT_NO_ITEMS, Publication_.created, SortDirection.DESC);
-			List<Publication> profilePublications = publicationService.getProfilePublication(profile, publicationsPage);
+			List<Publication> profilePublications = publicationService.getProfilePublications(profile, publicationsPage);
 			
 			Set<Profile> friends = profileService.findProfileFriends(profile);			
 			List<Post> posts = postService.findProfilePosts(profile, pageNumber, NO_PROFILE_POSTS, SORT_FIELD, SORT_DIRECTION);
@@ -271,7 +273,6 @@ public class ProfileController extends AbstractController{
 			return "redirect:/";
 		}
 	}
-	
 	
 	
 	

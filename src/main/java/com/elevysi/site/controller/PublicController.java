@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,19 +30,24 @@ import com.elevysi.site.entity.Play_;
 import com.elevysi.site.entity.Post;
 import com.elevysi.site.entity.Post_;
 import com.elevysi.site.entity.Profile;
+import com.elevysi.site.entity.Publication;
+import com.elevysi.site.entity.Publication_;
 import com.elevysi.site.entity.Upload;
 import com.elevysi.site.entity.User;
 import com.elevysi.site.pojo.LatestPost;
 import com.elevysi.site.pojo.OffsetPage;
+import com.elevysi.site.pojo.Page;
 import com.elevysi.site.pojo.SearchResult;
 import com.elevysi.site.pojo.SessionMessage;
 import com.elevysi.site.pojo.Page.SortDirection;
+import com.elevysi.site.security.ActiveUser;
 import com.elevysi.site.service.AlbumService;
 import com.elevysi.site.service.CommentService;
 import com.elevysi.site.service.DossierService;
 import com.elevysi.site.service.PlayService;
 import com.elevysi.site.service.PostService;
 import com.elevysi.site.service.ProfileService;
+import com.elevysi.site.service.PublicationService;
 import com.elevysi.site.service.UserService;
 
 @Controller
@@ -68,6 +75,9 @@ public class PublicController extends AbstractController{
 	
 	@Autowired
 	private AlbumService albumService;
+	
+	@Autowired
+	private PublicationService publicationService;
 	
 	private final static  int NO_LATEST_POSTS = 3;
 	
@@ -246,11 +256,11 @@ public class PublicController extends AbstractController{
 		redirectAttributes.addFlashAttribute("searchResults", searchResults);
 		redirectAttributes.addFlashAttribute("searchTerm", term);
 		
-		return "redirect:/public/search-global";
+		return "redirect:/public/search";
 	}
 	
-	@RequestMapping(value="/search-global", method = RequestMethod.GET)
-	public String showSearch(Model model, @ModelAttribute("searchResults") List<SearchResult> searchResults, @ModelAttribute("searchTerm")String searchTerm, final RedirectAttributes redirectAttributes){
+	@RequestMapping(value="/search", method = RequestMethod.GET)
+	public String search(Model model, @ModelAttribute("searchResults") List<SearchResult> searchResults, @ModelAttribute("searchTerm")String searchTerm, final RedirectAttributes redirectAttributes){
 		
 		/**
 		 * Can throw exception if not initialized
@@ -300,6 +310,77 @@ public class PublicController extends AbstractController{
 			sessionMessage.setSuccessClass();
 			
 			redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
+			return "redirect:/";
+		}
+	}
+	
+	
+	@RequestMapping({"/profile/{username}"})
+	public String view(@PathVariable("username") String username, @ModelAttribute("sessionMessage") SessionMessage sessionMessage, Model model, final RedirectAttributes redirectAttributes, @RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber){
+		
+		Profile profile = profileService.findOne(username);
+		
+		
+		if(profile != null){
+			
+			
+//			com.elevysi.site.pojo.Page publicationsPage = publicationService.buildOffsetPage(pageNumber, DEFAULT_NO_ITEMS, Publication_.created, SortDirection.DESC);
+//			List<Publication> profilePublications = publicationService.getProfilePublications(profile, publicationsPage);
+//			List<Publication> featuredPublications = new ArrayList<Publication>();
+//			
+//			
+//			
+//			for(Publication publication : profilePublications){
+//				Post post = publication.getPost();
+//				Play play = publication.getPlay();
+//				if(post != null){
+//					publication.setPost(postService.getPost(post.getId()));
+//					featuredPublications.add(publication);
+//					
+//				}else if(play != null){
+//					publication.setPlay(playService.getPlay(play.getId()));
+//					featuredPublications.add(publication);
+//				}
+//			}
+			
+			Page publicationPage = publicationService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_ITEMS, Publication_.modified, SortDirection.DESC);
+			List<Publication> foundFeaturedPublications = publicationService.getProfilePublications(profile, publicationPage);
+			List<Publication> featuredPublications = new ArrayList<Publication>();
+			
+			for(Publication publication: foundFeaturedPublications){
+				Post post = publication.getPost();
+				Play play = publication.getPlay();
+				Album album = publication.getAlbum();
+				if(post != null){
+					publication.setPost(postService.getPost(post.getId()));
+					
+				}else if(play != null){
+					publication.setPlay(playService.getPlay(play.getId()));
+				}else if(album != null){
+					publication.setAlbum(albumService.findById(album.getId()));
+				}
+				
+				featuredPublications.add(publication);
+			}
+			
+			Set<Profile> friends = profileService.findProfileFriends(profile);			
+			
+			
+			model.addAttribute("userProfile", profile);
+			model.addAttribute("user", profile.getUser());
+			model.addAttribute("friends", friends);
+			model.addAttribute("sessionMessage", sessionMessage);
+			model.addAttribute("pageTitle", profile.getName());
+			model.addAttribute("pageDescription", profile.getDescription());
+			model.addAttribute("featuredPublications", featuredPublications);
+			
+			
+			return "publicViewProfile";
+			
+		}else{
+			SessionMessage notFoundMsg = new SessionMessage("The specified profile was not found.");
+			notFoundMsg.setDangerClass();
+			redirectAttributes.addFlashAttribute("sessionMessage", notFoundMsg);
 			return "redirect:/";
 		}
 	}

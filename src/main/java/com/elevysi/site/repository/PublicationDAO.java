@@ -16,7 +16,7 @@ public interface PublicationDAO {
 	public long getCount();
 	public Publication getPublication(int id);
 	public List<Publication> getPublications(Page page);
-	public List<Publication> getProfilePublication(Profile profile, Page page);
+	public List<Publication> getProfilePublications(Profile profile, Page page);
 	public OffsetPage buildOffsetPage(int pageIndex, int size,  SingularAttribute sortField, SortDirection sortDirection);
 	public List<Publication> searchByTerm(String term);
 	public List<Publication> getFeaturedPublications(Page page);

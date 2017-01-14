@@ -5,7 +5,8 @@
 
 
 <fmt:parseNumber var="count" value="0"/>
-<fmt:parseNumber var="countFeat" value="0"/>
+<fmt:parseNumber var="countFeat" value=
+"0"/>
 <fmt:parseNumber var="noColumns" value="4"/>
 <fmt:parseNumber var="noColumnsFeat" value="2"/>
 <fmt:parseNumber var="starter" value="0"/>
@@ -20,7 +21,6 @@
 					
 						
 						<c:forEach items="${featuredPublications}" var="featuredItem">
-						
 						<c:choose>
 				
 							<c:when test="${countFeat == starter}"><div class="row margin-bottom-50"></c:when>
@@ -36,10 +36,6 @@
 								
 								<div class="col-sm-6 sm-margin-bottom-50">
 									<!-- Blog Grid -->
-									
-									
-											
-											
 											<div class="blog-grid margin-bottom-40">
 											
 												<c:choose>
@@ -52,8 +48,12 @@
 												
 												<h3><a href="<spring:url value='/posts/view/${featuredItem.post.id}/${featuredItem.friendlyUrl}'/>"><c:out value="${featuredItem.post.title}" /></a></h3>
 												<ul class="blog-grid-info">
-													<li><c:out value="${featuredItem.profile.name}"/></li>
-													<li><c:out value="${featuredItem.post.created}" /></li>
+													<li><a href="<c:url value='/public/profile/${featuredItem.profile.name}'/>"><c:out value="${featuredItem.profile.name}"/></a></li>
+													<c:if test="${not empty featuredItem.post.created}">
+														<li>
+														<fmt:formatDate pattern="dd MMMM yy" value="${featuredItem.post.created}" />
+														</li>
+													</c:if>
 													<li><a href="#"><i class="fa fa-comments"></i> 0</a></li>
 												</ul>
 												<p><c:out value="${featuredItem.post.description}" escapeXml="false"/></p>
@@ -75,17 +75,18 @@
 										<div class="responsive-video">
 											<iframe src="<c:out value='${featuredItem.play.url}'/>" frameborder="0" allowfullscreen></iframe>
 										</div>
-										
-										<p>
-											<fmt:formatDate pattern="dd MMMM yyyy" value="${featuredItem.play.created}" />
-										</p>
 									</div>
 									
 									<div class="news-v2-desc">
 										<h3>
 											<a href='<c:url value='/plays/view/${featuredItem.play.id}/${featuredItem.friendlyUrl}'/>'><c:out value="${featuredItem.play.title}" /></a>
 										</h3>
-										<small>By <a href="<c:url value='/profile/${featuredItem.profile.name}' />" ><c:out value="${featuredItem.profile.name}" /></a> | In <a href="#"><c:out value="${featuredItem.play.playType.name}" /></a></small>
+										<small>By <a href="<c:url value='/public/profile/${featuredItem.profile.name}'/>"><c:out value="${featuredItem.profile.name}" /></a> | In <a href="#"><c:out value="${featuredItem.play.playType.name}" /></a>
+										| 
+										<c:if test="${not empty featuredItem.play.created}">
+											<fmt:formatDate pattern="dd MMMM yy" value="${featuredItem.play.created}" />
+										</c:if>
+										</small>
 									</div>
 								</div>
 							
@@ -116,12 +117,7 @@
 								</div>
 							</c:when>						
 						</c:choose>
-							
-							
 						
-						
-							
-							
 							<c:choose>
 				
 								<c:when test="${(countFeat+unit) == featuredSize}"></div></c:when>
@@ -217,10 +213,11 @@
 								<div class="responsive-video">
 									<iframe src="<c:out value='${featuredVideo.url}'/>" frameborder="0" allowfullscreen></iframe>
 								</div>
-								
-								<p>
-									<fmt:formatDate pattern="dd MMMM yyyy" value="${featuredVideo.created}" />
-								</p>
+								<c:if test="${not empty featuredVideo.created}">
+									<p>
+										<fmt:formatDate pattern="dd MMMM yyyy" value="${featuredVideo.created}" />
+									</p>
+								</c:if>
 							</div>
 							
 							<div class="news-v2-desc">
@@ -241,7 +238,7 @@
 							
 						</c:choose>
 			
-				<fmt:parseNumber var="count" value="${count + 1}" />
+					<fmt:parseNumber var="count" value="${count + 1}" />
 					
 					</c:forEach>
 						

@@ -109,6 +109,14 @@
 </definition>
 
 
+<definition name="publicViewProfile" extends="commonBlog1.9">
+  <put-attribute name="title" value="Dossiers Confettis" cascade="true"/>
+  <put-attribute name="body" value="/WEB-INF/views/jsp/profiles/viewpublic.jsp" cascade="true"/>
+  <put-attribute name="currentUrl" value="/public/profiles" cascade="true"/>
+  
+</definition>
+
+
 <!-- Plays -->
 
 <definition name="viewplay" extends="commonBlog1.9">

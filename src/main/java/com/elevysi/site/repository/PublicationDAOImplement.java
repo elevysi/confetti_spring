@@ -81,7 +81,7 @@ public class PublicationDAOImplement implements PublicationDAO{
 		
 	}
 	
-	public List<Publication> getProfilePublication(Profile profile, Page page){
+	public List<Publication> getProfilePublications(Profile profile, Page page){
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Publication> criteria = cb.createQuery(Publication.class);
@@ -99,7 +99,6 @@ public class PublicationDAOImplement implements PublicationDAO{
 			Hibernate.initialize(publication.getAlbum());
 			Hibernate.initialize(publication.getPlay());
 			Hibernate.initialize(publication.getPost());
-			
 		}
 		
 		return publications;

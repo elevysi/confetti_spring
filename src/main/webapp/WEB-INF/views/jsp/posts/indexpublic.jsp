@@ -49,7 +49,7 @@
 				</div>
 				<div class="caption">
 					<h3><a class="hover-effect" href="<c:url value='/posts/view/${post.id}/${post.publication.friendlyUrl}'/>"><c:out value="${post.title}" /></a></h3>
-					<small>By <c:out value="${post.profile.name}" /> | Comments | <fmt:formatDate pattern="dd MMMM yy" value="${post.created}" /></small>
+					<small>By <a href="<c:url value='/public/profile/${post.profile.name}' />" ><c:out value="${post.profile.name}" /></a> | <fmt:formatDate pattern="dd MMMM yy" value="${post.created}" /></small>
 					<p><c:out value="${post.description}" /></p>
 				</div>
 			</div>
