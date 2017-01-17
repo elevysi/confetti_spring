@@ -1,2 +1,9 @@
 /target/
 /.apt_generated/
+/src/main/resources/META-INF/application-devOSX.properties
+/src/main/resources/META-INF/application-devUbuntu.properties
+/src/main/resources/META-INF/application-devWin.properties
+/src/main/resources/META-INF/application-prod.properties
+/src/main/resources/META-INF/application.properties
+/src/main/resources/META-INF/configurations.txt
+/src/main/resources/META-INF/datasource.xml
