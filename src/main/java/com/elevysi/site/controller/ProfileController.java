@@ -597,12 +597,10 @@ public class ProfileController extends AbstractController{
 			 * Create a new Active User with Profile
 			 * 
 			 */
-			
-
-			
 		}
 		
 		
 		return "redirect:/profile/";
 	}
+	
 }

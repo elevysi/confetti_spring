@@ -7,10 +7,9 @@
             <div class="container">
                 <ul class="nav navbar-nav">
                     <!-- Home -->
+                    <li><a href="<spring:url value="/"/>">Home</a></li>
                     <li class="dropdown">
-								<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
-									Blogs
-						</a>
+								<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">Blogs</a>
 						<ul class="dropdown-menu">
 							<li class="active"><a href="<spring:url value="/"/>">Spring</a></li>
 							<li><a href="<spring:url value="http://elevysi.com/posts/timeline"/>">Cake PHP</a></li>

@@ -143,11 +143,12 @@ public class PublicController extends AbstractController{
 		
 		OffsetPage page = postService.buildOffsetPage(pageIndex, DEFAULT_NO_ITEMS, Post_.created, SortDirection.DESC);
 		List<Post> posts = postService.getAllPosts(page);
-		long totalRecords = page.getTotalRecords();
-		int totalPages = Math.round(totalRecords / DEFAULT_NO_ITEMS);
+		double totalRecords = page.getTotalRecords();
+		int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
 		model.addAttribute("page", page);
 		model.addAttribute("posts", posts);
 		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("totalRecords", totalRecords);
 		
 		return "publicIndexPosts";
 	}
@@ -157,11 +158,12 @@ public class PublicController extends AbstractController{
 		
 		OffsetPage page = playService.buildOffsetPage(pageIndex, DEFAULT_NO_ITEMS, Play_.created, SortDirection.DESC);
 		List<Play> plays = playService.getPlays(page);
-		long totalRecords = page.getTotalRecords();
-		int totalPages = Math.round(totalRecords / DEFAULT_NO_ITEMS);
+		double totalRecords = page.getTotalRecords();
+		int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
 		model.addAttribute("page", page);
 		model.addAttribute("plays", plays);
 		model.addAttribute("totalPages", totalPages);
+		
 		
 		return "publicIndexPlays";
 		
@@ -172,8 +174,8 @@ public class PublicController extends AbstractController{
 		
 		OffsetPage page = albumService.buildOffsetPage(pageIndex, DEFAULT_NO_ITEMS, Album_.created, SortDirection.DESC);
 		List<Album> albums = albumService.getAlbums(page);
-		long totalRecords = page.getTotalRecords();
-		int totalPages = Math.round(totalRecords / DEFAULT_NO_ITEMS);
+		double totalRecords = page.getTotalRecords();
+		int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
 		model.addAttribute("page", page);
 		model.addAttribute("albums", albums);
 		model.addAttribute("totalPages", totalPages);
@@ -188,8 +190,8 @@ public class PublicController extends AbstractController{
 		
 		OffsetPage page = dossierService.buildOffsetPage(pageIndex, DEFAULT_NO_ITEMS, Dossier_.created, SortDirection.DESC);
 		List<Dossier> dossiers = dossierService.getDossiers(page);
-		long totalRecords = page.getTotalRecords();
-		int totalPages = Math.round(totalRecords / DEFAULT_NO_ITEMS);
+		double totalRecords = page.getTotalRecords();
+		int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
 		model.addAttribute("page", page);
 		model.addAttribute("dossiers", dossiers);
 		model.addAttribute("totalPages", totalPages);

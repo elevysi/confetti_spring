@@ -133,6 +133,9 @@ $(document).ready(function(){
 					required : true,
 					minlength : 2
 				},
+				description:{
+					maxlength : 255
+				},
 				content: {
 					required : true,
 					minlength : 2

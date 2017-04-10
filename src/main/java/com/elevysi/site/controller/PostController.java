@@ -59,9 +59,6 @@ public class PostController extends AbstractController{
 	private PostService postService;
 	
 	@Autowired
-	private UserService userService;
-	
-	@Autowired
 	private PostStatusService postStatusService;
 	
 	@Autowired
@@ -172,7 +169,6 @@ public class PostController extends AbstractController{
 	@RequestMapping(value = "add", method= RequestMethod.POST)
 	public String doAddPost(Model model, @Valid @ModelAttribute("post") Post post, BindingResult result, Principal principal, @RequestParam("action") String action){		
 		
-		
 		PostStatus postStatus;
 		if(action.equals("draft")){
 			postStatus = postStatusService.findDraftPostStatus();
@@ -189,8 +185,6 @@ public class PostController extends AbstractController{
 			
 			return "redirect:/";
 		}
-		
-		
 		
 		post.setPostStatus(postStatus);
 		postService.savePost(post);
@@ -290,7 +284,7 @@ public class PostController extends AbstractController{
 	}
 	
 	
-	@RequestMapping(value="edit/{id}", method=RequestMethod.GET)
+	@RequestMapping(value={"edit/{id}/*", "edit/{id}"}, method=RequestMethod.GET)
 	public String edit(@PathVariable("id")Integer id, Model model, @ModelAttribute("sessionMessage")SessionMessage sessionMessage, RedirectAttributes redirectAttributes){
 		SessionMessage dangerMsg = new SessionMessage("The post was not found");
 		dangerMsg.setDangerClass();

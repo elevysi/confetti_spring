@@ -14,7 +14,7 @@
 					</button>
 
 					<div class="navbar-brand">
-						<a href="index.html">
+						<a href="<spring:url value="/"/>">
 							<img src="<c:url value='/resources_1_9_5/img/logo1-default.png'/>" alt="Logo">
 						</a>
 					</div>
@@ -25,7 +25,8 @@
 					<div class="res-container">
 						<ul class="nav navbar-nav">
 							<!-- Home -->
-							<li class="dropdown home active">
+                    		<li class=" home active "><a href="<spring:url value="/"/>"> Home </a></li>
+							<li class="dropdown">
 								<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
 									Blogs
 								</a>
