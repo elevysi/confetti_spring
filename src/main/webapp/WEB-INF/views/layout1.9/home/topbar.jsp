@@ -17,9 +17,8 @@
 						<div class="topbar-time"><c:out value="${currentDate}"/></div>
 						<div class="topbar-toggler"><span class="fa fa-angle-down"></span></div>
 						<ul class="topbar-list topbar-menu">
-							<li><a href="#">Blog</a></li>
-							<li><a href="#">Contact</a></li>
-							<li><a href="#">Forums</a></li>
+							<li><a href="http://elevysi.com">Elevysi.com</a></li>
+							
 							
 							<security:authorize access="isAuthenticated()">
 								<li class="cd-log_reg hidden-sm hidden-md hidden-lg"><strong><a class="cd-signin" href='<spring:url value="/logout"></spring:url>'>Logout</a></strong></li>

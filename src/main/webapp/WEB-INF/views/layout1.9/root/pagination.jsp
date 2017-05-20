@@ -10,6 +10,7 @@
 <!--Pegination Centered-->
 <div class="tag-box tag-box-v7 text-justify">
 	<div class="text-center">
+	
 	<ul class="pagination">
 	<c:if test="${page.current > firstDisplay}" >
 		<li class="previous"><a href="<c:out value='${baseUrl}${page.current - 1}'/>">«</a></li>
@@ -66,6 +67,9 @@
 	</ul>
 	</div>
 	
+	<hr>
+	
+	<c:out value="${totalPages}" /> page(s)
 	
 </div>
 <!--End Pegination Centered-->

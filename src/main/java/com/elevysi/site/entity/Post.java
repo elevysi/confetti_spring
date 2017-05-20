@@ -48,10 +48,11 @@ public class Post extends AbstractEntity{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Size(min=2, message="Title must be at least 2 characters")
+	@Size(min=1, max=255, message="Title must be between 1 and 255 characters")
 	@Column(nullable = false)
 	private String title;
 	
+	@Size(max=255, message = "Description must not be more than 255 characters")
 	private String description;
 	
 //	@OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
@@ -149,36 +150,29 @@ public class Post extends AbstractEntity{
 		this.likeCount = likeCount;
 	}
 
-
 	public Integer getShareCount() {
 		return shareCount;
 	}
-
 
 	public void setShareCount(Integer shareCount) {
 		this.shareCount = shareCount;
 	}
 
-
 	public Integer getCommentCount() {
 		return commentCount;
 	}
-
 
 	public void setCommentCount(Integer commentCount) {
 		this.commentCount = commentCount;
 	}
 
-
 	public Publication getPublication() {
 		return publication;
 	}
 
-
 	public void setPublication(Publication publication) {
 		this.publication = publication;
 	}
-
 
 	@ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="post_categories",
@@ -191,7 +185,6 @@ public class Post extends AbstractEntity{
 	public Set<Category> getCategories() {
 		return categories;
 	}
-
 
 	public void setCategories(Set<Category> categories) {
 		this.categories = categories;
@@ -213,11 +206,9 @@ public class Post extends AbstractEntity{
 		return shares;
 	}
 
-
 	public void setShares(Set<Share> shares) {
 		this.shares = shares;
 	}
-
 
 	public Set<Comment> getComments() {
 		return comments;

@@ -96,7 +96,7 @@ public class HomeController extends AbstractController{
 		return "showroom";
 	}
 	
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = {"/", "/index.html"}, method = RequestMethod.GET)
 	public String homeBlog(
 			@ModelAttribute("sessionMessage") 
 			SessionMessage sessionMessage, 

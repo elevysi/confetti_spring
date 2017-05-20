@@ -131,7 +131,11 @@ $(document).ready(function(){
 			rules : {
 				title: {
 					required : true,
-					minlength : 2
+					minlength : 1,
+					maxlength : 255
+				},
+				description:{
+					maxlength : 255
 				},
 				content: {
 					required : true,
