@@ -144,7 +144,7 @@ public class PostController extends AbstractController{
 			categories.put(category.getId(), category.getName());
 		}
 		
-		com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_ITEMS, Dossier_.created, SortDirection.DESC);		
+		com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Dossier_.created, SortDirection.DESC);		
 		List<Dossier> dossiers = dossierService.getDossiers(dossiersPage);
 		
 		model.addAttribute("post", newPost);

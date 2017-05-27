@@ -9,7 +9,8 @@
 
 <c:choose>
 	<c:when test="${not empty  pageDescription}">
-		<meta name="description" content="${pageDescription}">
+		<meta name="description" content="<c:out value='${pageDescription}' />" />
+		
 	</c:when>
 	<c:otherwise>
 		<meta name="description" content="Blog, Web, Development, Technology, Music, LifeStyle, Motivation">
@@ -18,9 +19,9 @@
 
 <meta name="author" content="Elevysi">
 
-<meta name="_csrf" content="${_csrf.token}"/>
+<meta name="_csrf" content="<c:out value='${_csrf.token}' />"/>
 <!-- default header name is X-CSRF-TOKEN -->
-<meta name="_csrf_header" content="${_csrf.headerName}"/>
+<meta name="_csrf_header" content="<c:out value='${_csrf.headerName}' />"/>
 
 <!-- Favicon -->
 <link rel="shortcut icon" href="<c:url value='/img/favicon.ico' />">

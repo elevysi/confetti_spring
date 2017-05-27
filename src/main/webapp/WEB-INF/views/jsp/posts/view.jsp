@@ -142,6 +142,8 @@
 </div>
 <!-- End News v3 -->
 
+<!-- Put source of the image here -->
+
 <!-- Blog Post Author -->
 <div class="blog-author margin-bottom-30">
 
