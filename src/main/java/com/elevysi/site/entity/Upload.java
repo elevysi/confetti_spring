@@ -170,7 +170,7 @@ public class Upload implements Serializable{
 	
 	private Integer position;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "type", referencedColumnName = "id")
 	private MediaKind mediaType;
 	

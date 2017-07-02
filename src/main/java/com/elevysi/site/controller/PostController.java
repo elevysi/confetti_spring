@@ -242,7 +242,7 @@ public class PostController extends AbstractController{
 		
 	}
 	
-	@RequestMapping(value="view/{id}/*")
+	@RequestMapping(value={"view/{id}/*", "view/{id}"})
 	public String view(@PathVariable("id")Integer id, Model model, @ModelAttribute("sessionMessage")SessionMessage sessionMessage, RedirectAttributes redirectAttributes){
 		SessionMessage dangerMsg = new SessionMessage("The post was not found");
 		dangerMsg.setDangerClass();

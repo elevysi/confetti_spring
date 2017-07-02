@@ -68,8 +68,6 @@ public class PublicationMock {
 		}
 		
 		return this;
-		
-		
 	}
 
 }

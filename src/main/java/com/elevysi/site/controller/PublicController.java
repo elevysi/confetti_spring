@@ -347,34 +347,42 @@ public class PublicController extends AbstractController{
 			
 			Page publicationPage = publicationService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_ITEMS, Publication_.modified, SortDirection.DESC);
 			List<Publication> foundFeaturedPublications = publicationService.getProfilePublications(profile, publicationPage);
-			List<Publication> featuredPublications = new ArrayList<Publication>();
+
+//			List<Publication> featuredPublications = new ArrayList<Publication>();
 			
-			for(Publication publication: foundFeaturedPublications){
-				Post post = publication.getPost();
-				Play play = publication.getPlay();
-				Album album = publication.getAlbum();
-				if(post != null){
-					publication.setPost(postService.getPost(post.getId()));
-					
-				}else if(play != null){
-					publication.setPlay(playService.getPlay(play.getId()));
-				}else if(album != null){
-					publication.setAlbum(albumService.findById(album.getId()));
-				}
-				
-				featuredPublications.add(publication);
-			}
+//			for(Publication publication: foundFeaturedPublications){
+//				Post post = publication.getPost();
+//				Play play = publication.getPlay();
+//				Album album = publication.getAlbum();
+//				if(post != null){
+//					publication.setPost(postService.getPost(post.getId()));
+//					
+//				}else if(play != null){
+//					publication.setPlay(playService.getPlay(play.getId()));
+//				}else if(album != null){
+//					publication.setAlbum(albumService.findById(album.getId()));
+//				}
+//				
+//				featuredPublications.add(publication);
+//			}
 			
-			Set<Profile> friends = profileService.findProfileFriends(profile);			
+//			Set<Profile> friends = profileService.findProfileFriends(profile);	
 			
 			
 			model.addAttribute("userProfile", profile);
 			model.addAttribute("user", profile.getUser());
-			model.addAttribute("friends", friends);
+//			model.addAttribute("friends", friends);
 			model.addAttribute("sessionMessage", sessionMessage);
 			model.addAttribute("pageTitle", profile.getName());
 			model.addAttribute("pageDescription", profile.getDescription());
-			model.addAttribute("featuredPublications", featuredPublications);
+//			model.addAttribute("featuredPublications", featuredPublications);
+			
+			model.addAttribute("featuredPublications", foundFeaturedPublications);
+			
+			double totalRecords = publicationPage.getTotalRecords();
+			int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
+			model.addAttribute("page", publicationPage);
+			model.addAttribute("totalPages", totalPages);
 			
 			
 			return "publicViewProfile";

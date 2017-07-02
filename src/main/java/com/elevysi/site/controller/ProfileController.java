@@ -235,7 +235,7 @@ public class ProfileController extends AbstractController{
 		
 		if(profile != null){
 			
-			com.elevysi.site.pojo.Page publicationsPage = publicationService.buildOffsetPage(pageNumber, DEFAULT_NO_ITEMS, Publication_.created, SortDirection.DESC);
+			com.elevysi.site.pojo.Page publicationsPage = publicationService.buildOffsetPage(pageNumber, 1, Publication_.created, SortDirection.DESC);
 			List<Publication> profilePublications = publicationService.getProfilePublications(profile, publicationsPage);
 			
 			Set<Profile> friends = profileService.findProfileFriends(profile);			

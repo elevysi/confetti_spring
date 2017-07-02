@@ -75,6 +75,8 @@
 </c:forEach>
 
 
+<tiles:insertAttribute name="pagination" ignore="true"/>
+
 <!-- Pager v3 -->
 <!-- <ul class="pager pager-v3 pager-sm no-margin-bottom">
     <li class="previous"><a href="#">&larr; Older</a></li>
