@@ -19,7 +19,7 @@ var PreviousMessages = React.createClass({
 		});
 		return(
 			<div>
-				Here are the previous messages
+				Messages
 				{messageNodes} 
 			</div>
 		);
@@ -63,7 +63,7 @@ var Message = React.createClass({
 	render : function(){
 		return (
 			<div>
-				<h1>{this.props.author}</h1>
+				<h4>{this.props.author}</h4>
 				{this.props.children}
 			</div>
 		);
@@ -87,6 +87,9 @@ var ChatBox = React.createClass({
 			type: 'POST',
 			dataType: 'json',
 			data: Message,
+			beforeSend:function(xhr){
+  	 	         xhr.setRequestHeader(header, token)
+			},
 			success: function(json){
 				this.setState({chatMsgs: json});
 			}.bind(this),

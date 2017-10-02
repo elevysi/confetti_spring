@@ -108,6 +108,13 @@
   
 </definition>
 
+<definition name="publicIndexProfiles" extends="commonBlog1.9">
+  <put-attribute name="title" value="Profiles Confettis" cascade="true"/>
+  <put-attribute name="body" value="/WEB-INF/views/jsp/profiles/indexpublic.jsp" cascade="true"/>
+  <put-attribute name="currentUrl" value="/public/profiles" cascade="true"/>
+  
+</definition>
+
 
 <definition name="publicViewProfile" extends="commonBlog1.9">
   <put-attribute name="title" value="Dossiers Confettis" cascade="true"/>
@@ -164,6 +171,11 @@
 <definition name="search-results" extends="commonBlog1.9">
     <put-attribute name="title" value="Search Results" cascade="true"/>
     <put-attribute name="body" value="/WEB-INF/views/jsp/pages/searchResults.jsp"/>
+</definition>
+
+<definition name="search-tree" extends="commonBlog1.9">
+    <put-attribute name="title" value="Search Results" cascade="true"/>
+    <put-attribute name="body" value="/WEB-INF/views/jsp/pages/searchTree.jsp"/>
 </definition>
 
 <!-- Dossiers -->

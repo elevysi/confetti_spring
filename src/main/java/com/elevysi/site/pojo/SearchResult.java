@@ -1,5 +1,8 @@
 package com.elevysi.site.pojo;
 
+import java.util.Date;
+
+import com.elevysi.site.entity.Profile;
 import com.elevysi.site.entity.Upload;
 
 public class SearchResult {
@@ -11,6 +14,10 @@ public class SearchResult {
 	private String heading;
 	
 	private Object object;
+	private Date created;
+	private Date modified;
+	
+	private Profile author;
 	
 	
 	public Object getObject() {
@@ -61,6 +68,30 @@ public class SearchResult {
 
 	public void setDetails(String details) {
 		this.details = details;
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public Date getModified() {
+		return modified;
+	}
+
+	public void setModified(Date modified) {
+		this.modified = modified;
+	}
+
+	public Profile getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(Profile author) {
+		this.author = author;
 	}
 
 	

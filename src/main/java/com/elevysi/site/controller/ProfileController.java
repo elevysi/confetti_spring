@@ -6,9 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -20,10 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
@@ -38,14 +34,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.elevysi.site.entity.Album;
-import com.elevysi.site.entity.Comment;
+import com.elevysi.site.entity.Album_;
+import com.elevysi.site.entity.Dossier;
+import com.elevysi.site.entity.Dossier_;
 import com.elevysi.site.entity.Play;
+import com.elevysi.site.entity.Play_;
 import com.elevysi.site.entity.Post;
+import com.elevysi.site.entity.Post_;
 import com.elevysi.site.entity.Profile;
 import com.elevysi.site.entity.ProfileType;
 import com.elevysi.site.entity.Publication;
@@ -53,12 +52,12 @@ import com.elevysi.site.entity.Publication_;
 import com.elevysi.site.entity.User;
 import com.elevysi.site.form.FileUpload;
 import com.elevysi.site.pojo.Page.SortDirection;
+import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.ReturnValue;
 import com.elevysi.site.pojo.SessionMessage;
-import com.elevysi.site.repository.ProfileRepository;
 import com.elevysi.site.security.ActiveUser;
 import com.elevysi.site.service.AlbumService;
-import com.elevysi.site.service.CustomUserDetailsService;
+import com.elevysi.site.service.DossierService;
 import com.elevysi.site.service.PlayService;
 import com.elevysi.site.service.PostService;
 import com.elevysi.site.service.ProfileService;
@@ -90,6 +89,9 @@ public class ProfileController extends AbstractController{
 	
 	@Autowired
 	private PlayService playService;
+	
+	@Autowired
+	private DossierService dossierService;
 	
 	@Autowired
 	private AlbumService albumService;
@@ -147,33 +149,27 @@ public class ProfileController extends AbstractController{
 	public String profile(Model model, 
 			@ModelAttribute("sessionMessage")SessionMessage sessionMessage, 
 			@RequestParam(required = false, value="message")String msg,
-			Principal principal, 
-			@RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber
+			@RequestParam(value="username", defaultValue="", required=false)String username
+			
 	){
-		
-		
 		
 		if(sessionMessage.getMsgText() == null && msg != null){
 			sessionMessage = new SessionMessage();
 			sessionMessage.setMsgText(msg);
 			sessionMessage.setSuccessClass();
 		}
-		
 		Profile actingProfile = profileService.getActiveProfile();
-		//Load the profile specifics
-		
-		Profile profile = profileService.loadFullProfile(actingProfile.getId());
-		
-//		List<Post> profilePosts = postService.findProfilePosts(actingProfile, pageNumber, NO_PROFILE_POSTS_PER_LOAD, SORT_FIELD, SORT_DIRECTION);
-		
-//		model.addAttribute("profilePosts", profilePosts);
+		Profile profile;
+		if(username.equals("")){
+			profile = actingProfile;
+		}else{
+			profile = profileService.findByName(username);
+		}
 		model.addAttribute("actingProfile", profile);
 		model.addAttribute("sessionMessage", sessionMessage);
-		model.addAttribute("pageTitle", actingProfile.getName());
-		model.addAttribute("pageDescription", actingProfile.getDescription());
-		/**
-		 * Find publications
-		 */
+		model.addAttribute("pageTitle", profile.getName());
+		model.addAttribute("pageDescription", profile.getDescription());
+		
 		
 		
 		return "profileHome";
@@ -232,7 +228,11 @@ public class ProfileController extends AbstractController{
 	}
 	
 	@RequestMapping({"/profile/{username}"})
-	public String view(@PathVariable("username") String username, @ModelAttribute("sessionMessage") SessionMessage sessionMessage, Model model, final RedirectAttributes redirectAttributes, @RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber){
+	public String view(
+			@PathVariable("username") String username, 
+			@ModelAttribute("sessionMessage") SessionMessage sessionMessage, 
+			Model model, final RedirectAttributes redirectAttributes, 
+			@RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber){
 		
 		Profile profile = profileService.findOne(username);
 		
@@ -280,18 +280,22 @@ public class ProfileController extends AbstractController{
 	
 	
 	
-	@RequestMapping({"/bucket/{username}"})
-	public String bucket(Model model, Principal principal, @PathVariable("username") String username, final RedirectAttributes redirectAttributes){
+	@RequestMapping(value={"/bucket/{username}"}, method=RequestMethod.POST)
+	public String doBucket(
+			Model model,
+			Principal principal, 
+			@PathVariable("username") String username,
+			@RequestParam("bucketID") String bucketID,
+			final RedirectAttributes redirectAttributes
+	){
 		/*
 		 * Create a profile friend relationship
+		 * Find acting profile, add the requested profile to their list of friends
 		 */
-		User requestedUser = userService.findOne(username);
-		ProfileType userProfileType = profileTypeService.findOne("user");
-		Profile requestedProfile = profileService.findByUserAndProfileType(requestedUser, userProfileType);
-		
-		User requestingUser = userService.findOne((principal.getName()));
-		Profile requestingProfile = profileService.findByUserAndProfileType(requestingUser, userProfileType);
-		
+		Profile activeProfile = profileService.getActiveProfile();
+		//Loaded Profile with Friends
+		Profile requestingProfile = profileService.findByName(activeProfile.getName());
+		Profile requestedProfile = profileService.findByName(bucketID);
 		profileService.bucket(requestingProfile, requestedProfile);
 		
 		SessionMessage sessionMessage = new SessionMessage("Confetti "+username+  " has been successfully added to your bucket list.");
@@ -401,45 +405,101 @@ public class ProfileController extends AbstractController{
 	}
 	
 	@RequestMapping(value="/profile/{username}/posts")
-	public String profilePosts(Model model, RedirectAttributes redirectAttributes, Principal principal, @RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber){
+	public String profilePosts(
+			Model model, 
+			@PathVariable("username") String username,
+			@RequestParam(value="page", defaultValue="1", required=false)int pageIndex
+	){
+		Profile profile = profileService.findByName(username);
+		OffsetPage page = postService.buildOffsetPage(pageIndex, DEFAULT_NO_ITEMS, Post_.created, SortDirection.DESC);
 		
+		List<Post> posts = new ArrayList<Post>();
+		if(profile != null){
+			posts = postService.getLatestPostsForProfile(profile, null, page);
+		}
 		
-		Profile actingProfile = profileService.getActiveProfile();
-		List<Post> profilePosts = postService.findProfilePosts(actingProfile, pageNumber, NO_ITEMS_PER_PAGE, SORT_FIELD, SORT_DIRECTION);
+		model.addAttribute("posts", posts);
+		double totalRecords = page.getTotalRecords();
+		int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
+		model.addAttribute("page", page);
+		model.addAttribute("totalPages", totalPages);
 		
-		model.addAttribute("profilePosts", profilePosts);
-		model.addAttribute("actingProfile", actingProfile);
-		model.addAttribute("pageTitle", actingProfile.getName());
-		model.addAttribute("pageDescription", actingProfile.getDescription());
-		return "profilePosts";
+		return "indexpostsajax";
 		
 	}
 	
 	@RequestMapping(value="/profile/{username}/plays")
-	public String profilePlays(Model model, RedirectAttributes redirectAttributes, Principal principal, @RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber){
+	public String plays(
+			Model model, 
+			@PathVariable("username") String username,
+			@RequestParam(value="page", defaultValue="1", required=false)int pageNumber
+	){
+		Profile profile = profileService.findByName(username);
+		OffsetPage page = playService.buildOffsetPage(pageNumber, DEFAULT_NO_ITEMS, Play_.created, SortDirection.DESC);
+		List<Play> plays = new ArrayList<Play>();
 		
-		Profile actingProfile = profileService.getActiveProfile();
-		List<Play> profilePlays = playService.findLatestPlaysForProfile(actingProfile, new Play(), pageNumber-1, NO_ITEMS_PER_PAGE, SORT_FIELD, SORT_DIRECTION);
+		if(profile != null){
+			plays = playService.getProfilePlays(profile, page);
+		}
 		
-		model.addAttribute("profilePlays", profilePlays);
-		model.addAttribute("actingProfile", actingProfile);
-		model.addAttribute("pageTitle", actingProfile.getName());
-		model.addAttribute("pageDescription", actingProfile.getDescription());
-		return "profilePlays";
+		
+		model.addAttribute("plays", plays);
+		double totalRecords = page.getTotalRecords();
+		int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
+		model.addAttribute("page", page);
+		model.addAttribute("totalPages", totalPages);
+		
+		return "indexplaysajax";
 		
 	}
 	
+	
+	
 	@RequestMapping(value="/profile/{username}/albums")
-	public String profileAlbums(Model model, RedirectAttributes redirectAttributes, Principal principal, @RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber){
+	public String albums(
+			Model model,
+			@PathVariable("username") String username,
+			@RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber
+	){
 		
-		Profile actingProfile = profileService.getActiveProfile();
-		List<Album> profileAlbums = albumService.getPaginatedAlbumsForProfile(actingProfile, pageNumber, NO_ITEMS_PER_PAGE, SORT_FIELD, SORT_DIRECTION);
+		Profile profile = profileService.findByName(username);
+		OffsetPage page = albumService.buildOffsetPage(pageNumber, DEFAULT_NO_ITEMS, Album_.created, SortDirection.DESC);
+		List<Album> albums = new ArrayList<Album>();
 		
-		model.addAttribute("profileAlbums", profileAlbums);
-		model.addAttribute("actingProfile", actingProfile);
-		model.addAttribute("pageTitle", actingProfile.getName());
-		model.addAttribute("pageDescription", actingProfile.getDescription());		
-		return "profileAlbums";
+		if(profile != null){
+			albums = albumService.getAlbumsForProfile(profile, page);
+		}
+		
+		model.addAttribute("albums", albums);
+		double totalRecords = page.getTotalRecords();
+		int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
+		model.addAttribute("page", page);
+		model.addAttribute("totalPages", totalPages);
+		
+		return "indexalbumsajax";
+	}
+	
+	@RequestMapping(value="/profile/{username}/dossiers")
+	public String dossiers(
+			Model model,
+			@PathVariable("username") String username,
+			@RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber
+	){
+		Profile profile = profileService.findByName(username);
+		OffsetPage page = dossierService.buildOffsetPage(pageNumber, DEFAULT_NO_ITEMS, Dossier_.created, SortDirection.DESC);
+		List<Dossier> dossiers = new ArrayList<Dossier>();
+		
+		if(profile != null){
+			dossiers = dossierService.getDossiersForProfile(profile, page);
+		}
+		
+		model.addAttribute("dossiers", dossiers);
+		double totalRecords = page.getTotalRecords();
+		int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
+		model.addAttribute("page", page);
+		model.addAttribute("totalPages", totalPages);
+		
+		return "indexdossiersajax";
 		
 	}
 	
@@ -472,24 +532,6 @@ public class ProfileController extends AbstractController{
 		
 	}
 	
-	
-
-	@RequestMapping({"/profile/friends"})
-	public String friends(Model model, Principal principal){
-		User domainUser = userService.findOne(principal.getName());
-		model.addAttribute("user", domainUser);
-		
-		Profile actingProfile = profileService.getActiveProfile();
-		model.addAttribute("actingProfile", actingProfile);
-		
-		Set<Profile> friends = profileService.findProfileFriends(actingProfile);
-		model.addAttribute("friends", friends);
-		
-		model.addAttribute("pageTitle", actingProfile.getName());
-		model.addAttribute("pageDescription", actingProfile.getDescription());
-		
-		return "profileFriends";
-	}
 	
 	@RequestMapping(value="bucket")
 	public String bucket(Model model){
@@ -605,6 +647,70 @@ public class ProfileController extends AbstractController{
 		
 		
 		return "redirect:/profile/";
+	}
+	
+	@RequestMapping({"/profile/pbucket/"})
+	public String friends(
+			Model model, 
+			Principal principal
+		){
+		
+		Profile actingProfile = profileService.getActiveProfile();
+		model.addAttribute("actingProfile", actingProfile);
+		
+		List<Profile> friends = profileService.findProfileConnections(actingProfile);
+		
+		model.addAttribute("friends", friends);
+		
+		model.addAttribute("pageTitle", actingProfile.getName());
+		model.addAttribute("pageDescription", actingProfile.getDescription());
+		
+		return "profileFriends";
+	}
+	
+	/**
+	 * Ajax Calls
+	 */
+	@RequestMapping(value="/profile/{username}/profileBucketNetworkAjax/{networkType}/")
+	public String profileBucketNetworkAjax(
+			Model model,
+			@PathVariable("username") String username,
+			@PathVariable("networkType") int networkType,
+			@RequestParam(value="page", defaultValue="1", required=false)int pageIndex
+	){
+		
+		OffsetPage page = playService.buildOffsetPage(pageIndex, DEFAULT_NO_ITEMS, Play_.created, SortDirection.DESC);
+		
+		List<Profile> friends = new ArrayList<Profile>();
+		Profile profile = profileService.findByName(username);
+		
+		if(profile != null){
+			
+		
+			switch(networkType){
+				case 1: //all
+					friends = profileService.findProfileConnections(profile);
+				break;
+				case 2: //I added them
+					friends = profileService.findFollowing(profile);
+				break;
+				case 3: //They added me
+					friends = profileService.findFollowers(profile);
+				break;
+				case 4: //Mutual
+					friends = profileService.findMutualBucket(profile);
+				break;
+			}
+		}
+		
+		model.addAttribute("profiles", friends);
+		
+		double totalRecords = page.getTotalRecords();
+		int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
+		model.addAttribute("page", page);
+		model.addAttribute("totalPages", totalPages);
+		
+		return "indexprofilesajax";
 	}
 	
 }

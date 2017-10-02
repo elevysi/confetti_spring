@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.elevysi.site.entity.Dossier;
 import com.elevysi.site.entity.Dossier_;
 import com.elevysi.site.entity.Post;
+import com.elevysi.site.entity.Profile;
 import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.Page;
 import com.elevysi.site.pojo.Page.SortDirection;
@@ -129,6 +130,28 @@ public class DossierDAOImplement implements DossierDAO{
 		
 		em.merge(dossier);
 		em.remove(dossier);
+	}
+	
+	public List<Dossier> getDossiersForProfile(Profile profile, Page page){
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Dossier> criteria = cb.createQuery(Dossier.class);
+		Root<Dossier> dossierRoot = criteria.from(Dossier.class);
+		criteria.select(dossierRoot);
+		
+		Predicate condition = cb.equal(dossierRoot.get(Dossier_.profile), profile);
+		criteria.where(condition);
+		
+		TypedQuery<Dossier> query = page.createQuery(em, criteria, dossierRoot);
+		List<Dossier> dossiers =  query.getResultList();
+		for(Dossier dossier : dossiers){
+			Hibernate.initialize(dossier.getProfile());
+			Hibernate.initialize(dossier.getProfile().getProfilePicture());
+			Hibernate.initialize(dossier.getPosts());
+			Hibernate.initialize(dossier.getPlays());
+			Hibernate.initialize(dossier.getAlbums());
+			Hibernate.initialize(dossier.getUploads());
+		}
+		return dossiers;
 	}
 
 }

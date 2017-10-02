@@ -25,28 +25,29 @@
 		
 		<c:if test="${canEditPlay || isAdmin}">
 			<div class="clearfix margin-bottom-20"><hr></div>
-			<div class="btn-group">
-				<a class="btn-u btn-brd btn-u-blue"  href="<spring:url value='/plays/edit/${play.id}' />"><i class="fa fa-edit"></i> Edit play</a>
-				
-				<form:form method="post" action="${deletePlayUrl}" onsubmit="return confirmDelete(this, '${deletePlayUrl}')">
-						<button class="btn-u btn-brd btn-u-blue"><i class="fa fa-trash"></i> Delete play</button>
-				</form:form>
+			<ul class="list-inline up-ul">
+				<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-red btn-u-sm"  href="<spring:url value='/plays/edit/${play.id}' />"><i class="fa fa-edit"></i> Edit play</a></li>
+				<li>
+					<form:form method="post" action="${deletePlayUrl}" onsubmit="return confirmDelete(this, '${deletePlayUrl}')" class="form-inline">
+							<button class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-red btn-u-sm"><i class="fa fa-trash"></i> Delete play</button>
+					</form:form>
+				</li>
 				
 				<c:if test="${isAdmin}">
 				
 					<c:choose>
 						<c:when test="${play.publication.featured}">
-							<a class="btn-u btn-brd btn-u-blue" id="unfeatureBtn"  href="<spring:url value='/admin/unfeatureItem' />"><i class="fa fa-magic"></i> Unfeature publication</a>
+							<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-light-green btn-u-sm" id="unfeatureBtn"  href="<spring:url value='/admin/unfeatureItem' />"><i class="fa fa-magic"></i> Unfeature publication</a></li>
 						</c:when>
 						<c:otherwise>
-							<a class="btn-u btn-brd btn-u-blue" id="unfeatureBtn"  href="<spring:url value='/admin/featureItem' />"><i class="fa fa-magic"></i> Feature publication</a>
+							<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-green btn-u-sm" id="unfeatureBtn"  href="<spring:url value='/admin/featureItem' />"><i class="fa fa-magic"></i> Feature publication</a></li>
 						</c:otherwise>
 					
 					</c:choose>
 				
 				</c:if>
 					
-			</div>
+			</ul>
 			<div class="clearfix margin-bottom-20"><hr></div>
 		</c:if>
 		

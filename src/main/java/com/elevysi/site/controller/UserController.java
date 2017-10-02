@@ -193,7 +193,7 @@ public class UserController extends AbstractController{
 		ProfileType userProfileType = profileTypeService.findOne("user");
 		Profile userProfile = profileService.findByUserAndProfileType(user, userProfileType);
 		if(userProfile != null){
-			return "redirect:/profile/"+userProfile.getName();
+			return "redirect:/profile?username="+userProfile.getName();
 		}
 		
 		return "/";

@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.elevysi.site.entity.Dossier;
+import com.elevysi.site.entity.Profile;
 import com.elevysi.site.entity.Upload;
 import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.Page;
@@ -79,6 +80,10 @@ public class DossierService extends AbstractService{
 	@PreAuthorize("#dossier.profile.id == principal.activeProfile.id || hasRole('ADMIN')")
 	public void deleteDossier(Dossier dossier){
 		dossierDAO.deleteDossier(dossier.getId());
+	}
+	
+	public List<Dossier> getDossiersForProfile(Profile profile, Page page){
+		return dossierDAO.getDossiersForProfile(profile, page);
 	}
 
 }

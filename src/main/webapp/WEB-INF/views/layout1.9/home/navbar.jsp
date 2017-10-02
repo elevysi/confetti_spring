@@ -46,6 +46,7 @@
 									<li><a href="<spring:url value="/public/plays"/>">Plays</a></li>
 									<li><a href="<spring:url value="/public/albums"/>">Albums</a></li>
 									<li><a href="<spring:url value="/public/dossiers"/>">Dossiers</a></li>
+									<li><a href="<spring:url value="/public/profiles"/>">Profiles</a></li>
 									
 								</ul>
 							</li>

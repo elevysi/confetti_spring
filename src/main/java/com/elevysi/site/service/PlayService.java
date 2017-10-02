@@ -96,6 +96,14 @@ public class PlayService extends AbstractService{
 		
 		return requestedPage.getContent();
 	}
+	
+	public List<Play> getProfilePlays(Profile profile, com.elevysi.site.pojo.Page page){
+		return playDAO.getAllLatestForProfile(profile, page);
+	}
+	
+	public List<Play> getPlays(com.elevysi.site.pojo.Page page){
+		return playDAO.getPlays(page);
+	}
 
 	public List<Play> findAllPlays() {
 		
@@ -112,10 +120,6 @@ public class PlayService extends AbstractService{
 	
 	public OffsetPage buildOffsetPage(int pageIndex, int size,  SingularAttribute sortField, SortDirection sortDirection){
 		return playDAO.buildOffsetPage(pageIndex, size, sortField, sortDirection);
-	}
-	
-	public List<Play> getPlays(com.elevysi.site.pojo.Page page){
-		return playDAO.getPlays(page);
 	}
 	
 	public Play getPlay(int id){

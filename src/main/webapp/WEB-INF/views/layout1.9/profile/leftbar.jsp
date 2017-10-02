@@ -6,12 +6,12 @@
 	id="sidebar-nav-1">
 	<li class="list-group-item active"><a href="<spring:url value='/profile/${actingProfile.name}'/>"><i class="fa fa-bar-chart-o"></i> Home</a></li>
 	<li class="list-group-item"><a href="<spring:url value='/uploads/profile/'/>"><i class="fa fa-user"></i> Profile Picture</a></li>
-	<li class="list-group-item"><a href="<spring:url value='/profile/friends'/>"><i class="fa fa-group"></i> Friends Bucket</a></li>
-	<li class="list-group-item"><a href="<spring:url value='/profile/${actingProfile.name}/posts/'/>"><i class="fa fa-cubes"></i> Posts</a></li>
-	<li class="list-group-item"><a href="<spring:url value='/profile/${actingProfile.name}/plays/'/>"><i class="fa fa-cubes"></i> Plays</a></li>
-	<li class="list-group-item"><a href="<spring:url value='/profile/${actingProfile.name}/albums/'/>"><i class="fa fa-cubes"></i> Albums</a></li>
-	<li class="list-group-item"><a href="<spring:url value='/profile/${actingProfile.name}/messages/'/>"><i class="fa fa-comments"></i> Messages</a></li>
-	<li class="list-group-item"><a href="<spring:url value='/profile/${actingProfile.name}/settings/'/>"><i class="fa fa-cog"></i> Settings</a></li>
+	<li class="list-group-item"><a href="<spring:url value='/profile/pbucket/'/>"><i class="fa fa-group"></i> People Bucket</a></li>
+	<li class="list-group-item"><a href="<spring:url value='/profile/${actingProfile.name}/posts/'/>"><i class="fa fa-cubes"></i> My Posts</a></li>
+	<li class="list-group-item"><a href="<spring:url value='/profile/${actingProfile.name}/plays/'/>"><i class="fa fa-cubes"></i> My Plays</a></li>
+	<li class="list-group-item"><a href="<spring:url value='/profile/${actingProfile.name}/albums/'/>"><i class="fa fa-cubes"></i> My Albums</a></li>
+	<li class="list-group-item"><a href="<spring:url value='/profile/${actingProfile.name}/messages/'/>"><i class="fa fa-comments"></i> My Messages</a></li>
+	<li class="list-group-item"><a href="<spring:url value='/profile/${actingProfile.name}/settings/'/>"><i class="fa fa-cog"></i> My Settings</a></li>
 </ul>
 
 <!--Notification-->

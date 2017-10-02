@@ -5,6 +5,7 @@
 			<div class="topbar-search-block">
 				<div class="container">
 					<form action="<spring:url value="/public/search"/>" method="post">
+						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 						<input type="text" class="form-control" placeholder="Search" name="globalSearch">
 						<div class="search-close"><i class="icon-close"></i></div>
 					</form>

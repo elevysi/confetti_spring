@@ -93,7 +93,7 @@ public class SecurityConfig {
 					
 					.antMatchers("/login/**").permitAll()
 					.antMatchers("/logout/ajax/**").permitAll()
-//					.antMatchers("/register/**").permitAll()
+					.antMatchers("/register/**").permitAll()
 //					.antMatchers("/auth/**").permitAll() //DO not authorize this here as it will cause a fail in the second login strategy
 					
 					

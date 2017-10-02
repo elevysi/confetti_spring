@@ -73,7 +73,7 @@ public class UserService {
 		user.setModified(now);
 		
 		Role userRole = roleRepository.findByName("ROLE_USER");
-		user.getRoles().add(userRole);
+		if(userRole != null) user.getRoles().add(userRole);
 		
 		
 		
@@ -81,7 +81,7 @@ public class UserService {
 		Profile userProfile = new Profile();
 		userProfile.setUser(user);
 		ProfileType userProfileType = profileTypeService.findOne("user");
-		userProfile.setProfileType(userProfileType);
+		if(userProfileType != null)	userProfile.setProfileType(userProfileType);
 		
 		userProfile.setName(user.getUsername());
 		userProfile.setCreated(now);
@@ -92,7 +92,6 @@ public class UserService {
 		user.getProfiles().add(userProfile);
 		User savedUser = userRepository.save(user);
 		Profile savedUserProfile = profileService.findByUserAndProfileType(savedUser, userProfileType);
-		
 		
 		
 		String savingPath = this.relativePathToDefaultAvatar;
@@ -106,10 +105,13 @@ public class UserService {
 		profilePicture.setPath(savingPath);
 		profilePicture.setLinkTable("profilePicture");		
 		profilePicture.setLinkId(savedUserProfile.getId());
+		String uploadKey = Upload.generateUUID();
+		profilePicture.setKeyIdentification(uploadKey);
+		profilePicture.setDisplay(true);
+		profilePicture.setAltText("profilePicture");
+		profilePicture.setUploadOwner(savedUserProfile);
 		
 		uploadService.saveUpload(profilePicture);
-		
-		
 		
 	}
 	
@@ -180,6 +182,10 @@ public class UserService {
 
 	public List<User> findMatching(String term) {
 		return userRepository.searchFor(term);
+	}
+	
+	public List<User> findByTerm(String term) {
+		return userDAO.searchByTerm(term);
 	}
 
 	public User findOne(Integer id) {

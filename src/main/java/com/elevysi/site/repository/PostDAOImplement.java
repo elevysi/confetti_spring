@@ -258,7 +258,7 @@ public class PostDAOImplement extends AbstractDAO implements PostDAO {
 		criteria.select(postRoot);
 		
 		List<Predicate> predicates = new ArrayList<Predicate>();
-		predicates.add(cb.notEqual(postRoot.get(Post_.profile), profile));
+		predicates.add(cb.equal(postRoot.get(Post_.profile), profile));
 		
 		criteria.where(cb.or(predicates.toArray(new Predicate[predicates.size()])));
 		

@@ -2,6 +2,8 @@ package com.elevysi.site.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,10 +33,13 @@ import com.elevysi.site.entity.Play_;
 import com.elevysi.site.entity.Post;
 import com.elevysi.site.entity.Post_;
 import com.elevysi.site.entity.Profile;
+import com.elevysi.site.entity.Profile_;
 import com.elevysi.site.entity.Publication;
 import com.elevysi.site.entity.Publication_;
 import com.elevysi.site.entity.Upload;
 import com.elevysi.site.entity.User;
+import com.elevysi.site.pojo.DomainObjectNode;
+import com.elevysi.site.pojo.DomainObjectTree;
 import com.elevysi.site.pojo.LatestPost;
 import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.Page;
@@ -201,81 +207,180 @@ public class PublicController extends AbstractController{
 		
 	}
 	
-	@RequestMapping(value="/search", method = RequestMethod.POST)
-	public String doSearch(@RequestParam("globalSearch") String term, final RedirectAttributes redirectAttributes){
-		List<User> usersFound = new ArrayList<User>();
-		usersFound = userService.findMatching(term);
+	@RequestMapping(value="/search/tree", method = RequestMethod.GET)
+	public String searchTree(
+			Model model,
+			@RequestParam(name="term", defaultValue="", required=false) String searchTerm,
+			final RedirectAttributes redirectAttributes
+	){
 		
-		List<Post> foundPosts = new ArrayList<Post>();
-		foundPosts = postService.findMatching(term);
-		
-		int i = 0;
 		List<SearchResult> searchResults = new ArrayList<SearchResult>();
-		 
-		for (Post post : foundPosts) {
-			SearchResult searchResult = new SearchResult();
-			searchResult.setIndex(post.getId());
-			searchResult.setType("post");
-			searchResult.setHeading(post.getTitle());
-//			String details = "";
-//			String postContent = post.getContent();
-//			if(postContent != null && postContent.length() > 100)
-//				details = postContent.substring(0, 100);
-//			else details = postContent;
-			searchResult.setDetails(post.getContent());
+		
+		DomainObjectTree domainObjectTree = new DomainObjectTree();
+		DomainObjectNode<?> rootNode = new DomainObjectNode<Object>();
+		domainObjectTree.setDomainObjectRootNode(rootNode);
+		
+		DomainObjectNode<Post> postRoot = new DomainObjectNode<Post>();
+		DomainObjectNode<Post> playRoot = new DomainObjectNode<Post>();
+		DomainObjectNode<User> userRoot = new DomainObjectNode<User>();
+		DomainObjectNode<Profile> profileRoot = new DomainObjectNode<Profile>();
+		
+		
+		
+		if(! searchTerm.equals("")){
 			
-			if(post.getUploads().iterator().hasNext()){
-				searchResult.setUpload(post.getUploads().iterator().next());
+			List<User> usersFound = new ArrayList<User>();
+			usersFound = userService.findByTerm(searchTerm);
+			
+			List<Post> foundPosts = new ArrayList<Post>();
+			foundPosts = postService.findMatching(searchTerm);
+			
+			int i = 0;
+			 
+			for (Post post : foundPosts) {
+				SearchResult searchResult = new SearchResult();
+				searchResult.setIndex(post.getId());
+				searchResult.setType("post");
+				searchResult.setHeading(post.getTitle());
+				searchResult.setDetails(post.getContent());
+				searchResult.setCreated(post.getCreated());
+				searchResult.setAuthor(post.getProfile());
+				
+				Upload avatar = null;
+				if(post.getUploads().iterator().hasNext()){
+					avatar = post.getUploads().iterator().next();
+					searchResult.setUpload(avatar);
+				}
+				
+				searchResult.setObject(post);
+				searchResults.add(searchResult);
+				postRoot.addChild(new DomainObjectNode<Post>(post, avatar));
+				
+				i++;
 			}
 			
-			
-			searchResult.setObject(post);
-			
-			searchResults.add(searchResult);
-			
-			i++;
-		}
-		
-		for(User user: usersFound){
-			SearchResult searchResult = new SearchResult();
-			searchResult.setIndex(user.getId());
-			searchResult.setType("user");
-			searchResult.setHeading(user.getFirst_name() + " " + user.getLast_name());
-			
-			Profile userProfile = profileService.findUserProfile(user);	
-			searchResult.setDetails(userProfile.getDescription());
-			if(userProfile.getProfilePicture().iterator().hasNext()){
-				searchResult.setUpload(userProfile.getProfilePicture().iterator().next());
+			for(User user: usersFound){
+				SearchResult searchResult = new SearchResult();
+				searchResult.setIndex(user.getId());
+				searchResult.setType("user");
+				searchResult.setHeading(user.getFirst_name() + " " + user.getLast_name());
+				searchResult.setCreated(user.getCreated());
+				
+				Profile userProfile = profileService.findUserProfile(user);	
+				searchResult.setDetails(userProfile.getDescription());
+				Upload avatar = null;
+				if(userProfile.getProfilePicture().iterator().hasNext()){
+					avatar = userProfile.getProfilePicture().iterator().next();
+					searchResult.setUpload(avatar);
+				}
+				
+				searchResult.setObject(user);
+				searchResults.add(searchResult);
+				
+				userRoot.addChild(new DomainObjectNode<User>(user, avatar));
+				
+				i++;
+				
 			}
-			
-			searchResult.setObject(user);
-			searchResults.add(searchResult);
-			
-			
-			i++;
-			
 		}
-		redirectAttributes.addFlashAttribute("searchResults", searchResults);
-		redirectAttributes.addFlashAttribute("searchTerm", term);
+		model.addAttribute("searchResults", searchResults);
+		model.addAttribute("searchTerm", searchTerm);
+		model.addAttribute("postRoot", postRoot);
+		model.addAttribute("userRoot", userRoot);
+		return "search-tree";
+	}
+	
+	@RequestMapping(value="/search", method=RequestMethod.POST)
+	public String doSearch(
+			Model model,
+			final RedirectAttributes redirectAttributes,
+			@RequestParam(name="globalSearch", defaultValue="", required=false) String searchTerm
+	){
+		redirectAttributes.addFlashAttribute("searchTerm", searchTerm);
+		return "redirect:/public/search?term="+searchTerm;
 		
-		return "redirect:/public/search";
 	}
 	
 	@RequestMapping(value="/search", method = RequestMethod.GET)
-	public String search(Model model, @ModelAttribute("searchResults") List<SearchResult> searchResults, @ModelAttribute("searchTerm")String searchTerm, final RedirectAttributes redirectAttributes){
+	public String search(
+			Model model,
+			@RequestParam(name="term", defaultValue="", required=false) String searchTerm,
+			final RedirectAttributes redirectAttributes
+	){
 		
-		/**
-		 * Can throw exception if not initialized
-		 */
-		try{
-			model.addAttribute("searchResults", searchResults);
-		}catch(Exception e){
+		List<SearchResult> searchResults = new ArrayList<SearchResult>();
+		
+		if(! searchTerm.equals("")){
 			
+			List<User> usersFound = new ArrayList<User>();
+			usersFound = userService.findByTerm(searchTerm);
+			
+			List<Post> foundPosts = new ArrayList<Post>();
+			foundPosts = postService.findMatching(searchTerm);
+			
+			int i = 0;
+			 
+			for (Post post : foundPosts) {
+				SearchResult searchResult = new SearchResult();
+				searchResult.setIndex(post.getId());
+				searchResult.setType("post");
+				searchResult.setHeading(post.getTitle());
+				searchResult.setCreated(post.getCreated());
+				searchResult.setAuthor(post.getProfile());
+//				String details = "";
+//				String postContent = post.getContent();
+//				if(postContent != null && postContent.length() > 100)
+//					details = postContent.substring(0, 100);
+//				else details = postContent;
+				searchResult.setDetails(post.getContent());
+				
+				if(post.getUploads().iterator().hasNext()){
+					searchResult.setUpload(post.getUploads().iterator().next());
+				}
+				
+				
+				searchResult.setObject(post);
+				
+				searchResults.add(searchResult);
+				
+				i++;
+			}
+//			
+			for(User user: usersFound){
+				SearchResult searchResult = new SearchResult();
+				searchResult.setIndex(user.getId());
+				searchResult.setType("user");
+				searchResult.setHeading(user.getFirst_name() + " " + user.getLast_name());
+				searchResult.setCreated(user.getCreated());
+				
+				Profile userProfile = profileService.findUserProfile(user);	
+				searchResult.setDetails(userProfile.getDescription());
+				if(userProfile.getProfilePicture().iterator().hasNext()){
+					searchResult.setUpload(userProfile.getProfilePicture().iterator().next());
+				}
+				
+				searchResult.setObject(user);
+				searchResults.add(searchResult);
+				
+				
+				i++;
+				
+			}
 		}
-		
-		
+		model.addAttribute("searchResults", searchResults);
 		model.addAttribute("searchTerm", searchTerm);
 		return "search-results";
+	}
+	
+	@RequestMapping(value="/search/tree", method=RequestMethod.POST)
+	public String doSearchTree(
+			Model model,
+			final RedirectAttributes redirectAttributes,
+			@RequestParam(name="globalSearch", defaultValue="", required=false) String searchTerm
+	){
+		redirectAttributes.addFlashAttribute("searchTerm", searchTerm);
+		return "redirect:/public/search/tree?term="+searchTerm;
+		
 	}
 	
 	
@@ -385,6 +490,22 @@ public class PublicController extends AbstractController{
 			redirectAttributes.addFlashAttribute("sessionMessage", notFoundMsg);
 			return "redirect:/";
 		}
+	}
+	
+	
+	@RequestMapping(value="/profiles")
+	public String profiles(Model model, @RequestParam(value="page", defaultValue="1", required=false)int pageIndex){
+		
+		OffsetPage page = profileService.buildOffsetPage(pageIndex, DEFAULT_NO_ITEMS, Profile_.created, SortDirection.DESC);
+		List<Profile> profiles = profileService.getProfiles(page);
+		double totalRecords = page.getTotalRecords();
+		int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
+		model.addAttribute("page", page);
+		model.addAttribute("profiles", profiles);
+		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("totalRecords", totalRecords);
+		
+		return "publicIndexProfiles";
 	}
 
 }

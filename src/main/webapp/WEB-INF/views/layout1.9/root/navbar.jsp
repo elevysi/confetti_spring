@@ -26,6 +26,7 @@
 							<li><a href="<spring:url value="/public/plays"/>">Plays</a></li>
 							<li><a href="<spring:url value="/public/albums"/>">Albums</a></li>
 							<li><a href="<spring:url value="/public/dossiers"/>">Dossiers</a></li>
+							<li><a href="<spring:url value="/public/profiles"/>">Profiles</a></li>
 							
 						</ul>
 					</li>
@@ -95,6 +96,7 @@
                         <i class="search fa fa-search search-btn"></i>
                         <div class="search-open">
                         	<form action="<spring:url value="/public/search"/>" method="post">
+                        	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                             	<div class="input-group animated fadeInDown">
 									<input type="text" class="form-control" placeholder="Search" name="globalSearch">
 	                                <span class="input-group-btn">
