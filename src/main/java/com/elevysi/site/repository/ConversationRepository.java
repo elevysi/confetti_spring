@@ -10,8 +10,6 @@ import com.elevysi.site.entity.Conversation;
 @Repository
 public interface ConversationRepository extends JpaRepository<Conversation, Integer>{
 
-	Conversation findByUuid(String uuid);
-
 	@Query(value="SELECT conversation FROM Conversation conversation"
 			+ " INNER JOIN FETCH conversation.correspondents correspondent"
 			+ " INNER JOIN FETCH correspondent.owningCorrespondentProfile profile"

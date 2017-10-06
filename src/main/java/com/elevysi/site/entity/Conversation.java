@@ -26,7 +26,7 @@ import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(name="conversations")
-public class Conversation implements Serializable{
+public class Conversation extends AbstractEntity implements Serializable {
 	
 	/**
 	 * 
@@ -45,11 +45,11 @@ public class Conversation implements Serializable{
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modified;
 	
-	@OneToMany(cascade = CascadeType.MERGE, mappedBy = "conversation", fetch=FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "conversation", fetch=FetchType.LAZY)
 	@Fetch(FetchMode.SUBSELECT)
 	private Set<Message> conversationMessages = new HashSet<Message>();
 	
-	@OneToMany(cascade = CascadeType.MERGE, mappedBy = "conversation", fetch=FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "conversation", fetch=FetchType.EAGER)
 	@BatchSize(size=5)
 	private Set<Correspondent> correspondents = new HashSet<Correspondent>();
 
@@ -103,6 +103,7 @@ public class Conversation implements Serializable{
 		this.correspondents = correspondents;
 	}
 	
+	@Override
 	public boolean equals(Object object){
 		if(object == this) return true;
 		if(object == null || !(object instanceof Conversation)) return false;
@@ -113,6 +114,12 @@ public class Conversation implements Serializable{
 					
 		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+//	    return id.hashCode();
+	    return id != null ? id.hashCode() : 0; //https://stackoverflow.com/questions/21535029/what-must-be-hashcode-of-null-objects-in-java
 	}
 	
 	public void addCorrespondent(Correspondent correspondent){
@@ -162,6 +169,18 @@ public class Conversation implements Serializable{
 		 UUID uniqueKey = UUID.randomUUID();   
 		 return uniqueKey.toString();
 		 
+	}
+	
+	public boolean isConversationContainsProfile(Profile profile){
+		
+		if (this != null && profile != null){
+			if(this.correspondents != null){
+				for(Correspondent correspondent : this.correspondents){
+					if(correspondent.getOwningCorrespondentProfile().equals(profile)) return true;
+				}
+			}
+		}		
+		return false;
 	}
 	
 	

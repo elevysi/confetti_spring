@@ -19,6 +19,8 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.elevysi.site.entity.Play;
+import com.elevysi.site.entity.Play_;
 import com.elevysi.site.entity.Post;
 import com.elevysi.site.entity.Profile;
 import com.elevysi.site.entity.ProfileType;
@@ -204,5 +206,27 @@ public class ProfileDAOImplement implements ProfileDAO{
 		Hibernate.initialize(profile.getFriends());
 		
 		return profile;
+	}
+	
+	public List<Profile> searchByTerm(String term){
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Profile> criteria = cb.createQuery(Profile.class);
+		Root<Profile> profileRoot = criteria.from(Profile.class);
+		criteria.select(profileRoot);
+		
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		predicates.add(cb.like(profileRoot.get(Profile_.name), "%"+term+"%"));
+		
+		criteria.where(cb.or(predicates.toArray(new Predicate[predicates.size()])));
+		
+		TypedQuery<Profile> query = em.createQuery(criteria);
+		List<Profile> profiles =  query.getResultList();
+		
+//		for(Profile profile : profiles){
+//			
+//		}
+		
+		return profiles;
 	}
 }

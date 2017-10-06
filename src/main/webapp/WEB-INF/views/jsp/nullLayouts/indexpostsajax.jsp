@@ -8,13 +8,13 @@
 <fmt:parseNumber var="postsSize" value="${fn:length(posts)}" />
 
 
-
+<div class="margin-bottom-50"></div>
 <c:forEach items="${posts}" var="post">
 
 	
 
 		<c:if test="${count == starter || (count%noColumns)==starter}">
-					<div class="row news-v2">
+					<div class="row news-v2 margin-bottom-30">
 		</c:if>
 		
 

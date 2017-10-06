@@ -11,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -34,6 +35,10 @@ public class Dossier extends AbstractEntity{
 	private Integer id;
 	private String name;
 	private String description;
+	
+	@OneToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="publication_id")
+	private Publication publication;
 	
 	
 	public String getDescription() {
@@ -299,6 +304,14 @@ public class Dossier extends AbstractEntity{
 	
 	public void removeAlbum(Album album){
 		getAlbums().remove(album);
+	}
+
+	public Publication getPublication() {
+		return publication;
+	}
+
+	public void setPublication(Publication publication) {
+		this.publication = publication;
 	}
 	
 }

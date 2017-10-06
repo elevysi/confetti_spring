@@ -7,7 +7,7 @@
 <fmt:parseNumber var="even" value="2" />
 <fmt:parseNumber var="friendSize" value="${fn:length(profiles)}" />
 
-
+<div class="margin-bottom-50"></div>
 <c:forEach items="${profiles}" var="friend">
 
 		<c:if test="${count == starter || (count%noColumns)==starter}">
@@ -33,10 +33,10 @@
 							</c:otherwise>
 					</c:choose>
 				</div>
-					<a class="btn-more hover-effect" href="<c:url value='/profile/${friend.name}'/>">read more +</a>
+					<a class="btn-more hover-effect" href="<c:url value='/profile?username=${friend.name}'/>">read more +</a>
 				</div>
 				<div class="caption">
-					<h3><a class="hover-effect" href="<c:url value='/profile/${friend.name}'/>"><c:out value="${friend.name}" /></a></h3>
+					<h3><a class="hover-effect" href="<c:url value='/profile?username=${friend.name}'/>"><c:out value="${friend.name}" /></a></h3>
 					<small>Member Since <fmt:formatDate pattern="dd MMMM yyyy" value="${friend.created}" /></small>
 					<p><c:out value="${friend.description}" escapeXml="false"/></p>
 				</div>
@@ -48,6 +48,7 @@
 
 		<c:if test="${((count+unit) == friendSize) || ((count+unit)%noColumns==starter)}">
 			</div>
+			<div class="margin-bottom-50"></div>
 		</c:if>
 		
 

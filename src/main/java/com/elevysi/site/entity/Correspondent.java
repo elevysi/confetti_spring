@@ -28,7 +28,7 @@ public class Correspondent {
 	@JoinColumn(name="conversation_id", referencedColumnName="id")
 	private Conversation conversation;
 	
-	@OneToOne(fetch=FetchType.LAZY)
+	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="profile_id", referencedColumnName="id")
 	private Profile owningCorrespondentProfile;
 	
@@ -87,14 +87,33 @@ public class Correspondent {
 		this.modified = modified;
 	}
 	
+	@Override
 	public boolean equals(Object object){
 		
 		if(object == this) return true;
 		if(object == null || !(object instanceof Correspondent)) return false;
 		final Correspondent correspondent = (Correspondent)object;
+		
+		if(owningCorrespondentProfile != null && correspondent.getOwningCorrespondentProfile() != null){
+			/**
+			 * Check if they are the same conversation
+			 */
+			if(owningCorrespondentProfile.equals(correspondent.getOwningCorrespondentProfile())){
+				if(conversation != null && correspondent.getConversation() != null){
+					return conversation.equals(correspondent.getConversation());
+				}
+			}
+		}
+			
 		if(id !=null && correspondent.getId() != null) return id.equals(correspondent.getId());
 		
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+//	    return id.hashCode();
+	    return id != null ? id.hashCode() : 0; //https://stackoverflow.com/questions/21535029/what-must-be-hashcode-of-null-objects-in-java
 	}
 
 }

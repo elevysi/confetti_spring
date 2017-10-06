@@ -27,6 +27,18 @@ public interface PublicationRepository extends JpaRepository<Publication, Intege
 			+ " WHERE album.id =:albumID")
 	Publication findAlbumPublication(@Param("albumID")Integer albumID);
 	
+	
+	@Query(value="SELECT publication FROM Publication publication"
+			+ " INNER JOIN publication.profilePublication as profilePublication"
+			+ " WHERE profilePublication.id =:profileID")
+	Publication findProfilePublication(@Param("profileID")Integer profileID);
+	
+	@Query(value="SELECT publication FROM Publication publication"
+			+ " INNER JOIN publication.dossier as dossier"
+			+ " WHERE dossier.id =:dossierID")
+	Publication findDossierPublication(@Param("dossierID")Integer dossierID);
+	
+	
 	@Query(value="SELECT publication FROM Publication publication"
 			+ " INNER JOIN FETCH publication.profile profile"
 			+ " LEFT JOIN FETCH profile.posts posts"

@@ -209,4 +209,8 @@ public class ProfileService extends AbstractService{
 			return profileDAO.findByName(name);
 		}
 		
+		public List<Profile> searchByTerm(String term){
+			return profileDAO.searchByTerm(term);
+		}
+		
 }

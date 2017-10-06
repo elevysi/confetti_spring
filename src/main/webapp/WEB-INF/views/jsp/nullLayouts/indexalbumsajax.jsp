@@ -43,6 +43,7 @@
 
 		<c:if test="${((count+unit) == albumsSize) || ((count+unit)%noColumns==starter)}">
 			</ul></div>
+			<div class="margin-bottom-50"></div>
 		</c:if>
 		
 

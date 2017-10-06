@@ -7,13 +7,13 @@
 <fmt:parseNumber var="dossiersSize" value="${fn:length(dossiers)}" />
 
 
-
+<div class="margin-bottom-50"></div>
 <c:forEach items="${dossiers}" var="dossier">
 
 	
 
 		<c:if test="${count == starter || (count%noColumns)==starter}">
-					<div class="row news-v2">
+					<div class="row news-v2 margin-bottom-30">
 		</c:if>
 		
 
@@ -35,6 +35,7 @@
 
 		<c:if test="${((count+unit) == dossiersSize) || ((count+unit)%noColumns==starter)}">
 			</div>
+			<div class="margin-bottom-50"></div>
 		</c:if>
 		
 

@@ -242,7 +242,7 @@ public class PostController extends AbstractController{
 		
 	}
 	
-	@RequestMapping(value="view/{id}/*")
+	@RequestMapping(value={"view/{id}/*", "view/{id}"})
 	public String view(@PathVariable("id")Integer id, Model model, @ModelAttribute("sessionMessage")SessionMessage sessionMessage, RedirectAttributes redirectAttributes){
 		SessionMessage dangerMsg = new SessionMessage("The post was not found");
 		dangerMsg.setDangerClass();
@@ -328,7 +328,7 @@ public class PostController extends AbstractController{
 					model.addAttribute("canEditPost", canEditPost);
 					model.addAttribute("sessionMessage", sessionMessage);
 					
-					com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_ITEMS, Dossier_.created, SortDirection.DESC);		
+					com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Dossier_.created, SortDirection.DESC);		
 					List<Dossier> dossiers = dossierService.getDossiers(dossiersPage);
 					model.addAttribute("dossiers", dossiers);
 					

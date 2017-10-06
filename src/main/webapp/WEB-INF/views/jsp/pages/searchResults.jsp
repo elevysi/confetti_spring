@@ -51,15 +51,15 @@
 							
 							<c:choose>
 								<c:when test="${searchResult.type == 'user'}">
-									<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-dark-blue btn-u-sm" href="#">View</a></li>
+									<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-dark-blue btn-u-sm" href="<spring:url value='/users/viewProfile/${searchResult.index}'/>">View</a></li>
 									<li>
 										<%-- <form:form action="${bucketPostUrl}" method="post" onSubmit="return confirm('Please confirm before the action is processed.');" class="form-inline">
 											<input type="hidden" value="${userProfile.name}" name="bucketID" >
 											<button class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-purple btn-u-sm" type="submit">Add to my Bucket</button>
 										</form:form> --%>
 									
-									<a href="#" class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-purple btn-u-sm">Add to confetti bucket</a></li>
-									<li><a href="<c:url value='/profile/follow/'/>" class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-green btn-u-sm">Follow</a></li>
+									<a href="<spring:url value='/users/viewProfile/${searchResult.index}'/>" class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-purple btn-u-sm">Add to confetti bucket</a></li>
+									<li><a href="<spring:url value='/users/viewProfile/${searchResult.index}'/>" class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-green btn-u-sm">Follow</a></li>
 								</c:when>
 								<c:when test="${searchResult.type == 'post'}">
 									<li><a class="btn-u btn-brd btn-brd-hover rounded btn-u-dark-blue btn-u-sm" href="<c:url value='/posts/view/${searchResult.index}'/>">Share</a></li>

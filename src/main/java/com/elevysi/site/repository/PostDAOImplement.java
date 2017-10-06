@@ -99,6 +99,7 @@ public class PostDAOImplement extends AbstractDAO implements PostDAO {
 		for(Post post : posts){
 			Hibernate.initialize(post.getUploads());
 			Hibernate.initialize(post.getProfile());
+			Hibernate.initialize(post.getPublication());
 		}
 		
 		return posts;

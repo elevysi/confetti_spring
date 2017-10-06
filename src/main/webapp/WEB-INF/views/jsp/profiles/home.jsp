@@ -1,17 +1,19 @@
 <%@ include file="../../layout/taglib.jsp"%>
 
-<c:url var="allBucketUrl" value="/profile/${actingProfile.name}/profileBucketNetworkAjax/1/" />
-<c:url var="myBucketUrl" value="/profile/${actingProfile.name}/profileBucketNetworkAjax/2/" />
-<c:url var="includeBucketUrl" value="/profile/${actingProfile.name}/profileBucketNetworkAjax/3/" />
-<c:url var="mutualBucketUrl" value="/profile/${actingProfile.name}/profileBucketNetworkAjax/4/" />
+<c:url var="allBucketUrl" value="/profile/${profile.name}/profileBucketNetworkAjax/1/" />
+<c:url var="myBucketUrl" value="/profile/${profile.name}/profileBucketNetworkAjax/2/" />
+<c:url var="includeBucketUrl" value="/profile/${profile.name}/profileBucketNetworkAjax/3/" />
+<c:url var="mutualBucketUrl" value="/profile/${profile.name}/profileBucketNetworkAjax/4/" />
 
-<c:url var="postsUrl" value="/profile/${actingProfile.name}/posts/" />
-<c:url var="playsUrl" value="/profile/${actingProfile.name}/plays/" />
-<c:url var="dossiersUrl" value="/profile/${actingProfile.name}/dossiers/" />
-<c:url var="albumsUrl" value="/profile/${actingProfile.name}/albums/" />
+<c:url var="postsUrl" value="/profile/${profile.name}/posts/" />
+<c:url var="playsUrl" value="/profile/${profile.name}/plays/" />
+<c:url var="dossiersUrl" value="/profile/${profile.name}/dossiers/" />
+<c:url var="albumsUrl" value="/profile/${profile.name}/albums/" />
+
+<c:url var="bucketPostUrl" value="/bucket/${profile.name}" />
 
 <div class="" style="margin-left: 20px;">
-	<h2><c:out value="${actingProfile.name}"/></h2>
+	<h2><c:out value="${profile.name}"/></h2>
 	<ul class="list-inline up-ul">
 		<!-- Button trigger modal -->
 		<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-purple btn-u-sm"  href="<spring:url value='/uploads/profile' />">Profile Picture</a></li>
@@ -20,9 +22,20 @@
 		<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-red btn-u-sm"  href="<spring:url value='/plays/add' />">New Play</a></li>
 		<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-dark btn-u-sm"  href="<spring:url value='/albums/add' />">New Album</a></li>
 		<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-brown btn-u-sm"  href="<spring:url value='/products/add' />">New Product</a></li>
-		<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-blue btn-u-sm"  href="<spring:url value='/messages/add' />">New Message</a></li>
+		<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-blue btn-u-sm"  href="<spring:url value='/conversations/add/' />">New Message</a></li>
 		<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-yellow btn-u-sm"  href="<spring:url value='/dossiers/add' />">New Dossier</a></li>
 	</ul>
+	<hr>
+	
+	<ul class="list-inline up-ul">
+		<li>
+			<form:form action="${bucketPostUrl}" method="post" onSubmit="return confirm('Please confirm before the action is processed.');" class="form-inline">
+				<input type="hidden" value="${profile.name}" name="bucketID" >
+				<button class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-purple btn-u-sm" type="submit">Add to my Bucket</button>
+			</form:form>
+		</li>
+	</ul>
+	
 	<hr>
 	
 	<div class="tab-v2">

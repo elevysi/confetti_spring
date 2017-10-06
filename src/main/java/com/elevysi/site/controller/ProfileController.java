@@ -53,6 +53,7 @@ import com.elevysi.site.entity.User;
 import com.elevysi.site.form.FileUpload;
 import com.elevysi.site.pojo.Page.SortDirection;
 import com.elevysi.site.pojo.OffsetPage;
+import com.elevysi.site.pojo.PublicationMock;
 import com.elevysi.site.pojo.ReturnValue;
 import com.elevysi.site.pojo.SessionMessage;
 import com.elevysi.site.security.ActiveUser;
@@ -165,7 +166,10 @@ public class ProfileController extends AbstractController{
 		}else{
 			profile = profileService.findByName(username);
 		}
-		model.addAttribute("actingProfile", profile);
+		
+		model.addAttribute("actingProfile", actingProfile);
+		model.addAttribute("profile", profile);
+		
 		model.addAttribute("sessionMessage", sessionMessage);
 		model.addAttribute("pageTitle", profile.getName());
 		model.addAttribute("pageDescription", profile.getDescription());
@@ -175,58 +179,6 @@ public class ProfileController extends AbstractController{
 		return "profileHome";
 	}
 	
-	
-	@RequestMapping({"/profile/home"})
-	public String home(Model model, Principal principal){
-		String username = principal.getName();
-		
-		User domainUser = userService.getUser(username);
-		model.addAttribute("user", domainUser);
-		
-		return "profile";
-	}
-	
-	@RequestMapping({"/profile/homeTab"})
-	public String homeTab(Model model){
-		
-		
-		
-		return "profileHomeTab";
-	}
-	
-	@RequestMapping({"/profile/profileTab"})
-	public String profileTab(Model model, Principal principal, @RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber){
-		
-		Profile actingProfile = profileService.getActiveProfile();
-		List<Post> profilePosts = postService.findProfilePosts(actingProfile, pageNumber, NO_PROFILE_POSTS_PER_LOAD, SORT_FIELD, SORT_DIRECTION);
-		
-		Page<Publication> profilePublicationsPage = publicationService.findProfilePublications(actingProfile, pageNumber, NO_PROFILE_POSTS_PER_LOAD, SORT_FIELD, SORT_DIRECTION);
-		List<Publication> profilePublications = profilePublicationsPage.getContent();
-		
-		model.addAttribute("profilePosts", profilePosts);
-		model.addAttribute("actingProfile", actingProfile);
-		model.addAttribute("profilePublications", profilePublications);
-		
-		return "profileSelfTab";
-		
-	}
-	
-	@RequestMapping("/profile/messagesTab")
-	public String messagesTab(Model model){
-		
-		
-		return "profileMessagesTab";
-	}
-	
-	
-	@RequestMapping({"/profile/settingsTab"})
-	public String settingsTab(Model model, Principal principal){
-		User domainUser = userService.findOne(principal.getName());
-		
-		model.addAttribute("user", domainUser);
-		return "profileSettingsTab";
-	}
-	
 	@RequestMapping({"/profile/{username}"})
 	public String view(
 			@PathVariable("username") String username, 
@@ -234,51 +186,8 @@ public class ProfileController extends AbstractController{
 			Model model, final RedirectAttributes redirectAttributes, 
 			@RequestParam(defaultValue="1", required = false, value="page")Integer pageNumber){
 		
-		Profile profile = profileService.findOne(username);
-		
-		
-		if(profile != null){
-			
-			com.elevysi.site.pojo.Page publicationsPage = publicationService.buildOffsetPage(pageNumber, DEFAULT_NO_ITEMS, Publication_.created, SortDirection.DESC);
-			List<Publication> profilePublications = publicationService.getProfilePublications(profile, publicationsPage);
-			
-			Set<Profile> friends = profileService.findProfileFriends(profile);			
-			List<Post> posts = postService.findProfilePosts(profile, pageNumber, NO_PROFILE_POSTS, SORT_FIELD, SORT_DIRECTION);
-			
-			List<Play> plays = playService.findLatestPlaysForProfile(profile, new Play(), pageNumber-1, NO_PROFILE_POSTS, SORT_FIELD, SORT_DIRECTION);
-			
-			model.addAttribute("userProfile", profile);
-			model.addAttribute("profilePublications", profilePublications);
-			model.addAttribute("user", profile.getUser());
-			model.addAttribute("friends", friends);
-			model.addAttribute("posts", posts);
-			model.addAttribute("plays", plays);
-			model.addAttribute("sessionMessage", sessionMessage);
-			model.addAttribute("pageTitle", profile.getName());
-			model.addAttribute("pageDescription", profile.getDescription());
-			
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			boolean isAuthenticated =  SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
-			
-			if(auth != null && isAuthenticated){
-				ActiveUser activeUser = (ActiveUser)auth.getPrincipal();
-				Profile actingProfile = activeUser.getActiveProfile();
-				if(actingProfile != null){
-					model.addAttribute("actingProfile", actingProfile);
-				}
-			}
-			
-			return "profileView";
-			
-		}else{
-			SessionMessage notFoundMsg = new SessionMessage("The specified profile was not found.");
-			notFoundMsg.setDangerClass();
-			redirectAttributes.addFlashAttribute("sessionMessage", notFoundMsg);
-			return "redirect:/";
-		}
+		return "redirect:/profile?username="+username;
 	}
-	
-	
 	
 	@RequestMapping(value={"/bucket/{username}"}, method=RequestMethod.POST)
 	public String doBucket(
@@ -296,12 +205,13 @@ public class ProfileController extends AbstractController{
 		//Loaded Profile with Friends
 		Profile requestingProfile = profileService.findByName(activeProfile.getName());
 		Profile requestedProfile = profileService.findByName(bucketID);
-		profileService.bucket(requestingProfile, requestedProfile);
+		if(! requestingProfile.equals(requestedProfile)) profileService.bucket(requestingProfile, requestedProfile);
 		
-		SessionMessage sessionMessage = new SessionMessage("Confetti "+username+  " has been successfully added to your bucket list.");
+		SessionMessage sessionMessage = new SessionMessage("Confetti "+requestedProfile.getName()+  " has been successfully added to your bucket list.");
 		sessionMessage.setSuccessClass();
 		redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
-		return "redirect:/profile/"+username;
+		
+		return "redirect:/profile?username="+username;
 	}
 	
 	
@@ -509,13 +419,17 @@ public class ProfileController extends AbstractController{
 		Profile actingProfile = activeUser.getActiveProfile();
 		List<Profile> userProfiles = activeUser.getProfiles();
 		List<ProfileType> profileTypes = profileTypeService.findProfileTypes();
+	
 		model.addAttribute("actingProfile", actingProfile);
+		model.addAttribute("profile", actingProfile);
 		model.addAttribute("userProfiles", userProfiles);
+		
 		model.addAttribute("profileTypes", profileTypes);
 		model.addAttribute("profile", actingProfile);
 		model.addAttribute("pageTitle", actingProfile.getName());
 		model.addAttribute("pageDescription", actingProfile.getDescription());
 		model.addAttribute("sessionMessage", sessionMessage);
+		
 		return "profileSettings";
 		
 	}
@@ -711,6 +625,24 @@ public class ProfileController extends AbstractController{
 		model.addAttribute("totalPages", totalPages);
 		
 		return "indexprofilesajax";
+	}
+	
+	@RequestMapping(value="/profile/searchAjax")
+	public @ResponseBody List<Profile> searchAjax(
+			@RequestParam(value="term", required=true)String term
+	){
+		List<Profile> profiles = new ArrayList<Profile>();
+		List<Profile> foundProfiles = profileService.searchByTerm(term);
+		if(foundProfiles != null){
+//			for(Publication publication: foundPublications){
+//				PublicationMock publicationMock = new PublicationMock();
+//				publicationMock.createMockFromPublication(publication);
+//				publications.add(publicationMock);
+//			}
+		}
+		
+		
+		return foundProfiles;
 	}
 	
 }

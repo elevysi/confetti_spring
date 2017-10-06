@@ -7,6 +7,7 @@
 <fmt:parseNumber var="even" value="2" />
 <fmt:parseNumber var="playsSize" value="${fn:length(plays)}" />
 
+<div class="margin-bottom-50"></div>
 <c:forEach items="${plays}" var="play">
 					
 <c:if test="${count == starter || (count%noColumns)==starter}">

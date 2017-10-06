@@ -220,11 +220,6 @@
   <put-attribute name="body" value="/WEB-INF/views/jsp/profiles/friends.jsp" cascade="true"/>
 </definition>
 
-<definition name="profileView" extends="commonProfile1.9">
-  <put-attribute name="title" value="Profile" cascade="true"/>
-  <put-attribute name="body" value="/WEB-INF/views/jsp/profiles/view.jsp" cascade="true"/>
-</definition>
-
 <definition name="profilePosts" extends="commonProfile1.9">
   <put-attribute name="title" value="Profile Posts" cascade="true"/>
   <put-attribute name="body" value="/WEB-INF/views/jsp/profiles/posts.jsp" cascade="true"/>
@@ -265,6 +260,21 @@
   <put-attribute name="body" value="/WEB-INF/views/jsp/uploads/profileMediaList.jsp"/>
 </definition>
 
+<definition name="conversationIndex" extends="commonProfile1.9">
+  <put-attribute name="title" value="Message" cascade="true"/>
+  <put-attribute name="body" value="/WEB-INF/views/jsp/conversations/index.jsp" cascade="true"/>
+</definition>
+
+<definition name="conversationAdd" extends="commonProfile1.9">
+  <put-attribute name="title" value="New Message" cascade="true"/>
+  <put-attribute name="body" value="/WEB-INF/views/jsp/conversations/add.jsp" cascade="true"/>
+</definition>
+
+<definition name="conversationView" extends="commonProfile1.9">
+  <put-attribute name="title" value="Message" cascade="true"/>
+  <put-attribute name="body" value="/WEB-INF/views/jsp/conversations/view.jsp" cascade="true"/>
+</definition>
+
 <definition name="conversate" extends="commonProfile1.9">
   <put-attribute name="title" value="Message" cascade="true"/>
   <put-attribute name="body" value="/WEB-INF/views/jsp/conversations/conversate.jsp" cascade="true"/>
@@ -278,7 +288,7 @@
 
 
 <definition name="userPasswordUpdate" extends="commonProfile1.9">
-  <put-attribute name="title" value="Message" cascade="true"/>
+  <put-attribute name="title" value="Password Update" cascade="true"/>
   <put-attribute name="body" value="/WEB-INF/views/jsp/users/updatePassword.jsp" cascade="true"/>
 </definition>
 

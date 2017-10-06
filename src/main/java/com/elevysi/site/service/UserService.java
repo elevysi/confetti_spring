@@ -22,11 +22,13 @@ import org.springframework.stereotype.Service;
 
 import com.elevysi.site.entity.Profile;
 import com.elevysi.site.entity.ProfileType;
+import com.elevysi.site.entity.Publication;
 import com.elevysi.site.entity.Role;
 import com.elevysi.site.entity.Upload;
 import com.elevysi.site.entity.User;
 import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.Page.SortDirection;
+import com.elevysi.site.repository.ProfileDAO;
 import com.elevysi.site.repository.RoleRepository;
 import com.elevysi.site.repository.UploadRepository;
 import com.elevysi.site.repository.UserDAO;
@@ -34,10 +36,13 @@ import com.elevysi.site.repository.UserRepository;
 import com.elevysi.site.security.ActiveUser;
 
 @Service
-public class UserService {
+public class UserService extends AbstractService{
 	
 	@Autowired
 	private UserDAO userDAO;
+	
+	@Autowired
+	private ProfileDAO profileDAO;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -87,31 +92,39 @@ public class UserService {
 		userProfile.setCreated(now);
 		userProfile.setModified(now);
 		
-		
-		
 		user.getProfiles().add(userProfile);
 		User savedUser = userRepository.save(user);
 		Profile savedUserProfile = profileService.findByUserAndProfileType(savedUser, userProfileType);
 		
+		if(savedUserProfile != null){
 		
-		String savingPath = this.relativePathToDefaultAvatar;
-		
-		/*
-		 * Give profile a default profile picture
-		 * Can't save upload directly with profile Owner because of multiple mappings on link_id and updatable, insertable is set to false for Profile in favor of Post
-		 */
-		
-		Upload profilePicture = new Upload();
-		profilePicture.setPath(savingPath);
-		profilePicture.setLinkTable("profilePicture");		
-		profilePicture.setLinkId(savedUserProfile.getId());
-		String uploadKey = Upload.generateUUID();
-		profilePicture.setKeyIdentification(uploadKey);
-		profilePicture.setDisplay(true);
-		profilePicture.setAltText("profilePicture");
-		profilePicture.setUploadOwner(savedUserProfile);
-		
-		uploadService.saveUpload(profilePicture);
+			Publication publication = savePublication(savedUserProfile, savedUserProfile.getName());
+			if(publication != null){
+				savedUserProfile.setPublication(publication);
+				//Resave the new User Profile with the publication ID
+				profileDAO.update(savedUserProfile);
+			}
+			
+			
+			String savingPath = this.relativePathToDefaultAvatar;
+			
+			/*
+			 * Give profile a default profile picture
+			 * Can't save upload directly with profile Owner because of multiple mappings on link_id and updatable, insertable is set to false for Profile in favor of Post
+			 */
+			
+			Upload profilePicture = new Upload();
+			profilePicture.setPath(savingPath);
+			profilePicture.setLinkTable("profilePicture");		
+			profilePicture.setLinkId(savedUserProfile.getId());
+			String uploadKey = Upload.generateUUID();
+			profilePicture.setKeyIdentification(uploadKey);
+			profilePicture.setDisplay(true);
+			profilePicture.setAltText("profilePicture");
+			profilePicture.setUploadOwner(savedUserProfile);
+			
+			uploadService.saveUpload(profilePicture);
+		}
 		
 	}
 	
@@ -143,28 +156,6 @@ public class UserService {
 		return requestedPage;
 		
 	}
-	
-	/**
-     * Returns a new object which specifies the the wanted result page.
-     * @param pageIndex The index of the wanted result page
-     * @return
-     */
-    private Pageable constructPageSpecification(int pageIndex, int limit, String sortField, String sortDirection) {
-        Pageable pageSpecification = new PageRequest(pageIndex, limit, sortByField(sortField, sortDirection));
-        return pageSpecification;
-    }
- 
-    /**
-     * Returns a Sort object which sorts persons in ascending order by using the last name.
-     * @return
-     */
-    private Sort sortByField(String sortField, String sortDirection) {
-    	
-    	if(sortDirection.equalsIgnoreCase("desc")){
-    		return new Sort(Sort.Direction.DESC, sortField);
-    	}else return new Sort(Sort.Direction.ASC, sortField);
-        
-    }
 
 	public void delete(int id) {
 		

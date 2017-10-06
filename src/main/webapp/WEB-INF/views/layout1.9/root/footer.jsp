@@ -170,6 +170,7 @@
 <!-- JS Implementing Plugins -->
 <script type="text/javascript" src="<c:url value='/resources_1_9_5/plugins/back-to-top.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/resources_1_9_5/plugins/smoothScroll.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/thematic_1_9/Blog/assets/plugins/scrollbar/js/jquery.mCustomScrollbar.concat.min.js'/>"></script>
 
 <!-- JS Customization -->
 <script type="text/javascript" src="<c:url value='/resources_1_9_5/js/custom.js'/>"></script>
@@ -181,6 +182,7 @@
 	jQuery(document).ready(function() {
 		App.init();
 		FancyBox.initFancybox();
+		App.initScrollBar();
 	});
 </script>
 <!--[if lt IE 9]>

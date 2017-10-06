@@ -74,6 +74,8 @@ public class PublicationDAOImplement implements PublicationDAO{
 			Hibernate.initialize(publication.getAlbum());
 			Hibernate.initialize(publication.getPlay());
 			Hibernate.initialize(publication.getPost());
+			Hibernate.initialize(publication.getProfilePublication());
+			Hibernate.initialize(publication.getDossier());
 			
 		}
 		

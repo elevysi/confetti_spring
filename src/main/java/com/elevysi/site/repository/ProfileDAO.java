@@ -24,6 +24,7 @@ public interface ProfileDAO {
 	public List<Profile> findFollowers(int id);
 	public Profile findByUserAndProfileType(User user, ProfileType profileType);
 	public Profile findByName(String name);
+	public List<Profile> searchByTerm(String term);
 	
 
 

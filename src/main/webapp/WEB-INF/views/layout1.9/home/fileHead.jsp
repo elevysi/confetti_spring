@@ -37,7 +37,9 @@
 	<link rel="stylesheet" href="<c:url value='/thematic_1_9/Blog/assets/plugins/owl-carousel/owl-carousel/owl.carousel.css'/>">
 	<link rel="stylesheet" href="<c:url value='/thematic_1_9/Blog/assets/plugins/master-slider/masterslider/style/masterslider.css'/>">
 	<link rel="stylesheet" href="<c:url value='/thematic_1_9/Blog/assets/plugins/master-slider/masterslider/skins/default/style.css'/>">
-
+	
+	<link rel="stylesheet" href="<c:url value='/thematic_1_9/Blog/assets/plugins/scrollbar/css/jquery.mCustomScrollbar.css'/>">
+	
 	<!-- CSS Theme -->
 	<link rel="stylesheet" href="<c:url value='/thematic_1_9/Blog/assets/css/theme-colors/default.css" id="style_color'/>">
 	<link rel="stylesheet" href="<c:url value='/thematic_1_9/Blog/assets/css/theme-skins/dark.css'/>">

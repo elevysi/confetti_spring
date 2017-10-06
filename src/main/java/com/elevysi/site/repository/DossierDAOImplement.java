@@ -1,5 +1,6 @@
 package com.elevysi.site.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -16,6 +17,8 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.elevysi.site.entity.Album;
+import com.elevysi.site.entity.Album_;
 import com.elevysi.site.entity.Dossier;
 import com.elevysi.site.entity.Dossier_;
 import com.elevysi.site.entity.Post;
@@ -151,6 +154,31 @@ public class DossierDAOImplement implements DossierDAO{
 			Hibernate.initialize(dossier.getAlbums());
 			Hibernate.initialize(dossier.getUploads());
 		}
+		return dossiers;
+	}
+	
+	public List<Dossier> searchByTerm(String term){
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Dossier> criteria = cb.createQuery(Dossier.class);
+		Root<Dossier> dossierRoot = criteria.from(Dossier.class);
+		criteria.select(dossierRoot);
+		
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		
+		predicates.add(cb.like(dossierRoot.get(Dossier_.name), "%"+term+"%"));
+		predicates.add(cb.like(dossierRoot.get(Dossier_.description), "%"+term+"%"));
+		
+		
+		criteria.where(cb.or(predicates.toArray(new Predicate[predicates.size()])));
+		
+		TypedQuery<Dossier> query = em.createQuery(criteria);
+		List<Dossier> dossiers =  query.getResultList();
+		
+		for(Dossier dossier : dossiers){
+//			Hibernate.initialize(dossier.getPublication());
+		}
+		
 		return dossiers;
 	}
 

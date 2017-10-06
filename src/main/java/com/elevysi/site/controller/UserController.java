@@ -222,6 +222,7 @@ public class UserController extends AbstractController{
 	SessionMessage sessionMessage){
 		Profile actingProfile = profileService.getActiveProfile();
 		model.addAttribute("actingProfile", actingProfile);
+		model.addAttribute("profile", actingProfile);
 		model.addAttribute("sessionMessage", sessionMessage);
 		return "userPasswordUpdate";
 	}

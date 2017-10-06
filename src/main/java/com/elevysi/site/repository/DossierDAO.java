@@ -20,5 +20,6 @@ public interface DossierDAO{
 	public Dossier saveEditedDossier(Dossier dossier);
 	public void deleteDossier(int id);
 	public List<Dossier> getDossiersForProfile(Profile profile, Page page);
+	public List<Dossier> searchByTerm(String term);
 
 }

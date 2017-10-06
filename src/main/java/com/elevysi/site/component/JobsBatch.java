@@ -6,16 +6,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.elevysi.site.entity.Album;
+import com.elevysi.site.entity.Dossier;
+import com.elevysi.site.entity.Dossier_;
 import com.elevysi.site.entity.Play;
 import com.elevysi.site.entity.Post;
+import com.elevysi.site.entity.Profile;
+import com.elevysi.site.entity.Profile_;
 import com.elevysi.site.entity.Publication;
 import com.elevysi.site.entity.Publication_;
+import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.Page;
 import com.elevysi.site.pojo.Page.SortDirection;
 import com.elevysi.site.service.AlbumService;
 import com.elevysi.site.service.CommentService;
+import com.elevysi.site.service.DossierService;
 import com.elevysi.site.service.PlayService;
 import com.elevysi.site.service.PostService;
+import com.elevysi.site.service.ProfileService;
 import com.elevysi.site.service.PublicationService;
 
 @Component
@@ -36,9 +43,15 @@ public class JobsBatch {
 	
 	@Autowired
 	private PublicationService publicationService;
+	
+	@Autowired
+	private ProfileService profileService;
+	
+	@Autowired
+	private DossierService dossierService;
 
 	public void run(){
-//		createPublicationsForAllItems();
+//		createPublicationsForAllItemsRemaining();
 		handlePublications();
 	}
 //	
@@ -180,7 +193,104 @@ public class JobsBatch {
 						}
 					}
 				}
+				
+				Dossier dossier = publication.getDossier();
+				if(dossier != null){
+					if(publication.getFriendlyUrl() == null){
+						String dossierTitle = dossier.getName();
+						if(dossierTitle != null){
+							String slug = publicationService.toSlug(dossierTitle);
+							publication.setFriendlyUrl(slug);
+							publicationService.doSaveEditedPublication(publication);
+						}
+					}
+				}
+				
+				Profile profilePublication = publication.getProfilePublication();
+				if(profilePublication != null){
+					if(publication.getFriendlyUrl() == null){
+						String profileTitle = profilePublication.getName();
+						if(profileTitle != null){
+							String slug = publicationService.toSlug(profileTitle);
+							publication.setFriendlyUrl(slug);
+							publicationService.doSaveEditedPublication(publication);
+						}
+					}
+				}
 			}
 		}
+	}
+	
+	public void createPublicationsForAllItemsRemaining(){
+		
+		OffsetPage page = profileService.buildOffsetPage(1, 100, Profile_.created, SortDirection.DESC);
+		List<Profile> profiles = profileService.getProfiles(page);
+		
+		if(profiles != null){
+			for(int i = 0; i < profiles.size(); i++){
+				Profile ithProfile = profiles.get(i);
+				/**
+				 * Check if this item has a publication
+				 */
+				Publication publication = publicationService.findProfilePublication(ithProfile);
+				
+				
+				if(publication == null){
+					/**
+					 * Create a publication for this item
+					 */
+						Publication newPblct = new Publication(ithProfile, ithProfile.getCreated(), ithProfile.getModified(), true);
+						
+						String slug = publicationService.toSlug(ithProfile.getName());
+						newPblct.setFriendlyUrl(slug);
+						
+						Publication savedPublication = publicationService.saveRemotePublication(newPblct);
+						
+						if(savedPublication != null){
+							/**
+							 * Update the item
+							 */
+							ithProfile.setPublication(savedPublication);
+							profileService.updateProfile(ithProfile);
+						}
+				}
+			}
+		}
+		
+		
+		OffsetPage dossierPage = dossierService.buildOffsetPage(1, 100, Dossier_.created, SortDirection.DESC);
+		List<Dossier> dossiers = dossierService.getDossiers(dossierPage);
+		
+		if(dossiers != null){
+			for(int i = 0; i < dossiers.size(); i++){
+				Dossier ithDossier = dossiers.get(i);
+				/**
+				 * Check if this item has a publication
+				 */
+				Publication publication = publicationService.findDossierPublication(ithDossier);
+				
+				
+				if(publication == null){
+					/**
+					 * Create a publication for this item
+					 */
+						Publication newPblct = new Publication(ithDossier.getProfile(), ithDossier.getCreated(), ithDossier.getModified(), true);
+						
+						String slug = publicationService.toSlug(ithDossier.getName());
+						newPblct.setFriendlyUrl(slug);
+						
+						Publication savedPublication = publicationService.saveRemotePublication(newPblct);
+						
+						if(savedPublication != null){
+							/**
+							 * Update the item
+							 */
+							ithDossier.setPublication(savedPublication);
+							dossierService.saveEdited(ithDossier);
+						}
+				}
+			}
+		}
+		
 	}
 }

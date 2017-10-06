@@ -181,6 +181,10 @@ public class Profile implements Serializable{
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	@OneToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="publication_id")
+	private Publication publication;
 
 
 	public String getName() {
@@ -364,6 +368,16 @@ public class Profile implements Serializable{
 	
 	public void removeFriend(Profile friend){
 		getFriends().remove(friend);
+	}
+
+
+	public Publication getPublication() {
+		return publication;
+	}
+
+
+	public void setPublication(Publication publication) {
+		this.publication = publication;
 	}
 	
 }

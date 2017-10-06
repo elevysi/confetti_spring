@@ -56,7 +56,6 @@
 							class="dropdown-toggle" data-toggle="dropdown"> Profile</a>
 							<ul class="dropdown-menu">
 								<li><a href="<spring:url value="/profile/"/>">Home - <security:authentication property="principal.username" /></a></li>
-								<li><a href="<spring:url value="/profile/timeline"/>">Confettis</a></li>
 								<li><a href="<spring:url value="/updatePassword"/>">Password Update</a></li>
 							</ul>
 						</li>
