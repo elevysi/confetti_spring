@@ -390,8 +390,8 @@ section:last-child {
 		<div id="contactDetails" class="quickFade delayFour">
 			<ul>
 				<li>email: <a href="mailto:elvis.hatungimana@gmail.com" target="_blank">elvis.hatungimana@gmail.com</a></li>
-				<li>web: <a href="http://elevysi.com:8080/site/">http://elevysi.com</a></li>
-				<li>phone: 00352691677104</li>
+				<li>web - blog: <a href="http://spring.elevysi.com/" target="_blank">http://spring.elevysi.com</a></li>
+				
 			</ul>
 		</div>
 		<div class="clear"></div>
@@ -409,7 +409,6 @@ section:last-child {
 						I am a passionate developer; i learn fast and I am a motivated individual. I love the challenge in solving problems. For me, the ideal solution would incorporate the efficiency, the optimization as well as good practices (such as DRY and layering concepts for programming).
 I look to pursue a career in technology, specifically in web development, web apps and information systems development. I am looking to be a full stack web developer as I work on all layers of web development, some better (back-end development) than the others (servers administration).
 I am a team player but I can handle responsibility and independent work. 
-					
 					</p>
 				</div>
 			</article>
@@ -438,7 +437,7 @@ CSS3, REST, Oauth2</li>
 					</ul>
 				</article>
 				
-				<article>
+				<!-- <article>
 					<h2>Summer Job at Université du Luxembourg</h2>
 					<p class="subDetails">July 2012 - August 2012</p>
 					Carried out the testing of an implemented framework for dependable systems
@@ -457,7 +456,7 @@ CSS3, REST, Oauth2</li>
 						<li>Programming in Java</li>
 					
 					</ul>
-				</article>
+				</article> -->
 			</div>
 			<div class="clear"></div>
 		</section>
@@ -469,11 +468,36 @@ CSS3, REST, Oauth2</li>
 			</div>
 			
 			<div class="sectionContent">
-				<ul class="keySkills">
-					<li>Proficient: Java, Php, CSS, SQL, Javascript, Jquery</li>
-					<li>Intermediate: C, C++, Objective-c, Visual Basic, Latex</li>
-					
-				</ul>
+				<article>
+					<ul>
+						<li>Proficient: Java, Php, CSS, SQL, Javascript</li>
+						<li>Intermediate: C, C++, Objective-c, Visual Basic, Latex</li>
+						<li>Frameworks Spring MVC, Hibernate, Cakephp, Express, Jquery, AngularJS</li>
+						<li>Stacks: JAVA, LAMP, MEAN 2</li>
+						<li>Tools: Git, Jenkins, Gulp</li>
+						<li>IDEs: Eclipse, Spring Tool Suite, Visual Studio Code</li>
+					</ul>
+				</article>
+			</div>
+			<div class="clear"></div>
+		</section>
+		
+		<section>
+			<div class="sectionTitle">
+				<h1>Environments, Methodology</h1>
+			</div>
+			
+			<div class="sectionContent">
+				<article>
+				
+					<ul>
+						<li>Databases: Relational (sql - mysql) and Non-Relational Databases (noSql - mongoDB)</li>
+						<li>Servers: Apache Http server, NodeJS, Apache Tomcat</li>
+						<li>Agile methodology, Scrum certified</li>
+						
+					</ul>
+				</article>
+				
 			</div>
 			<div class="clear"></div>
 		</section>

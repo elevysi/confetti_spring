@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.elevysi.site.entity.Dossier;
 import com.elevysi.site.entity.Dossier_;
+import com.elevysi.site.entity.Post;
 import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.Page;
 import com.elevysi.site.pojo.Page.SortDirection;
@@ -47,6 +48,16 @@ public class DossierDAOImplement implements DossierDAO{
 		Hibernate.initialize(dossier.getProfile());
 		Hibernate.initialize(dossier.getProfile().getProfilePicture());
 		Hibernate.initialize(dossier.getPosts());
+		
+		Hibernate.initialize(dossier.getPosts());
+		
+		for(Post post: dossier.getPosts()){
+			Hibernate.initialize(post.getProfile());
+			Hibernate.initialize(post.getPublication());
+			Hibernate.initialize(post.getCategories());
+			Hibernate.initialize(post.getUploads());
+		}
+		
 		Hibernate.initialize(dossier.getPlays());
 		Hibernate.initialize(dossier.getAlbums());
 		Hibernate.initialize(dossier.getUploads());

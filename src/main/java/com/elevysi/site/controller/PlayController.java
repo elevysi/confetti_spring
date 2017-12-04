@@ -91,7 +91,7 @@ public class PlayController extends AbstractController{
 		model.addAttribute("play", play);
 		model.addAttribute("playTypes", foundPlayTypes);
 		
-		com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_ITEMS, Dossier_.created, SortDirection.DESC);		
+		com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Dossier_.created, SortDirection.DESC);		
 		List<Dossier> dossiers = dossierService.getDossiers(dossiersPage);
 		model.addAttribute("dossiers", dossiers);
 		
@@ -118,7 +118,7 @@ public class PlayController extends AbstractController{
 		model.addAttribute("latestProfilePlays", latestProfilePlays);
 		model.addAttribute("title", "Play - "+play.getId());
 		model.addAttribute("pageTitle", play.getTitle());
-		model.addAttribute("pageDescription", play.getDescription());
+		model.addAttribute("pageDescription", play.getTitle());
 		return "viewplay";
 	}
 	

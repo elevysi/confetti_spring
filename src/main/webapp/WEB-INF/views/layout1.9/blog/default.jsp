@@ -44,7 +44,7 @@
 	                
 		                <c:if test="${sessionMessage.msgText != null}">
 							<div class="${sessionMessage.msgClass}">
-								<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+								<button class="close" aria-hidden="true" data-dismiss="alert" type="button">x</button>
 								<c:out value="${sessionMessage.msgText}"></c:out>
 							</div>
 						</c:if>

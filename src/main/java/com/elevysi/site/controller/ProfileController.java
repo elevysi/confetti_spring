@@ -160,10 +160,14 @@ public class ProfileController extends AbstractController{
 		}
 		
 		Profile actingProfile = profileService.getActiveProfile();
+		//Load the profile specifics
+		
+		Profile profile = profileService.loadFullProfile(actingProfile.getId());
+		
 //		List<Post> profilePosts = postService.findProfilePosts(actingProfile, pageNumber, NO_PROFILE_POSTS_PER_LOAD, SORT_FIELD, SORT_DIRECTION);
 		
 //		model.addAttribute("profilePosts", profilePosts);
-		model.addAttribute("actingProfile", actingProfile);
+		model.addAttribute("actingProfile", profile);
 		model.addAttribute("sessionMessage", sessionMessage);
 		model.addAttribute("pageTitle", actingProfile.getName());
 		model.addAttribute("pageDescription", actingProfile.getDescription());

@@ -136,6 +136,9 @@
 				<!-- End Blog Grid -->
 				
 				
+				<a class="r-more" href="<spring:url value='/public/posts'/>"><span class="glyphicon glyphicon-hand-right"></span> Discover All Posts</a>
+				<hr />
+				
 				<!-- Blog Carousel Heading -->
 				<div class="blog-cars-heading">
 					<h2>Dossiers</h2>
@@ -190,7 +193,8 @@
 				</div>
 				<!-- End Blog Carousel -->
 				
-				
+				<a class="r-more" href="<spring:url value='/public/dossiers'/>"><span class="glyphicon glyphicon-hand-right"></span> Discover All Dossiers</a>
+				<hr />
 
 				<!-- Blog Thumb v4 -->
 				<div class="margin-bottom-50">
@@ -244,6 +248,10 @@
 						
 					
 				</div>
+				
+				<a class="r-more" href="<spring:url value='/public/plays'/>"><span class="glyphicon glyphicon-hand-right"></span> Discover All Plays</a>
+				<hr />
+				
 				<!-- End Blog Thumb v4 -->
 
 				

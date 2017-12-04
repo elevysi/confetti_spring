@@ -5,6 +5,14 @@
 <c:url value='/dossiers/delete/${dossier.id}' var="deleteDossierUrl" />
 <security:authorize access="hasRole('ROLE_ADMIN')" var="isAdmin" />
 
+<fmt:parseNumber var="count" value="0" />
+<fmt:parseNumber var="noColumns" value="4" />
+<fmt:parseNumber var="starter" value="0" />
+<fmt:parseNumber var="unit" value="1" />
+<fmt:parseNumber var="even" value="2" />
+<fmt:parseNumber var="itemsSize" value="${fn:length(dossier.posts) + fn:length(dossier.plays)}" />
+
+
 <!-- News v3 -->
 <div class="news-v3 bg-color-white margin-bottom-30">
 	<c:choose>
@@ -61,62 +69,158 @@
 			<img class="img-responsive full-width" src="<c:url value='/uploads/download?key=${dossier.uploads.iterator().next().keyIdentification}'/>" alt="${dossier.uploads.iterator().next().altText}">
 		</c:when>
 	</c:choose>
+	
+</div>
 
-	<div class="news-v3-in">
-		<ul class="list-inline posted-info">
-			<li>By <a href="<c:url value='/profile/${dossier.profile.id}'/>"><c:out
-						value="${dossier.profile.name}" /></a></li>
 
-			
+<div class="news-v3-in">
+	<ul class="list-inline posted-info">
+		<li>By <a href="<c:url value='/profile/${dossier.profile.id}'/>"><c:out
+					value="${dossier.profile.name}" /></a></li>
 
-			<li>Posted <fmt:formatDate pattern="dd MMMM yyyy"
-					value="${dossier.created}" />
-			</li>
-		</ul>
-		<h2>
-			<a href="<c:url value='/dossiers/view/${dossier.id}/'/>"><c:out
-					value="${dossier.name}" /></a>
-		</h2>
-		<p>
-			<c:out value="${dossier.description}" escapeXml="false" />
-		</p>
-		<div class="headline"><h2>Articles</h2></div>
-		<ul class="list">
 		
+
+		<li>Posted <fmt:formatDate pattern="dd MMMM yyyy"
+				value="${dossier.created}" />
+		</li>
+	</ul>
+	<h2>
+		<a href="<c:url value='/dossiers/view/${dossier.id}/'/>"><c:out
+				value="${dossier.name}" /></a>
+	</h2>
+	<p>
+		<c:out value="${dossier.description}" escapeXml="false" />
+	</p>
+	<div class="headline"><h2>Articles</h2></div>
+	<ul class="list">
+	
+	
+		<c:forEach items="${dossier.posts}" var="post">
 		
-			<c:forEach items="${dossier.posts}" var="post">
-			
-				<li><a href="<c:url value='/posts/view/${post.id}/' />" ><c:out value="${post.title}" /></a> - Post</li>
-			</c:forEach>
-			
-			<c:forEach items="${dossier.plays}" var="play">
-			
-				<li><a href="<c:url value='/plays/view/${play.id}/' />" ><c:out value="${play.title}" /></a> - Play</li>
-			</c:forEach>
-			
-			<c:forEach items="${dossier.albums}" var="album">
-			
-				<li><a href="<c:url value='/albums/view/${album.id}/' />" ><c:out value="${album.name}" /></a> - Album</li>
-			</c:forEach>
-		</ul>
+			<li><a href="<c:url value='/posts/view/${post.id}/' />" ><c:out value="${post.title}" /></a> - Post</li>
+		</c:forEach>
 		
+		<c:forEach items="${dossier.plays}" var="play">
 		
-		<c:if test="${canEditDossier || isAdmin}">
-			<div class="clearfix margin-bottom-20"><hr></div>
-			<div class="btn-group">
-				<a class="btn-u btn-brd btn-u-blue"  href="<spring:url value='dossiers/edit/${dossier.id}' />"><i class="fa fa-edit"></i> Edit Dossier</a>
+			<li><a href="<c:url value='/plays/view/${play.id}/' />" ><c:out value="${play.title}" /></a> - Play</li>
+		</c:forEach>
+		
+		<c:forEach items="${dossier.albums}" var="album">
+		
+			<li><a href="<c:url value='/albums/view/${album.id}/' />" ><c:out value="${album.name}" /></a> - Album</li>
+		</c:forEach>
+	</ul>
+	
+	
+	<c:if test="${canEditDossier || isAdmin}">
+		<div class="clearfix margin-bottom-20"><hr></div>
+		<div class="btn-group">
+			<a class="btn-u btn-brd btn-u-blue"  href="<spring:url value='dossiers/edit/${dossier.id}' />"><i class="fa fa-edit"></i> Edit Dossier</a>
+			
+			<form:form method="post" action="${deleteDossierUrl}" onsubmit="return confirmDelete(this, '${deleteDossierUrl}')">
+				<button class="btn-u btn-brd btn-u-blue"><i class="fa fa-magic"></i> Delete Dossier</button>
+			</form:form>
+			
+			
 				
-				<form:form method="post" action="${deleteDossierUrl}" onsubmit="return confirmDelete(this, '${deleteDossierUrl}')">
-					<button class="btn-u btn-brd btn-u-blue"><i class="fa fa-magic"></i> Delete Dossier</button>
-				</form:form>
-				
-				
-					
-			</div>
-			<div class="clearfix margin-bottom-20"><hr></div>
+		</div>
+		<div class="clearfix margin-bottom-20"><hr></div>
+	</c:if>
+	
+</div>
+
+<div>
+	
+	<c:forEach items="${dossier.posts}" var="post">
+
+	
+
+		<c:if test="${count == starter || (count%noColumns)==starter}">
+					<div class="row news-v2 margin-bottom-50">
 		</c:if>
 		
-	</div>
+
+	
+
+		<div class="col-sm-3 sm-margin-bottom-30">
+			<div class="thumbnails thumbnail-style thumbnail-kenburn">
+				<div class="thumbnail-img">
+					
+					<c:choose>
+						<c:when test="${not empty post.uploads && fn:length(post.uploads) >= 1}">
+							<div class="overflow-hidden">
+								<img class="img-responsive" src="<c:url value='/uploads/download?key=${post.uploads.iterator().next().keyIdentification}'/>" alt="">
+							</div>
+						</c:when>
+						<c:otherwise>
+							<div class="overflow-hidden">
+								<img class="img-responsive" src="<c:url value='/resources_1_9_5/img/main/img22.jpg'/>" alt="">
+							</div>
+						</c:otherwise>
+					</c:choose>
+					
+					
+					<a class="btn-more hover-effect" href="<c:url value='/posts/view/${post.id}/${post.publication.friendlyUrl}'/>">read more +</a>
+				</div>
+				<div class="caption">
+					<h3><a class="hover-effect" href="<c:url value='/posts/view/${post.id}/${post.publication.friendlyUrl}'/>"><c:out value="${post.title}" /></a></h3>
+					<small>By <a href="<c:url value='/public/profile/${post.profile.name}' />" ><c:out value="${post.profile.name}" /></a> | <fmt:formatDate pattern="dd MMMM yy" value="${post.created}" /></small>
+					<p><c:out value="${post.description}" /></p>
+				</div>
+			</div>
+		</div>
+	
+
+	
+
+		<c:if test="${((count+unit) == itemsSize) || ((count+unit)%noColumns==starter)}">
+			</div>
+		</c:if>
+		
+
+	
+
+	<fmt:parseNumber var="count" value="${count + 1}" />
+
+	</c:forEach>
+	
+	<c:forEach items="${dossier.plays}" var="play">
+					
+	<c:if test="${count == starter || (count%noColumns)==starter}">
+		<div class="row news-v2 margin-bottom-50">
+	</c:if>
+	
+		<div class="col-sm-3 sm-margin-bottom-30">
+			<div class="news-v2-badge">
+			
+				<div class="responsive-video">
+					<iframe src="<c:out value='${play.url}'/>" frameborder="0" allowfullscreen></iframe>
+				</div>
+				<c:if test="${not empty play.created}">
+					<p>
+						<fmt:formatDate pattern="dd MM yy" value="${play.created}" />
+					</p>
+				</c:if>
+			</div>
+			
+			<div class="news-v2-desc">
+				<h3>
+					<a href='<c:url value='/plays/view/${play.id}/'/>'><c:out value="${play.title}" /></a>
+				</h3>
+				<small>By <a href="<c:url value='/public/profile/${play.playProfile.name}' />" ><c:out value="${play.playProfile.name}" /></a> | In <a href="#"><c:out value="${play.playType.name}" /></a></small>
+			</div>
+		
+		</div>
+		
+		<c:if test="${((count+unit) == itemsSize) || ((count+unit)%noColumns==starter)}">
+			</div>
+		</c:if>
+		
+	
+		<fmt:parseNumber var="count" value="${count + 1}" />
+	
+	</c:forEach>
+	
 </div>
 <!-- End News v3 -->
 

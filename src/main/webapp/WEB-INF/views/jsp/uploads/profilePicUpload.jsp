@@ -130,6 +130,7 @@ var myDropzone = new Dropzone("div#uploadDelegationDropzone", { // Make the whol
 	  
 	},
 	sending: function(file, xhr, formData){
+		xhr.setRequestHeader(header, token);
 		formData.append("type", 1);
 	},	
 	removedfile: function(file) {
@@ -137,6 +138,9 @@ var myDropzone = new Dropzone("div#uploadDelegationDropzone", { // Make the whol
 	        type: 'POST',
 	        url: upload_delete_target_url,
 	        data: {type : 1},
+	        beforeSend:function(xhr){
+	             xhr.setRequestHeader(header, token);
+	        },
 	        success: function(file, response) {
 	     	   $("#adderLink").show();
 	     	},

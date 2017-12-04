@@ -29,6 +29,20 @@
 							
 						</ul>
 					</li>
+					
+					
+					<li class="dropdown">
+						
+						<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">Create</a>
+						<ul class="dropdown-menu">
+							<li><a href="<spring:url value="/posts/add"/>">Add Post</a></li>
+							<li><a href="<spring:url value="/plays/add"/>">Add Play</a></li>
+							<li><a href="<spring:url value="/albums/add"/>">Add Album</a></li>
+							<li><a href="<spring:url value="/dossiers/add"/>">Add Dossier</a></li>
+							
+						</ul>
+					</li>
+					
 					<!-- End Confettis -->
 					
 					<!-- Shopping -->

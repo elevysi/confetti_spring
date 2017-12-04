@@ -6,25 +6,30 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.elevysi.site.entity.Post;
+import com.elevysi.site.security.SecurityConfig;
 import com.elevysi.site.service.PostService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:dispatcher-servlet.xml", "classpath*:application-context.xml", "classpath*:datasource.xml"})
+//@ContextConfiguration(locations = { "classpath*:dispatcher-servlet.xml", "classpath*:application-context.xml", "classpath*:datasource.xml"})
+@ContextConfiguration(locations = {"classpath:META-INF/application-context.xml"})
+//@ContextConfiguration(classes = {SecurityConfig.class})
+@Transactional
 public class PostTest {
 	
 	
 	@Autowired
 	PostService postService;
 	
-	public PostService getPostService() {
-		return postService;
-	}
-
-	public void setPostService(PostService postService) {
-		this.postService = postService;
-	}
+//	public PostService getPostService() {
+//		return postService;
+//	}
+//
+//	public void setPostService(PostService postService) {
+//		this.postService = postService;
+//	}
 
 	@Test
 	public void createPost(){
