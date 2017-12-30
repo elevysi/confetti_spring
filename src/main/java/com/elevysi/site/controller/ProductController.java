@@ -5,6 +5,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.elevysi.site.entity.Product;
+
 @Controller
 @RequestMapping(value="/shop/products")
 public class ProductController {
@@ -12,7 +14,8 @@ public class ProductController {
 	@RequestMapping(value="/add")
 	public String add(Model model){
 		
-		
+		Product product = new Product();
+		model.addAttribute("product", product);
 		return "productAdd";
 	}
 	
