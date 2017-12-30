@@ -5,12 +5,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.metamodel.SingularAttribute;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.elevysi.site.entity.Conversation;
 import com.elevysi.site.entity.Message;
+import com.elevysi.site.pojo.OffsetPage;
+import com.elevysi.site.pojo.Page.SortDirection;
+import com.elevysi.site.repository.MessageDAO;
 import com.elevysi.site.repository.MessageRepository;
 
 @Service
@@ -18,6 +23,9 @@ public class MessageService extends AbstractService{
 
 	@Autowired
 	private MessageRepository messageRepository;
+	
+	@Autowired
+	private MessageDAO messageDAO;
 	
 	public Message saveMessage(Message message){
 		Date now = new Date();
@@ -48,6 +56,14 @@ public class MessageService extends AbstractService{
 	
 	public Message findOne(Integer id){
 		return messageRepository.findOne(id);
+	}
+	
+	public OffsetPage buildOffsetPage(int pageIndex, int size,  SingularAttribute sortField, SortDirection sortDirection){
+		return messageDAO.buildOffsetPage(pageIndex, size, sortField, sortDirection);
+	}
+	
+	public List<Message> getConversationMessages(Conversation conversation, com.elevysi.site.pojo.Page page){
+		return messageDAO.getConversationMessages(conversation, page);
 	}
 	
 }

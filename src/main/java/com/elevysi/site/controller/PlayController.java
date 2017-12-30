@@ -150,13 +150,13 @@ public class PlayController extends AbstractController{
 		return "redirect:/plays/view/"+savedPlay.getId()+"/";
 	}
 	
-	@RequestMapping(value={"/edit/{id}/*", "/edit/{id}"})
+	@RequestMapping(value={"/edit/{id}", "/edit/{id}/*"})
 	public String edit(Model model, @PathVariable("id")Integer id, @ModelAttribute("sessionMessage")SessionMessage sessionMessage){
 		Play play = playService.getPlay(id);
 		model.addAttribute("play", play);
 		List<PlayType> foundPlayTypes = playTypeService.findAll();		
 		model.addAttribute("playTypes", foundPlayTypes);
-		com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_ITEMS, Dossier_.created, SortDirection.DESC);		
+		com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Dossier_.created, SortDirection.DESC);		
 		List<Dossier> dossiers = dossierService.getDossiers(dossiersPage);
 		model.addAttribute("dossiers", dossiers);
 		

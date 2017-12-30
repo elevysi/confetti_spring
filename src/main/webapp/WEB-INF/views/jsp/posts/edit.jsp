@@ -172,5 +172,56 @@ $(document).ready(function(){
 	
 });
 
+
+/* $(function() {
+	var _i = 0;
+	var container = document.getElementById('selectedItems');
+	$("#publicationInput").autocomplete({
+		source: function (request, response) {
+	           $.ajax({
+	               url: "${searchPublicationUrl}",
+	               type: 'GET',
+	               dataType: 'json',
+	               data: request,
+	               success: function (data) {
+	                   response($.map(data, function (_publicationMock) { 
+	                        return {
+	                            label: _publicationMock.displayField+" - "+_publicationMock.childType,
+	                            value: _publicationMock.id
+	                        };
+	                   }));
+	               }
+	           });
+	        },
+	        html: true,
+	        minLength: 2,
+	        select: function(event, ui) {
+	             var id = ui.item.value;
+	             if(id != '') {
+	            	 var checkbox = document.createElement('input');
+	            	 var icon = document.createElement('i');
+	            	 checkbox.type = "checkbox";
+	            	 checkbox.name = "featuredPublications";
+	            	 checkbox.value = ui.item.value;
+	            	 _currentVal = ++_i;
+	            	 checkbox.id = "featuredPublications"+_currentVal;
+	            	 checkbox.setAttribute("checked", "true");
+
+	            	 var label = document.createElement('label');
+	            	 label.className = "checkbox";
+	            	 label.htmlFor = "featuredPublications"+_currentVal;
+	            	 label.appendChild(checkbox);
+	            	 label.appendChild(icon);
+	            	 label.appendChild(document.createTextNode(ui.item.label));
+	            	
+	            	 
+	            	 container.appendChild(label);
+	             }
+	        },
+	
+	});
+	
+}); */
+
 </script>
 

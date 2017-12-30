@@ -581,36 +581,40 @@ public class UploadController extends AbstractController{
 		        			
 		        		}
 		        	}
-		            in = new BufferedInputStream(new FileInputStream(this.avatarUploadPath+finalPath));
-		
-		            response.setContentType(contentType);
-		            if(inline == null){
-		            	response.setHeader("Content-Disposition",  " inline; filename=" + filename);
-		            	
-		            	/**
-		            	 * Force download put attachment in header instead
-		            	 */
-		            	
-		            	//response.setHeader("Content-Disposition",  " attachment; filename=" + filename);
-		            }
-		            
-		            response.setContentLength(upload.getFilesize());
-		            
-		            response.setStatus(HttpServletResponse.SC_OK);
-		            IOUtils.copy(in, response.getOutputStream());
-		            response.flushBuffer();
+		        	File downloadFile = new File(this.avatarUploadPath+finalPath);
+		        	if(downloadFile.exists() && downloadFile.isFile()){
+		        		
+			            in = new BufferedInputStream(new FileInputStream(downloadFile));
+			
+			            response.setContentType(contentType);
+			            if(inline == null){
+			            	response.setHeader("Content-Disposition",  " inline; filename=" + filename);
+			            	
+			            	/**
+			            	 * Force download put attachment in header instead
+			            	 */
+			            	
+			            	//response.setHeader("Content-Disposition",  " attachment; filename=" + filename);
+			            }
+			            
+			            response.setContentLength(upload.getFilesize());
+			            
+			            response.setStatus(HttpServletResponse.SC_OK);
+			            IOUtils.copy(in, response.getOutputStream());
+			            response.flushBuffer();
+		        	}
 		            
 		        }
 		        catch(Exception e)
 		        {
-		           e.printStackTrace();
+//		           e.printStackTrace();
 		           return;
 		        }
 		        finally
 		        {
 		            try
 		            {
-		                in.close();
+		            	if(in!= null) in.close();
 		            }
 		            catch(Exception ee)
 		            {

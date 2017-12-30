@@ -114,16 +114,14 @@
 	
 	<c:if test="${canEditDossier || isAdmin}">
 		<div class="clearfix margin-bottom-20"><hr></div>
-		<div class="btn-group">
-			<a class="btn-u btn-brd btn-u-blue"  href="<spring:url value='dossiers/edit/${dossier.id}' />"><i class="fa fa-edit"></i> Edit Dossier</a>
-			
-			<form:form method="post" action="${deleteDossierUrl}" onsubmit="return confirmDelete(this, '${deleteDossierUrl}')">
-				<button class="btn-u btn-brd btn-u-blue"><i class="fa fa-magic"></i> Delete Dossier</button>
-			</form:form>
-			
-			
-				
-		</div>
+		<ul class="list-inline up-ul">
+			<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-yellow btn-u-sm"  href="<spring:url value='/dossiers/edit/${dossier.id}' />"><i class="fa fa-edit"></i> Edit Dossier</a></li>
+			<li>
+				<form:form method="post" action="${deleteDossierUrl}" onsubmit="return confirmDelete(this, '${deleteDossierUrl}')" class="form-inline">
+					<button class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-red btn-u-sm"><i class="fa fa-magic"></i> Delete Dossier</button>
+				</form:form>
+			</li>
+		</ul>
 		<div class="clearfix margin-bottom-20"><hr></div>
 	</c:if>
 	

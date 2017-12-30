@@ -59,7 +59,7 @@ public class AlbumController extends AbstractController{
 		model.addAttribute("uuid", uuid);
 		model.addAttribute("album", album);
 		
-		com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_ITEMS, Dossier_.created, SortDirection.DESC);		
+		com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Dossier_.created, SortDirection.DESC);		
 		List<Dossier> dossiers = dossierService.getDossiers(dossiersPage);
 		model.addAttribute("dossiers", dossiers);
 		
@@ -100,7 +100,7 @@ public class AlbumController extends AbstractController{
 		
 	}
 	
-	@RequestMapping(value="/view/{id}/*")
+	@RequestMapping(value={"/view/{id}/*", "/view/{id}"})
 	public String view(@PathVariable("id")Integer id, Model model, RedirectAttributes redirectAttributes, @RequestParam(defaultValue="1", required=false, value="page")Integer pageNumber){
 		
 		Album album = albumService.findOne(id);
@@ -127,7 +127,7 @@ public class AlbumController extends AbstractController{
 		}
 	}
 	
-	@RequestMapping(value="/edit/{id}", method=RequestMethod.GET)
+	@RequestMapping(value={"/edit/{id}", "/edit/{id}/*"}, method=RequestMethod.GET)
 	public String edit(Model model, @PathVariable("id")Integer id){
 		Album album = albumService.findById(id);
 		model.addAttribute("album", album);
@@ -154,7 +154,7 @@ public class AlbumController extends AbstractController{
 			
 			model.addAttribute("albumEdit", albumEdit);
 			
-			com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_ITEMS, Dossier_.created, SortDirection.DESC);		
+			com.elevysi.site.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Dossier_.created, SortDirection.DESC);		
 			List<Dossier> dossiers = dossierService.getDossiers(dossiersPage);
 			model.addAttribute("dossiers", dossiers);
 		}

@@ -181,6 +181,10 @@ public class Profile implements Serializable{
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	@OneToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="publication_id")
+	private Publication publication;
 
 
 	public String getName() {
@@ -336,11 +340,44 @@ public class Profile implements Serializable{
         return false;
     }
 	
+	/**
+	 * https://www.mkyong.com/java/java-how-to-overrides-equals-and-hashcode/
+	 * http://www.baeldung.com/java-hashcode
+	 */
 	@Override
 	public int hashCode() {
-	    return id.hashCode();
+//	    return id.hashCode();
+	    return id != null ? id.hashCode() : 0; //https://stackoverflow.com/questions/21535029/what-must-be-hashcode-of-null-objects-in-java
+	}
+	
+	
+	public void addFriend(Profile friend){
+		if(friend != null){
+			
+			if(this.getFriends().contains(friend)){
+				this.getFriends().remove(friend);
+				this.getFriends().add(friend);
+				
+			}else{
+				getFriends().add(friend);
+			}
+			
+			
+		}
+	}
+	
+	public void removeFriend(Profile friend){
+		getFriends().remove(friend);
 	}
 
-	
+
+	public Publication getPublication() {
+		return publication;
+	}
+
+
+	public void setPublication(Publication publication) {
+		this.publication = publication;
+	}
 	
 }

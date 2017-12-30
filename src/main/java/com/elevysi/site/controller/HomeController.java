@@ -119,16 +119,15 @@ public class HomeController extends AbstractController{
 		for(Publication publication: foundFeaturedPublications){
 			Post post = publication.getPost();
 			Play play = publication.getPlay();
-//			Album album = publication.getAlbum();
+			Album album = publication.getAlbum();
 			if(post != null){
 				publication.setPost(postService.getPost(post.getId()));
 				
 			}else if(play != null){
 				publication.setPlay(playService.getPlay(play.getId()));
+			}else if(album != null){
+				publication.setAlbum(albumService.findById(album.getId()));
 			}
-//			else if(album != null){
-//				publication.setAlbum(albumService.findById(album.getId()));
-//			}
 			
 			featuredPublications.add(publication);
 		}

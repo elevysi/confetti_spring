@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.metamodel.SingularAttribute;
 
 import com.elevysi.site.entity.Dossier;
+import com.elevysi.site.entity.Profile;
 import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.Page;
 import com.elevysi.site.pojo.Page.SortDirection;
@@ -18,5 +19,7 @@ public interface DossierDAO{
 	public OffsetPage buildOffsetPage(int pageIndex, int size,  SingularAttribute sortField, SortDirection sortDirection);
 	public Dossier saveEditedDossier(Dossier dossier);
 	public void deleteDossier(int id);
+	public List<Dossier> getDossiersForProfile(Profile profile, Page page);
+	public List<Dossier> searchByTerm(String term);
 
 }

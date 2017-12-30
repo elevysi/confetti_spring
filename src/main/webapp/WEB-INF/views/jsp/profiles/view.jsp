@@ -2,10 +2,21 @@
     pageEncoding="UTF-8"%>
 
 <%@ include file="../../layout/taglib.jsp" %>
-
+<c:url var="bucketPostUrl" value="/bucket/${userProfile.name}" />
 <h2><c:out value="${userProfile.name}" /></h2>
+<ul class="list-inline up-ul">
+	<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-dark-blue btn-u-sm"  href="<spring:url value='/conversations/conversate/${userProfile.name}' />"><i class="fa fa-magic"></i>Message</a></li>
+	<li>
+		<form:form action="${bucketPostUrl}" method="post" onSubmit="return confirm('Please confirm before the action is processed.');" class="form-inline">
+			<input type="hidden" value="${userProfile.name}" name="bucketID" >
+			<button class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-purple btn-u-sm" type="submit">Add to my Bucket</button>
+		</form:form>
+	</li>
+	<li></li>
+</ul>
 
-<a class="btn-u rounded btn-u-dark-blue btn-u-xs"  href="<spring:url value='/conversations/conversate/${userProfile.name}' />"><i class="fa fa-magic"></i>Message</a>
+
+
 <hr>
 
 <c:forEach items="${plays}" var="play">
@@ -45,12 +56,6 @@
 <div class="clearfix margin-bottom-20"><hr></div>
 </c:forEach>
 
+<tiles:insertAttribute name="pagination" ignore="true"/>
 
-<!-- Pager v3 -->
-<ul class="pager pager-v3 pager-sm no-margin-bottom">
-    <li class="previous"><a href="#">&larr; Older</a></li>
-    <li class="page-amount">1 of 7</li>
-    <li class="next"><a href="#">Newer &rarr;</a></li>
-</ul>
-<!-- End Pager v3 -->
 

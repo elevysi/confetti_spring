@@ -70,3 +70,9 @@
 <!-- FancyBox -->
 <script type="text/javascript" src="<c:url value='/resources_1_9_5/plugins/fancybox/source/jquery.fancybox.pack.js'/>"></script>
 
+<!--React-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.1/react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.1/react-dom.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
+

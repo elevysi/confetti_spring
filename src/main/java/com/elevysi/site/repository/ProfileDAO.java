@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.metamodel.SingularAttribute;
 
 import com.elevysi.site.entity.Profile;
+import com.elevysi.site.entity.ProfileType;
 import com.elevysi.site.entity.User;
 import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.Page;
@@ -19,6 +20,11 @@ public interface ProfileDAO {
 	public Profile findById(int id);
 	public Profile findProfileByUser(User user);
 	public Profile getUserPrincipalProfile(User user);
+	public List<Profile> findFollowing(int id);
+	public List<Profile> findFollowers(int id);
+	public Profile findByUserAndProfileType(User user, ProfileType profileType);
+	public Profile findByName(String name);
+	public List<Profile> searchByTerm(String term);
 	
 
 

@@ -13,6 +13,10 @@ public abstract class AbstractEntity implements Serializable{
 		 
 	}
 	
+	public static String generateStaticUUID(){
+		 UUID uniqueKey = UUID.randomUUID();   
+		 return uniqueKey.toString();
+	}
 
 	public String constructUrlTitle(String title){
 		if(title != null){

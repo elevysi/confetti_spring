@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.elevysi.site.entity.Album;
+import com.elevysi.site.entity.Dossier;
 import com.elevysi.site.entity.Play;
 import com.elevysi.site.entity.Post;
 import com.elevysi.site.entity.Profile;
@@ -54,6 +55,14 @@ public class PublicationService{
 	
 	public Publication findAlbumPublication(Album album){
 		return publicationRepository.findAlbumPublication(album.getId());
+	}
+	
+	public Publication findProfilePublication(Profile profile){
+		return publicationRepository.findProfilePublication(profile.getId());
+	}
+	
+	public Publication findDossierPublication(Dossier dossier){
+		return publicationRepository.findDossierPublication(dossier.getId());
 	}
 	
 	public Publication saveRemotePublication(Publication publication){

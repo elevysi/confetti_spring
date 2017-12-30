@@ -9,9 +9,11 @@
             <div class="col-md-6 col-md-offset-3">
                 <h2>Search again</h2>
                 <form action="<spring:url value="/public/search"/>" method="post">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <div class="input-group">
                 
                     <input type="text" class="form-control" placeholder="Search users, posts ..." name="globalSearch">
+                    
                     <span class="input-group-btn">
                         <button class="btn-u" type="submit"><i class="fa fa-search"></i></button>
                     </span>
@@ -40,7 +42,7 @@
 											value="${searchResult.heading}" /> </a>
 								</c:when>
 								<c:when test="${searchResult.type == 'post'}">
-									<a class="color-green" href="<spring:url value='/posts/view/${searchResult.index}'/>"><c:out
+									<a class="color-green" href="<spring:url value='/posts/view/${searchResult.index}/'/>"><c:out
 											value="${searchResult.heading}" /></a>
 								</c:when>
 							</c:choose>
@@ -49,14 +51,20 @@
 							
 							<c:choose>
 								<c:when test="${searchResult.type == 'user'}">
-									<li><button class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-dark-blue btn-u-sm" href="#">View</button></li>
-									<li><button href="#" class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-purple btn-u-sm">Add to confetti bucket</button></li>
-									<li><button href="<c:url value='/profile/follow/'/>" class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-green btn-u-sm">Follow</button></li>
+									<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-dark-blue btn-u-sm" href="<spring:url value='/users/viewProfile/${searchResult.index}'/>">View</a></li>
+									<li>
+										<%-- <form:form action="${bucketPostUrl}" method="post" onSubmit="return confirm('Please confirm before the action is processed.');" class="form-inline">
+											<input type="hidden" value="${userProfile.name}" name="bucketID" >
+											<button class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-purple btn-u-sm" type="submit">Add to my Bucket</button>
+										</form:form> --%>
+									
+									<a href="<spring:url value='/users/viewProfile/${searchResult.index}'/>" class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-purple btn-u-sm">Add to confetti bucket</a></li>
+									<li><a href="<spring:url value='/users/viewProfile/${searchResult.index}'/>" class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-green btn-u-sm">Follow</a></li>
 								</c:when>
 								<c:when test="${searchResult.type == 'post'}">
-									<li><button class="btn-u btn-brd btn-brd-hover rounded btn-u-dark-blue btn-u-sm" href="<c:url value='/posts/view/${searchResult.index}'/>">Share</button></li>
-									<li><button class="btn-u btn-brd btn-brd-hover rounded btn-u-dark btn-u-sm" href="<c:url value='/posts/view/${searchResult.index}'/>">Comment</button></li>
-									<li><button class="btn-u btn-brd btn-brd-hover rounded btn-u-green btn-u-sm" href='<c:url value="/posts/view/${searchResult.index}"/>' class="btn-u btn-u-purple">Read</button></li>
+									<li><a class="btn-u btn-brd btn-brd-hover rounded btn-u-dark-blue btn-u-sm" href="<c:url value='/posts/view/${searchResult.index}'/>">Share</a></li>
+									<li><a class="btn-u btn-brd btn-brd-hover rounded btn-u-dark btn-u-sm" href="<c:url value='/posts/view/${searchResult.index}'/>">Comment</a></li>
+									<li><a class="btn-u btn-brd btn-brd-hover rounded btn-u-green btn-u-sm" href='<c:url value="/posts/view/${searchResult.index}"/>' class="btn-u btn-u-purple">Read</a></li>
 								</c:when>
 							</c:choose>
 							
@@ -79,14 +87,12 @@
 									</li>
 									<c:choose>
 										<c:when test="${searchResult.type == 'user'}">
-											<li>11 months ago - By WrapBootstrap</li>
+											<li>Member Since <fmt:formatDate pattern="dd MMMM yyyy" value="${searchResult.created}" /></li>
 										</c:when>
 										<c:when test="${searchResult.type == 'post'}">
 											<li><c:out value="${searchResult.object.profile.name}"/></li>
 										</c:when>
 									</c:choose>
-									
-									<li>2,092,675 views</li>
 								</ul>
 							</div>
 						</div>
@@ -106,7 +112,7 @@
 											value="${searchResult.heading}" /> </a>
 								</c:when>
 								<c:when test="${searchResult.type == 'post'}">
-									<a href="<spring:url value='/posts/view/${searchResult.index}'/>"><c:out
+									<a href="<spring:url value='/posts/view/${searchResult.index}/'/>"><c:out
 											value="${searchResult.heading}" /></a>
 								</c:when>
 							</c:choose>
@@ -119,13 +125,12 @@
 										class="sr-only">Toggle Dropdown</span>
 								</button>
 								<ul role="menu" class="dropdown-menu">
-									<li><a href="#">Share</a></li>
-									<li><a href="#">Similar</a></li>
-									<li><a href="#">Advanced search</a></li>
+									<li><a href="<c:url value='/posts/view/${searchResult.index}'/>">Read</a></li>
+									<li><a href="<c:url value='/posts/view/${searchResult.index}'/>">Comment</a></li>
+									<li><a href="<c:url value='/posts/view/${searchResult.index}'/>">Share</a></li>
 								</ul>
 							</li>
-							<li><a href="#">Wrapbootstrap</a></li>
-							<li><a href="#">Dribbble</a></li>
+							<li><a href="<c:url value='/profile/${searchResult.author.name}' />"><c:out value="${searchResult.author.name}"/></a></li>
 						</ul>
 						<p>
 							<c:out value="${fn:substring(searchResult.details, 0, 300)}" escapeXml="false"/>
@@ -140,9 +145,8 @@
 									<li><i class="color-green fa fa-star-half-o"></i></li>
 								</ul>
 							</li>
-							<li>3 years ago - By Anthon Brandley</li>
-							<li>234,034 views</li>
-							<li><a href="#">Web designer</a></li>
+							<li><fmt:formatDate pattern="dd MMMM yyyy" value="${searchResult.created}" /> - By <c:out value="${searchResult.author.name}"/></li>
+							
 						</ul>
 					</div>
 					<!-- Begin Inner Results -->
@@ -159,18 +163,6 @@
 
 		<div class="margin-bottom-30"></div>
 
-		<div class="text-left">
-			<ul class="pagination">
-				<li><a href="#">«</a></li>
-				<li class="active"><a href="#">1</a></li>
-				<li><a href="#">2</a></li>
-				<li><a href="#">3</a></li>
-				<li><a href="#">...</a></li>
-				<li><a href="#">157</a></li>
-				<li><a href="#">158</a></li>
-				<li><a href="#">»</a></li>
-			</ul>
-		</div>
 	</c:when>
 	<c:otherwise>
 		<p class="alert alert-danger">

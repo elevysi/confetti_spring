@@ -74,6 +74,8 @@ public class PublicationDAOImplement implements PublicationDAO{
 			Hibernate.initialize(publication.getAlbum());
 			Hibernate.initialize(publication.getPlay());
 			Hibernate.initialize(publication.getPost());
+			Hibernate.initialize(publication.getProfilePublication());
+			Hibernate.initialize(publication.getDossier());
 			
 		}
 		
@@ -95,11 +97,10 @@ public class PublicationDAOImplement implements PublicationDAO{
 		List<Publication> publications =  query.getResultList();
 		
 		for(Publication publication : publications){
-//			Hibernate.initialize(publication.getProfile());
-//			Hibernate.initialize(publication.getAlbum());
+			Hibernate.initialize(publication.getProfile());
+			Hibernate.initialize(publication.getAlbum());
 			Hibernate.initialize(publication.getPlay());
 			Hibernate.initialize(publication.getPost());
-			Hibernate.initialize(publication.getPost().getUploads());
 		}
 		
 		return publications;

@@ -32,7 +32,7 @@ public class UserDAOImplement implements UserDAO{
 	
 	public List<User> searchByTerm(String term){
 		
-		TypedQuery<User> query = em.createQuery("SELECT user FROM User post WHERE "+
+		TypedQuery<User> query = em.createQuery("SELECT user FROM User user WHERE "+
 				"LOWER(user.first_name) LIKE LOWER(CONCAT('%',:searchTerm, '%')) OR " +
 	            "LOWER(user.last_name) LIKE LOWER(CONCAT('%',:searchTerm, '%')) OR " +
 	            "LOWER(user.username) LIKE LOWER(CONCAT('%',:searchTerm, '%')) OR " +
@@ -40,14 +40,20 @@ public class UserDAOImplement implements UserDAO{
 						User.class
 		).setParameter("searchTerm", term);
 		
+		//Union the profile search
+		
 		List<User> users = query.getResultList();
 		
+		
+		
 		for(User user : users){
-			Hibernate.initialize(user.getProfiles());
-			Hibernate.initialize(user.getRoles());
+//			Hibernate.initialize(user.getProfiles());
+//			Hibernate.initialize(user.getUserProfile());
+//			Hibernate.initialize(user.getUserProfile().getProfilePicture());
+//			Hibernate.initialize(user.getRoles());
 		}
 		
-		return null;
+		return users;
 	}
 	
 	public List<User> getUsers(Page page){

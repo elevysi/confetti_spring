@@ -4,6 +4,8 @@ public class MessageDisplay {
 	
 	private Integer id;
 	private String messageAuthor;
+	private String avatarUUID;
+	
 	public String getMessageAuthor() {
 		return messageAuthor;
 	}
@@ -31,6 +33,21 @@ public class MessageDisplay {
 		this.id = id;
 		this.messageAuthor = messageAuthor;
 		this.messageContent = messageContent;
+	}
+	
+	public MessageDisplay(Integer id, String messageAuthor, String messageContent, String avatarUUID){
+		this.id = id;
+		this.messageAuthor = messageAuthor;
+		this.messageContent = messageContent;
+		this.avatarUUID = avatarUUID;
+	}
+	
+	
+	public String getAvatarUUID() {
+		return avatarUUID;
+	}
+	public void setAvatarUUID(String avatarUUID) {
+		this.avatarUUID = avatarUUID;
 	}
 	
 	

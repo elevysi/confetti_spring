@@ -38,8 +38,16 @@ public class Publication {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modified;
 	
+	
 	@OneToOne(cascade=CascadeType.ALL, mappedBy="publication", fetch=FetchType.LAZY)
 	private Post post;
+	
+	@OneToOne(cascade=CascadeType.ALL, mappedBy="publication", fetch=FetchType.LAZY)
+	private Profile profilePublication;
+	
+	@OneToOne(cascade=CascadeType.ALL, mappedBy="publication", fetch=FetchType.LAZY)
+	private Dossier dossier;
+	
 	
 	public Post getPost() {
 		return post;
@@ -164,5 +172,21 @@ public class Publication {
 		publicationMock.setId(this.id);
 		
 		return publicationMock;
+	}
+
+	public Profile getProfilePublication() {
+		return profilePublication;
+	}
+
+	public void setProfilePublication(Profile profilePublication) {
+		this.profilePublication = profilePublication;
+	}
+
+	public Dossier getDossier() {
+		return dossier;
+	}
+
+	public void setDossier(Dossier dossier) {
+		this.dossier = dossier;
 	}
 }

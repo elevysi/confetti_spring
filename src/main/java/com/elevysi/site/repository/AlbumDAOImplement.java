@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.elevysi.site.entity.Album;
 import com.elevysi.site.entity.Album_;
+import com.elevysi.site.entity.Profile;
 import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.Page;
 import com.elevysi.site.pojo.Page.SortDirection;
@@ -120,6 +121,26 @@ public class AlbumDAOImplement implements AlbumDAO{
 		
 		em.merge(album);
 		em.remove(album);
+	}
+	
+	public List<Album> getAlbumsForProfile(Profile profile, Page page){
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Album> criteria = cb.createQuery(Album.class);
+		Root<Album> queryRoot = criteria.from(Album.class);
+		Predicate condition = cb.equal(queryRoot.get(Album_.profileOwner), profile);
+		criteria.where(condition);
+		TypedQuery<Album> query = em.createQuery(criteria);
+		List<Album> albums = query.getResultList();
+		
+		for(Album album : albums){
+			Hibernate.initialize(album.getUploads());
+			Hibernate.initialize(album.getDossier());
+			Hibernate.initialize(album.getPublication());
+			Hibernate.initialize(album.getProfileOwner());
+		}
+		
+		return albums;
 	}
 
 }

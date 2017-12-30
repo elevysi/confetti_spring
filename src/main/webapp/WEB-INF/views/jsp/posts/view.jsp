@@ -103,28 +103,29 @@
 		
 		<c:if test="${canEditPost || isAdmin}">
 			<div class="clearfix margin-bottom-20"><hr></div>
-			<div class="btn-group">
-				<a class="btn-u btn-brd btn-u-blue"  href="<spring:url value='/posts/edit/${post.id}' />"><i class="fa fa-edit"></i> Edit Post</a>
-				
-				<form:form method="post" action="${deletePostUrl}" onsubmit="return confirmDelete(this, '${deletePostUrl}')">
-						<button class="btn-u btn-brd btn-u-blue"><i class="fa fa-trash"></i> Delete Post</button>
-				</form:form>
+			<ul class="list-inline up-ul">
+				<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-sea btn-u-sm"  href="<spring:url value='/posts/edit/${post.id}' />"><i class="fa fa-edit"></i> Edit Post</a></li>
+				<li>
+					<form:form method="post" action="${deletePostUrl}" onsubmit="return confirmDelete(this, '${deletePostUrl}')" class="form-inline">
+							<button class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-red btn-u-sm"><i class="fa fa-trash"></i> Delete Post</button>
+					</form:form>
+				</li>
 				
 				<c:if test="${isAdmin}">
 				
 					<c:choose>
 						<c:when test="${post.publication.featured}">
-							<a class="btn-u btn-brd btn-u-blue" id="unfeatureBtn"  href="<spring:url value='/admin/unfeatureItem' />"><i class="fa fa-magic"></i> Unfeature publication</a>
+							<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-light-green btn-u-sm" id="unfeatureBtn"  href="<spring:url value='/admin/unfeatureItem' />"><i class="fa fa-magic"></i> Unfeature publication</a></li>
 						</c:when>
 						<c:otherwise>
-							<a class="btn-u btn-brd btn-u-blue" id="unfeatureBtn"  href="<spring:url value='/admin/featureItem' />"><i class="fa fa-magic"></i> Feature publication</a>
+							<li><a class="btn-u btn-brd btn-brd-hover rounded-2x btn-u-green btn-u-sm" id="unfeatureBtn"  href="<spring:url value='/admin/featureItem' />"><i class="fa fa-magic"></i> Feature publication</a></li>
 						</c:otherwise>
 					
 					</c:choose>
 				
 				</c:if>
 					
-			</div>
+			</ul>
 			<div class="clearfix margin-bottom-20"><hr></div>
 		</c:if>
 			
@@ -202,7 +203,7 @@
 	        </div>
 	        <div class="news-v2-desc">
 	            <h3><a href="<c:url value='/posts/view/${latestProfilePost.id}/${latestProfilePost.publication.friendlyUrl}'/> "><c:out value="${latestProfilePost.title}" /></a></h3>
-	            <small>By <c:out value="${latestProfilePost.profile.name}"></c:out> | California, US 
+	            <small>By <c:out value="${latestProfilePost.profile.name}"></c:out> | World
 	            
 	            <c:if test="${not empty latestProfilePost.categories}">| In
 				<c:forEach items="${latestProfilePost.categories}" var="postCategory"

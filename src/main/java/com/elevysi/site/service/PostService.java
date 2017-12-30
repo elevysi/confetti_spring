@@ -53,12 +53,6 @@ public class PostService extends AbstractService{
 	@Autowired
 	private UploadService uploadService;
 	
-	@Autowired
-	private AlbumService albumService;
-	
-	@Autowired
-	private AlbumRepository albumRepository;
-	
 	@PersistenceContext
 	private EntityManager entityManager;
 	
@@ -169,8 +163,8 @@ public class PostService extends AbstractService{
 	}
 	
 	public List<Post> getLatestPostsForProfile(Profile profile, Post post, com.elevysi.site.pojo.Page page){
-		Integer viewedPostId = post.getId();
-		if(viewedPostId != null){
+		
+		if(post != null){
 			return postDao.getAllLatestForProfileExcept(profile, post.getId(), page);
 		}else{
 			return postDao.getAllLatestForProfile(profile, page);

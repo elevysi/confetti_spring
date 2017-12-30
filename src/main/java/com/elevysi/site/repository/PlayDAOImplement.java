@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.elevysi.site.entity.Play;
 import com.elevysi.site.entity.Play_;
+import com.elevysi.site.entity.Profile;
 import com.elevysi.site.pojo.OffsetPage;
 import com.elevysi.site.pojo.Page;
 import com.elevysi.site.pojo.Page.SortDirection;
@@ -117,6 +118,29 @@ public class PlayDAOImplement implements PlayDAO{
 		em.merge(play);
 		em.remove(play);
 		
+	}
+	
+	public List<Play> getAllLatestForProfile(Profile profile, Page page){
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Play> criteria = cb.createQuery(Play.class);
+		Root<Play> root = criteria.from(Play.class);
+		criteria.select(root);
+		
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		predicates.add(cb.equal(root.get(Play_.playProfile), profile));
+		
+		criteria.where(cb.or(predicates.toArray(new Predicate[predicates.size()])));
+		
+		TypedQuery<Play> query = page.createQuery(em, criteria, root);
+		List<Play> plays =  query.getResultList();
+		
+		for(Play play : plays){
+			Hibernate.initialize(play.getPlayProfile());
+			Hibernate.initialize(play.getPublication());
+		}
+		
+		return plays;
 	}
 
 }

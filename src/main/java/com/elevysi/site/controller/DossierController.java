@@ -59,7 +59,7 @@ public class DossierController extends AbstractController {
 		
 	}
 	
-	@RequestMapping(value={"edit/{id}/*", "edit/{id}"})
+	@RequestMapping(value={"/edit/{id}", "/edit/{id}/*"})
 	public String edit(Model model, @PathVariable("id")Integer id){
 		Dossier dossier = dossierService.findById(id);
 		if(dossier.getUuid() == null) dossier.setUuid(dossier.generateUUID());
@@ -67,7 +67,7 @@ public class DossierController extends AbstractController {
 		return "editDossier";
 	}
 	
-	@RequestMapping(value="edit", method=RequestMethod.POST)
+	@RequestMapping(value="/edit", method=RequestMethod.POST)
 	public String doEdit(Model model, @Valid @ModelAttribute("dossier")Dossier dossier,BindingResult result ,RedirectAttributes redirectAttributes){
 		
 		if(result.hasErrors()){
@@ -94,7 +94,7 @@ public class DossierController extends AbstractController {
 		
 	}
 	
-	@RequestMapping(value={"view/{id}/*", "view/{id}"})
+	@RequestMapping(value={"/view/{id}/*", "view/{id}"})
 	public String view(Model model, @PathVariable("id")Integer id, RedirectAttributes redirectAttributes){
 		Dossier dossier = dossierService.findById(id);
 		if(dossier == null){
@@ -113,7 +113,7 @@ public class DossierController extends AbstractController {
 		return "viewDossier";
 	}
 	
-	@RequestMapping(value="delete/{id}", method=RequestMethod.POST)
+	@RequestMapping(value="/delete/{id}", method=RequestMethod.POST)
 	public String doDeleteDossier(@PathVariable("id")Integer id, Model model, RedirectAttributes redirectAttributes){
 		SessionMessage sessionMessage;
 		

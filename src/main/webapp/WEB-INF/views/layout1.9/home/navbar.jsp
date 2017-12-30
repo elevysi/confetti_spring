@@ -46,6 +46,7 @@
 									<li><a href="<spring:url value="/public/plays"/>">Plays</a></li>
 									<li><a href="<spring:url value="/public/albums"/>">Albums</a></li>
 									<li><a href="<spring:url value="/public/dossiers"/>">Dossiers</a></li>
+									<li><a href="<spring:url value="/public/profiles"/>">Profiles</a></li>
 									
 								</ul>
 							</li>
@@ -78,8 +79,7 @@
 									<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">Profile</a>
 										<ul class="dropdown-menu">
 											<li><a href="<spring:url value="/profile/"/>">Home - <security:authentication property="principal.username" /></a></li>
-											<li><a href="<spring:url value="/profile/timeline"/>">Confettis</a></li>
-											
+											<li><a href="<spring:url value="/updatePassword"/>">Password Update</a></li>
 										</ul>
 								
 								</li>

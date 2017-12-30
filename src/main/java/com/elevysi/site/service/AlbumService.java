@@ -200,5 +200,9 @@ public class AlbumService extends AbstractService{
 	public void deleteAlbum(Album album){
 		albumDAO.deleteAlbum(album.getId());
 	}
+	
+	public List<Album> getAlbumsForProfile(Profile profile, com.elevysi.site.pojo.Page page){
+		return albumDAO.getAlbumsForProfile(profile, page);
+	}
 
 }

@@ -193,7 +193,7 @@ public class UserController extends AbstractController{
 		ProfileType userProfileType = profileTypeService.findOne("user");
 		Profile userProfile = profileService.findByUserAndProfileType(user, userProfileType);
 		if(userProfile != null){
-			return "redirect:/profile/"+userProfile.getName();
+			return "redirect:/profile?username="+userProfile.getName();
 		}
 		
 		return "/";
@@ -222,6 +222,7 @@ public class UserController extends AbstractController{
 	SessionMessage sessionMessage){
 		Profile actingProfile = profileService.getActiveProfile();
 		model.addAttribute("actingProfile", actingProfile);
+		model.addAttribute("profile", actingProfile);
 		model.addAttribute("sessionMessage", sessionMessage);
 		return "userPasswordUpdate";
 	}

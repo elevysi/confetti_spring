@@ -39,7 +39,6 @@ public abstract class AbstractController implements ServletContextAware{
 	protected final static int PAGE_SIZE = 10;
 	protected final static int DEFAULT_NO_POSTS = 12;
 	protected final static int DEFAULT_NO_ITEMS = 12;
-
 	protected final static int DEFAULT_NO_DOSSIERS = 50;
 	protected final static int ZERO_PAGE = 0;
 	protected final static int FIRST_PAGE = 1;

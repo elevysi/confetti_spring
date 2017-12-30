@@ -99,10 +99,14 @@
 <script src="<c:url value='/thematic_1_9/Blog/assets/js/app.js'/>"></script>
 <script src="<c:url value='/thematic_1_9/Blog/assets/js/plugins/owl-carousel.js'/>"></script>
 <script src="<c:url value='/thematic_1_9/Blog/assets/js/plugins/master-slider-showcase1.js'/>"></script>
+
+<script type="text/javascript" src="<c:url value='/thematic_1_9/Blog/assets/plugins/scrollbar/js/jquery.mCustomScrollbar.concat.min.js'/>"></script>
+
 <script>
 	jQuery(document).ready(function() {
 		App.init();
 // 		App.initCounter();
+		App.initScrollBar();
 		FancyBox.initFancybox();
 		OwlCarousel.initOwlCarousel();
 		OwlCarousel.initOwlCarousel2();
