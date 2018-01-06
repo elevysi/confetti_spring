@@ -117,6 +117,13 @@ public class Upload implements Serializable{
 	@Where(clause="link_table='profilePicture'")
 	private Profile owningProfilePicture;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumns({
+		@JoinColumn(name="link_id", referencedColumnName="id", nullable = false, insertable = false, updatable = false)
+	})
+	@Where(clause="link_table='articles'")
+	private Profile owningAvatar;
+	
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="link_id", nullable = false, insertable = false, updatable = false)

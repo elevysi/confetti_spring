@@ -8,3 +8,5 @@
 /src/main/resources/META-INF/configurations.txt
 /src/main/resources/META-INF/datasource.xml
 /src/main/resources/frontend/node_modules/
+/src/main/resources/frontend/src/assests/
+/src/main/resources/frontend/proxy.conf.json

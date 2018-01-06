@@ -83,6 +83,7 @@ public class SecurityConfig {
 					.antMatchers("/restricted/**").access("hasRole('USER')")
 					.antMatchers("/").permitAll()
 					.antMatchers("/public/**").permitAll()
+					.antMatchers("/api/**").permitAll()
 					.antMatchers("/item/view/**").permitAll()
 					.antMatchers("/posts/view/**").permitAll()
 					.antMatchers("/plays/view/**").permitAll()
