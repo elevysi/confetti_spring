@@ -1,9 +1,10 @@
-package com.elevysi.site.security;
+package com.elevysi.site.config;
  
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
@@ -20,6 +21,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import com.elevysi.site.security.ModalUrlAuthenticationSuccessHandler;
+import com.elevysi.site.security.MySavedUrlAuthenticationSuccessHandler;
+import com.elevysi.site.security.RoleUrlAuthenticationSuccessHandler;
  
 
 @Configuration
