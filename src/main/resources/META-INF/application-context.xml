@@ -74,6 +74,7 @@
 	<task:scheduled-tasks>
 		<task:scheduled ref="jobsBatch" method="run" cron="0 */10 * * * *"/>
 	</task:scheduled-tasks>
+	<!-- <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate" c:_-ref="connectionFactory"/> -->
 	
 	
 </beans>

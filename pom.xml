@@ -328,9 +328,11 @@
 			            </goals>
 			           
 			            <configuration>
+			            	<outputDirectory>${project.build.directory}/generated-sources/metamodel</outputDirectory>
 			            	<processors>
 			            		<processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
 			            	</processors>
+			            	<overwrite>true</overwrite>
 			            </configuration>
 			          </execution>
             	
