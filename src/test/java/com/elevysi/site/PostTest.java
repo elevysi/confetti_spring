@@ -10,10 +10,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.elevysi.site.config.SecurityConfig;
-import com.elevysi.site.config.TestConfig;
-import com.elevysi.site.entity.Post;
-import com.elevysi.site.service.PostService;
+import com.elevysi.site.blog.config.TestConfig;
+import com.elevysi.site.blog.config.security.SecurityConfig;
+import com.elevysi.site.blog.entity.Post;
+import com.elevysi.site.blog.service.PostService;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@ContextConfiguration(locations = {"classpath:META-INF/application-context.xml", "classpath:META-INF/datasource.xml"})

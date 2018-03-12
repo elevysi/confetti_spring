@@ -18,7 +18,7 @@
             <!-- Use the HibernateAware mapper instead of the default -->
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="objectMapper">
-                    <bean class="com.elevysi.site.jackson.HibernateAwareObjectMapper" />
+                    <bean class="com.elevysi.site.blog.jackson.HibernateAwareObjectMapper" />
                 </property>
             </bean>
         </mvc:message-converters>
@@ -140,11 +140,11 @@
 	        <mvc:exclude-mapping path="/img/**" />
 	        <mvc:exclude-mapping path="/css/**" />
 	        <mvc:exclude-mapping path="/ng/**" />
-	        <bean class="com.elevysi.site.interceptor.AbstractInterceptor" />
+	        <bean class="com.elevysi.site.blog.interceptor.AbstractInterceptor" />
 	    </mvc:interceptor>
     </mvc:interceptors>
 	
 	
-	<context:component-scan base-package="com.elevysi.site.controller" />
+	<context:component-scan base-package="com.elevysi.site.blog.controller" />
 	
 </beans>

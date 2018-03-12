@@ -105,9 +105,9 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 		
 	</http>
 	
-	<beans:bean id="roleAuthenticationSuccessHandler" class="com.elevysi.site.security.RoleUrlAuthenticationSuccessHandler" />
-	<beans:bean id="modalAuthenticationSuccessHandler" class="com.elevysi.site.security.ModalUrlAuthenticationSuccessHandler" />
-	<beans:bean id="mySavedAuthenticationSuccessHandler" class="com.elevysi.site.security.MySavedUrlAuthenticationSuccessHandler" />
+	<beans:bean id="roleAuthenticationSuccessHandler" class="com.elevysi.site.blog.config.security.RoleUrlAuthenticationSuccessHandler" />
+	<beans:bean id="modalAuthenticationSuccessHandler" class="com.elevysi.site.blog.config.security.ModalUrlAuthenticationSuccessHandler" />
+	<beans:bean id="mySavedAuthenticationSuccessHandler" class="com.elevysi.site.blog.config.security.MySavedUrlAuthenticationSuccessHandler" />
 	
 	<authentication-manager  id="dao-auth" alias="authenticationManager">
 	        <authentication-provider user-service-ref="customUserDetailsService">
@@ -116,6 +116,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 	</authentication-manager>
 	
 	
-	<beans:bean id="userDetailsService" class="com.elevysi.site.service.CustomUserDetailsService" />
+	<beans:bean id="userDetailsService" class="com.elevysi.site.blog.service.CustomUserDetailsService" />
 	
 </beans:beans>

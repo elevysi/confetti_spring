@@ -31,7 +31,7 @@
 	
 	
 	
-	<jpa:repositories base-package="com.elevysi.site.repository" />
+	<jpa:repositories base-package="com.elevysi.site.blog.repository" />
 	
 	<!--  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 	    <property name="dataSource" ref="dataSource" />
@@ -70,7 +70,7 @@
 	
 	<!-- Task Schedulers  -->
 	
-	<bean id="jobsBatch" class="com.elevysi.site.component.JobsBatch" />
+	<bean id="jobsBatch" class="com.elevysi.site.blog.component.JobsBatch" />
 	<task:scheduled-tasks>
 		<task:scheduled ref="jobsBatch" method="run" cron="0 */10 * * * *"/>
 	</task:scheduled-tasks>
