@@ -6,21 +6,21 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.elevysi.site.blog.dao.ShareRepository;
 import com.elevysi.site.blog.entity.Share;
-import com.elevysi.site.blog.repository.ShareRepository;
 
 @Service
-public class ShareService extends AbstractService{
+public class ShareService extends BasicService{
 	
 	@Autowired
 	private ShareRepository shareRepository;
 
 	public boolean hasAlreadyShared(Share share) {
 		
-		Share savedShare = shareRepository.findSharedItem(share.getItemId(), share.getItemType(), share.getShareOwner().getId());
-		if(savedShare != null){
-			return true;
-		}
+//		Share savedShare = shareRepository.findSharedItem(share.getItemId(), share.getItemType(), share.getShareOwner().getId());
+//		if(savedShare != null){
+//			return true;
+//		}
 		return false;
 	}
 

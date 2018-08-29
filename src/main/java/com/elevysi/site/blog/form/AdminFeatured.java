@@ -3,7 +3,7 @@ package com.elevysi.site.blog.form;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.elevysi.site.blog.pojo.PublicationMock;
+import com.elevysi.site.commons.pojo.PublicationMock;
 
 public class AdminFeatured {
 	

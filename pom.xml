@@ -74,10 +74,10 @@
 			<version>1.2.1.RELEASE</version>
 		</dependency>
 		
-		<!-- <dependency>
+		<dependency>
 			<groupId>org.springframework.security.oauth</groupId>
 			<artifactId>spring-security-oauth2</artifactId>
-		</dependency> -->
+		</dependency>
 		
 		
 		<!-- Web -->
@@ -88,28 +88,35 @@
 		
 		
 		<!-- Servlet -->
+		<!--https://www.mkyong.com/spring-boot/spring-boot-hello-world-example-jsp/  -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.1</version>
-			<scope>provided</scope>
-		</dependency>
+		
+		<!-- JSTL for JSP -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 		</dependency>
-		
+
+		<!-- Need this to compile JSP -->
 		<dependency>
-	        <groupId>org.apache.tomcat.embed</groupId>
-	        <artifactId>tomcat-embed-jasper</artifactId>
-	        <scope>provided</scope>
-	    </dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Need this to compile JSP,
+			tomcat-embed-jasper version is not working, no idea why -->
+		<dependency>
+			<groupId>org.eclipse.jdt.core.compiler</groupId>
+			<artifactId>ecj</artifactId>
+			<version>4.6.1</version>
+			<scope>provided</scope>
+		</dependency>
+		
 	    
 	    
 	    <!-- Spring Cloud Client -->
@@ -338,6 +345,13 @@
 	</dependency>
 
 
+	<!-- For the ModelMapper -->
+	<dependency>
+		<groupId>com.github.jmnarloch</groupId>
+		<artifactId>modelmapper-spring-boot-starter</artifactId>
+		<version>1.1.0</version>
+	</dependency>
+
 
 	</dependencies>
     <build>
@@ -395,20 +409,20 @@
             			</goals>
             		</execution>
             	</executions>
-            	<configuration>
+            	<!-- <configuration>
             		<schemaLanguage>WSDL</schemaLanguage>
             		<generatePackage>com.elevysi.site.ws.shop.soap.consumer</generatePackage>
-            		<!-- <forceRegenerate>true</forceRegenerate> -->
+            		<forceRegenerate>true</forceRegenerate>
             		<schemas>
             			<schema>
             				<url>http://localhost:8300/ws/articleDetailsWsdl.wsdl</url>
             			</schema>
             		</schemas>
-            		<!-- <schemaDirectory>${project.basedir}/src/main/resources/ws/soap/wsdl</schemaDirectory>
+            		<schemaDirectory>${project.basedir}/src/main/resources/ws/soap/wsdl</schemaDirectory>
             		<schemaIncludes>
             			<include>*.wsdl</include>
-            		</schemaIncludes> -->
-            	</configuration>
+            		</schemaIncludes>
+            	</configuration> -->
             	
             </plugin>
 		

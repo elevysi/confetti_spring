@@ -116,6 +116,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 	</authentication-manager>
 	
 	
-	<beans:bean id="userDetailsService" class="com.elevysi.site.blog.service.CustomUserDetailsService" />
+	<beans:bean id="userDetailsService" class="com.elevysi.site.blog.test.service.CustomUserDetailsService" />
 	
 </beans:beans>

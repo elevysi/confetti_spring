@@ -1,6 +1,5 @@
 package com.elevysi.site.blog.entity;
 
-import java.io.Serializable;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,7 +14,7 @@ import org.hibernate.annotations.FilterDef;
 @Entity
 @Table(name ="tags")
 @FilterDef(name="postTag", defaultCondition="item_type = post")
-public class Tag implements Serializable{
+public class Tag extends AbstractEntity{
 	
 	/**
 	 * 

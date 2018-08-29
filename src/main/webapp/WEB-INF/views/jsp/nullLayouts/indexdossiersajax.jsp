@@ -5,7 +5,7 @@
 <fmt:parseNumber var="unit" value="1" />
 <fmt:parseNumber var="even" value="2" />
 <fmt:parseNumber var="dossiersSize" value="${fn:length(dossiers)}" />
-
+<spring:eval expression="@environment.getProperty('socialService.url')" var="socialServiceUrl" />
 
 <div class="margin-bottom-50"></div>
 <c:forEach items="${dossiers}" var="dossier">
@@ -20,22 +20,38 @@
 	
 
 		<div class="col-md-3">
-		
-		<h2 class="title-v4"><c:out value="${dossier.name}"></c:out></h2>
-			<p><c:out value="${dossier.description}" escapeXml="false"/></p>
-			
-			<p>
-				<a class="btn-u btn-brd btn-u-blue" href="<c:url value='/dossiers/view/${dossier.id}/'/>"><i class="fa fa-hand-o-up"></i> Explore</a>
-			</p>
-			
+			<div class="thumbnails thumbnail-style thumbnail-kenburn">
+				<div class="thumbnail-img">
+					
+					<c:choose>
+						<c:when test="${not empty dossier.publication.uploads && fn:length(dossier.publication.uploads) >= 1}">
+							<div class="overflow-hidden">
+								<img class="img-responsive" src="<c:url value='/uploads/download?key=${dossier.publication.uploads.iterator().next().keyIdentification}'/>" alt="">
+							</div>
+						</c:when>
+						<c:otherwise>
+							<div class="overflow-hidden">
+								<img class="img-responsive" src="<c:url value='/resources_1_9_5/img/main/img22.jpg'/>" alt="">
+							</div>
+						</c:otherwise>
+					</c:choose>
+					
+					
+					<a class="btn-more hover-effect" href="<c:url value='/dossiers/view/${dossier.id}/${dossier.publication.friendlyUrl}'/>">read more +</a>
+				</div>
+				<div class="caption">
+					<h3><a class="hover-effect" href="<c:url value='/dossiers/view/${dossier.id}/${dossier.publication.friendlyUrl}'/>"><c:out value="${dossier.name}" /></a></h3>
+					<small>By <a href="<c:url value='${socialServiceUrl}/ui/public/profile/${dossier.publication.profileName}' />" ><c:out value="${dossier.publication.profileName}" /></a> | <fmt:formatDate pattern="dd MMMM yy" value="${dossier.created}" /></small>
+					<p><c:out value="${dossier.description}" escapeXml="false"/></p>
+				</div>
+			</div>
 		</div>
 	
 
 	
 
-		<c:if test="${((count+unit) == dossiersSize) || ((count+unit)%noColumns==starter)}">
+		<c:if test="${((count+unit) == postsSize) || ((count+unit)%noColumns==starter)}">
 			</div>
-			<div class="margin-bottom-50"></div>
 		</c:if>
 		
 

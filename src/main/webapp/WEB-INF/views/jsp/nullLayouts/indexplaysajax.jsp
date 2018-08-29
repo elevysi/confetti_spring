@@ -6,6 +6,7 @@
 <fmt:parseNumber var="unit" value="1" />
 <fmt:parseNumber var="even" value="2" />
 <fmt:parseNumber var="playsSize" value="${fn:length(plays)}" />
+<spring:eval expression="@environment.getProperty('socialService.url')" var="socialServiceUrl" />
 
 <div class="margin-bottom-50"></div>
 <c:forEach items="${plays}" var="play">
@@ -31,7 +32,7 @@
 			<h3>
 				<a href='<c:url value='/plays/view/${play.id}/${play.publication.friendlyUrl}'/>'><c:out value="${play.title}" /></a>
 			</h3>
-			<small>By <a href="<c:url value='/public/profile/${play.playProfile.name}' />" ><c:out value="${play.playProfile.name}" /></a> | In <a href="#"><c:out value="${play.playType.name}" /></a></small>
+			<small>By <a href="<c:url value='${socialServiceUrl}/ui/public/profile/${play.publication.profileName}' />" ><c:out value="${play.publication.profileName}" /></a> | In <a href="#"><c:out value="${play.playType.name}" /></a></small>
 		</div>
 	
 	</div>

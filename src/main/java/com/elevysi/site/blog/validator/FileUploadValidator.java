@@ -11,7 +11,7 @@ import com.elevysi.site.blog.form.FileUpload;
 @Component
 public class FileUploadValidator implements Validator{
 	
-	@Value("${valid.FileUpload.file}")
+	@Value("${fileUploadValidatorMsg}")
 	private String file_error;
 	
 	public boolean supports(Class clazz) {

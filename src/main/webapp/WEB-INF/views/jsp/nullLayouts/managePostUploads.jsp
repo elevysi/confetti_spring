@@ -3,8 +3,6 @@
 
 <%@ include file="../../layout/taglib.jsp"%>
 
-<c:url var="post_url" value="/posts/addSimple" />
-
 <c:url var="embeddedForm" value="/uploads/embeddedMediaForm" />
 
 <c:url var="embeddedMediaTab" value="/uploads/embeddedMedia/${uuid}?type=${type}" />

@@ -2,6 +2,9 @@
 	pageEncoding="UTF-8"%>
 	
 <%@ include file="../../layout/taglib.jsp"%>
+<spring:eval expression="@environment.getProperty('socialService.url')" var="socialService" />
+<spring:eval expression="@environment.getProperty('authService.url')" var="authServiceUrl" />
+
 <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse mega-menu navbar-responsive-collapse">
             <div class="container">
@@ -26,7 +29,7 @@
 							<li><a href="<spring:url value="/public/plays"/>">Plays</a></li>
 							<li><a href="<spring:url value="/public/albums"/>">Albums</a></li>
 							<li><a href="<spring:url value="/public/dossiers"/>">Dossiers</a></li>
-							<li><a href="<spring:url value="/public/profiles"/>">Profiles</a></li>
+							<li><a href="<spring:url value="${socialServiceUrl}/ui/public/profiles"/>">Profiles</a></li>
 							
 						</ul>
 					</li>
@@ -55,8 +58,8 @@
 						<li class="dropdown"><a href="javascript:void(0);"
 							class="dropdown-toggle" data-toggle="dropdown"> Profile</a>
 							<ul class="dropdown-menu">
-								<li><a href="<spring:url value="/profile/"/>">Home - <security:authentication property="principal.username" /></a></li>
-								<li><a href="<spring:url value="/updatePassword"/>">Password Update</a></li>
+								<li><a href="<spring:url value="${socialService}/ui/profile"/>">Home - <security:authentication property="principal.username" /></a></li>
+								<li><a href="<spring:url value="${authService}/ui/updatePassword"/>">Password Update</a></li>
 							</ul>
 						</li>
 						<!-- End Blog -->
@@ -71,21 +74,21 @@
 								<ul class="dropdown-menu">
 									<li><a href="<spring:url value="/admin/dashboard"/>">Dashboard</a></li>
 									<li><a href="<spring:url value="/admin/featured"/>">Featured</a></li>
-									<li><a href="<spring:url value="/admin/users"/>">Users</a></li>
+									<li><a href="<spring:url value="${authServiceUrl}/ui/admin/users"/>">Users</a></li>
 									<li><a href="<spring:url value="/admin/profiles"/>">Profiles</a></li>
 								</ul>
 							</li>
 							<!-- End Admin -->
 						</security:authorize>
 						<c:url var="logoutPostUrl" value="/logout" />
-						<li><a class="logoutBtn" href="<spring:url value="/logout"/>">Sign out</a></li>
+						<li><a class="logoutBtn" href="<spring:url value="${authService}/logout"/>">Sign out</a></li>
 						
 						
 						
 					</security:authorize>
 					
 					<security:authorize access="!isAuthenticated()">
-						<li><a href="<spring:url value="/auth/rqstd/login"/>">Sign in</a></li>
+						<li><a href="<spring:url value="/login"/>">Sign in</a></li>
 					</security:authorize>
 
                     

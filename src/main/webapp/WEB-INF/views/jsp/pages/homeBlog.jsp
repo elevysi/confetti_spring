@@ -39,8 +39,8 @@
 											<div class="blog-grid margin-bottom-40">
 											
 												<c:choose>
-													<c:when test="${not empty featuredItem.post.uploads && fn:length(featuredItem.post.uploads) >= 1}">
-														<img class="img-responsive" src="<c:url value='/uploads/download?key=${featuredItem.post.uploads.iterator().next().keyIdentification}'/>" alt="">
+													<c:when test="${not empty featuredItem.post.publication.uploads && fn:length(featuredItem.post.publication.uploads) >= 1}">
+														<img class="img-responsive" src="<c:url value='/uploads/download?key=${featuredItem.post.publication.uploads.iterator().next().keyIdentification}'/>" alt="">
 													</c:when>
 												<c:otherwise>
 												</c:otherwise>
@@ -48,7 +48,7 @@
 												
 												<h3><a href="<spring:url value='/posts/view/${featuredItem.post.id}/${featuredItem.friendlyUrl}'/>"><c:out value="${featuredItem.post.title}" /></a></h3>
 												<ul class="blog-grid-info">
-													<li><a href="<c:url value='/public/profile/${featuredItem.profile.name}'/>"><c:out value="${featuredItem.profile.name}"/></a></li>
+													<li><a href="<c:url value='/public/profile/${featuredItem.profileName}'/>"><c:out value="${featuredItem.profileName}"/></a></li>
 													<c:if test="${not empty featuredItem.post.created}">
 														<li>
 														<fmt:formatDate pattern="dd MMMM yy" value="${featuredItem.post.created}" />
@@ -81,7 +81,7 @@
 										<h3>
 											<a href='<c:url value='/plays/view/${featuredItem.play.id}/${featuredItem.friendlyUrl}'/>'><c:out value="${featuredItem.play.title}" /></a>
 										</h3>
-										<small>By <a href="<c:url value='/public/profile/${featuredItem.profile.name}'/>"><c:out value="${featuredItem.profile.name}" /></a> | In <a href="#"><c:out value="${featuredItem.play.playType.name}" /></a>
+										<small>By <a href="<c:url value='/public/profile/${featuredItem.profileName}'/>"><c:out value="${featuredItem.profileName}" /></a> | In <a href="#"><c:out value="${featuredItem.play.playType.name}" /></a>
 										| 
 										<c:if test="${not empty featuredItem.play.created}">
 											<fmt:formatDate pattern="dd MMMM yy" value="${featuredItem.play.created}" />
@@ -109,7 +109,7 @@
 										
 										<h3><a href="<c:url value='/albums/view/${featuredItem.album.id}/' />"><c:out value="${featuredItem.album.name}" /></a></h3>
 										<ul class="blog-grid-info">
-											<li><c:out value="${fn:length(featuredItem.album.uploads)} photos by ${featuredItem.profile.name}" /></li>
+											<li><c:out value="${fn:length(featuredItem.album.uploads)} photos by ${featuredItem.profileName}" /></li>
 											<li><fmt:formatDate pattern="dd MMMM yy" value="${featuredItem.album.created}" /></li>
 											<li><a href="#"><i class="fa fa-comments"></i> 0</a></li>
 										</ul>
@@ -161,8 +161,8 @@
 							<div class="row">
 								<div class="col-sm-5 sm-margin-bottom-20">
 									<c:choose>
-										<c:when test="${not empty dossier.uploads && fn:length(dossier.uploads) >= 1}">
-											<img class="img-responsive" src="<c:url value='/uploads/download?key=${dossier.uploads.iterator().next().keyIdentification}'/>" alt="">
+										<c:when test="${not empty dossier.publication.uploads && fn:length(dossier.publication.uploads) >= 1}">
+											<img class="img-responsive" src="<c:url value='/uploads/download?key=${dossier.publication.uploads.iterator().next().keyIdentification}'/>" alt="">
 										</c:when>
 										<c:otherwise>
 											<img class="img-responsive" src="<c:url value='/resources_1_9_5/img/main/img22.jpg' />" alt="">
@@ -176,7 +176,7 @@
 									<div class="blog-grid">
 										<h3><a href="<c:url value='/dossiers/view/${dossier.id}/' />"><c:out value="${dossier.name}" /></a></h3>
 										<ul class="blog-grid-info">
-											<li></li>
+											<li>By <c:out value='${dossier.publication.profileName}' escapeXml="false"/></li>
 											<li><fmt:formatDate pattern="dd MMMM yy" value="${dossier.created}" /></li>
 											<li><a href="#"><i class="fa fa-comments"></i> 0</a></li>
 										</ul>
@@ -228,7 +228,7 @@
 								<h3>
 									<a href='<c:url value='/plays/view/${featuredVideo.id}/${featuredVideo.publication.friendlyUrl}'/>'><c:out value="${featuredVideo.title}" /></a>
 								</h3>
-								<small>By <a href="<c:url value='/profile/${featuredVideo.playProfile.name}' />" ><c:out value="${featuredVideo.playProfile.name}" /></a> | In <a href="#"><c:out value="${featuredVideo.playType.name}" /></a></small>
+								<small>By <a href="<c:url value='/profile/${featuredVideo.publication.profileName}' />" ><c:out value="${featuredVideo.publication.profileName}" /></a> | In <a href="#"><c:out value="${featuredVideo.playType.name}" /></a></small>
 							</div>
 						
 						</div>

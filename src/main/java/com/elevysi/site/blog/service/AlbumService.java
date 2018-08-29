@@ -10,19 +10,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import com.elevysi.site.blog.dao.AlbumDAO;
+import com.elevysi.site.blog.dao.AlbumRepository;
+import com.elevysi.site.blog.dao.UploadRepository;
 import com.elevysi.site.blog.entity.Album;
 import com.elevysi.site.blog.entity.Play;
-import com.elevysi.site.blog.entity.Profile;
 import com.elevysi.site.blog.entity.Publication;
 import com.elevysi.site.blog.entity.Upload;
-import com.elevysi.site.blog.pojo.OffsetPage;
-import com.elevysi.site.blog.pojo.Page.SortDirection;
-import com.elevysi.site.blog.repository.AlbumDAO;
-import com.elevysi.site.blog.repository.AlbumRepository;
-import com.elevysi.site.blog.repository.UploadRepository;
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.elevysi.site.commons.pojo.OffsetPage;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 
 @Service
-public class AlbumService extends AbstractService{
+public class AlbumService extends BasicService{
 	
 	@Autowired
 	private AlbumRepository albumRepository;
@@ -46,10 +46,12 @@ public class AlbumService extends AbstractService{
 	}
 	
 	
-	public List<Album> getPaginatedAlbumsForProfile(Profile profile, Integer pageNumber, Integer limit, String sortField, String sortDirection){
+	public List<Album> getPaginatedAlbumsForProfile(ProfileDTO profile, Integer pageNumber, Integer limit, String sortField, String sortDirection){
 		
-		Page<Album> requestedPage = albumRepository.findProfileAlbums(profile.getId(), constructPageSpecification(pageNumber - 1, limit, sortField, sortDirection));		
-		return requestedPage.getContent();
+//		Page<Album> requestedPage = albumRepository.findProfileAlbums(profile.getId(), constructPageSpecification(pageNumber - 1, limit, sortField, sortDirection));		
+//		return requestedPage.getContent();
+		
+		return null;
 		
 	}
 	
@@ -66,9 +68,15 @@ public class AlbumService extends AbstractService{
 		album.setModified(now);
 		
 
-		Publication publication = savePublication(album.getProfileOwner(), album.getName());
-		if(publication != null){
-			album.setPublication(publication);
+		Publication publication = new Publication();
+		publication.setCreated(now);
+		publication.setModified(now);
+		publication.setPublicPublication(true);
+//		publication.setProfileID(album.getProfileID());
+		publication.setProfileName(album.getProfileOwner().getName());
+		String slug = toSlug(album.getName());
+		if(slug != null){
+			publication.setFriendlyUrl(slug);
 		}
 		
 		Album savedAlbum = albumRepository.save(album);
@@ -166,7 +174,9 @@ public class AlbumService extends AbstractService{
 	}
 	
 	public List<Album> findAllProfileAlbums(){
-		return albumRepository.findAllProfileAlbums();
+//		return albumRepository.findAllProfileAlbums();
+		
+		return null;
 	}
 
 
@@ -192,7 +202,7 @@ public class AlbumService extends AbstractService{
 		return albumDAO.buildOffsetPage(pageIndex, size, sortField, sortDirection);
 	}
 	
-	public List<Album> getAlbums(com.elevysi.site.blog.pojo.Page page){
+	public List<Album> getAlbums(com.elevysi.site.commons.pojo.Page page){
 		return albumDAO.getAlbums(page);
 	}
 	
@@ -201,7 +211,7 @@ public class AlbumService extends AbstractService{
 		albumDAO.deleteAlbum(album.getId());
 	}
 	
-	public List<Album> getAlbumsForProfile(Profile profile, com.elevysi.site.blog.pojo.Page page){
+	public List<Album> getAlbumsForProfile(ProfileDTO profile, com.elevysi.site.commons.pojo.Page page){
 		return albumDAO.getAlbumsForProfile(profile, page);
 	}
 

@@ -15,6 +15,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import com.elevysi.site.commons.dto.ProfileDTO;
 
 //escape table name because like is a reserved word in Query Language
 @Entity
@@ -30,9 +33,10 @@ public class Like implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="profile_id")
-	private Profile likeOwner;
+//	@OneToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name="profile_id")
+	@Transient
+	private ProfileDTO likeOwner;
 	
 	@Column(name="item_id")
 	private Integer itemId;
@@ -52,9 +56,10 @@ public class Like implements Serializable{
 	@JoinColumn(name="item_id", insertable = false, updatable = false)
 	private Album likedAlbum;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="item_id", insertable = false, updatable = false)
-	private Profile likedProfile;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name="item_id", insertable = false, updatable = false)
+	@Transient
+	private ProfileDTO likedProfile;
 	
 	
 	@Column(name = "created", columnDefinition="DATETIME")
@@ -89,11 +94,11 @@ public class Like implements Serializable{
 		this.id = id;
 	}
 
-	public Profile getLikeOwner() {
+	public ProfileDTO getLikeOwner() {
 		return likeOwner;
 	}
 
-	public void setLikeOwner(Profile likeOwner) {
+	public void setLikeOwner(ProfileDTO likeOwner) {
 		this.likeOwner = likeOwner;
 	}
 
@@ -137,11 +142,11 @@ public class Like implements Serializable{
 		this.likedAlbum = likedAlbum;
 	}
 
-	public Profile getLikedProfile() {
+	public ProfileDTO getLikedProfile() {
 		return likedProfile;
 	}
 
-	public void setLikedProfile(Profile likedProfile) {
+	public void setLikedProfile(ProfileDTO likedProfile) {
 		this.likedProfile = likedProfile;
 	}
 	

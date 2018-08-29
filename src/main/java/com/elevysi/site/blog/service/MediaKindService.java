@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.elevysi.site.blog.dao.MediaKindRepository;
 import com.elevysi.site.blog.entity.MediaKind;
-import com.elevysi.site.blog.repository.MediaKindRepository;
 
 @Service
 public class MediaKindService {

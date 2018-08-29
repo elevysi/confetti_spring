@@ -12,18 +12,24 @@
 	<fieldset>
 	
 		<div class="form-item">
-		<section>
-			<label class="label">Choose Dossier <form:errors path="dossier" /></label> <label class="select">
-			<form:select path="dossier.id">
-				<form:option  value="">--Select one--</form:option>
-				<form:options items="${dossiers}" itemValue="id" itemLabel="name"/>
-				<form:errors path="dossier"/>
-			</form:select>
-			
-			</label>
-		</section>
-	</div>
+			<section>
+				<label class="label">Choose Dossier<form:errors path="publication.dossiers" /></label> <label class="select select-multiple">
+				<form:select path="publication.dossiers">
+					<form:options items="${dossiers}" itemValue="id" itemLabel="name"/>
+				</form:select>
+				
+				</label>
+			</section>
+		</div>
 	
+		<div class="form-item">
+			<section>
+				<label class="label">Choose Category <form:errors path="publication.categories" /></label> <label class="select select-multiple">
+				<form:select path="publication.categories" items="${categories}" itemValue="id" itemLabel="name"/>
+				
+				</label>
+			</section>
+		</div>
 	
 		<div class="form-item">
 			<section>
@@ -32,7 +38,6 @@
 				</label>
 			</section>
 		</div>
-	
 		
 		<div class="form-item">
 			<section>
@@ -76,8 +81,9 @@
 
 	</fieldset>
 	<footer>
-		<button class="btn-u" type="submit" name="action" value="draft"><spring:message code="label.plays.add.submitBtn" /></button>
-		
+		<button class="btn-u" type="submit" name="action" value="draft"><spring:message code="label.posts.add.saveDraft" /></button>
+		<button class="btn-u" type="submit" name="action" value="publish"><spring:message code="label.posts.add.submitBtn" /></button>
+		<button class="btn-u btn-u-default" name="action" value="cancel" type="button"><spring:message code="label.posts.add.backBtn" /></button>
 	</footer>
 
 

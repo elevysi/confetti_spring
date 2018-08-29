@@ -6,6 +6,24 @@
 
 <!-- Root Pages -->
 
+<definition name="root2.5" template="/WEB-INF/views/layout2.5/root/default.jsp">
+	<put-attribute name="title" value="Elevysi - Blog" />
+	<put-attribute name="headTag" value="/WEB-INF/views/layout2.5/root/fileHead.jsp" />
+	<put-attribute name="navbar" value="/WEB-INF/views/layout2.5/root/navbar.jsp" />
+	<put-attribute name="breadcrumb" value="/WEB-INF/views/layout2.5/root/breadcrumb.jsp" />
+	<put-attribute name="rightBar" value="/WEB-INF/views/layout2.5/root/rightBar.jsp" />
+	<put-attribute name="footer" value="/WEB-INF/views/layout2.5/root/footer.jsp" />
+	<put-attribute name="bodyjs" value="/WEB-INF/views/layout2.5/root/globaljs.jsp" />
+	<put-attribute name="pagination" value="/WEB-INF/views/layout2.5/root/pagination.jsp" cascade="true"/>
+</definition>
+
+<definition name="homeMinimal" extends="root2.5">
+	  <put-attribute name="title" value="Elevysi - Spring Blog" />
+	  <put-attribute name="body" value="/WEB-INF/views/jsp/pages/homeMinimal.jsp" />
+	  <put-attribute name="current" value="index" />
+	  <put-attribute name="currentUrl" value="/" cascade="true"/>
+</definition>
+
 <definition name="root">
 	<put-attribute name="title" value="Elevysi" />
 	<put-attribute name="breadcrumb" value="/WEB-INF/views/layout/breadcrumb.jsp" />
@@ -196,6 +214,12 @@
   <put-attribute name="title" value="Dossier - View" cascade="true"/>
   <put-attribute name="body" value="/WEB-INF/views/jsp/dossiers/view.jsp" cascade="true"/>
   <put-attribute name="currentUrl" value="/dossiers/view/" cascade="true"/>
+</definition>
+
+<definition name="viewCategory" extends="commonBlog1.9">
+  <put-attribute name="title" value="Tag - View" cascade="true"/>
+  <put-attribute name="body" value="/WEB-INF/views/jsp/categories/view.jsp" cascade="true"/>
+  <put-attribute name="currentUrl" value="/public/tag/view/" cascade="true"/>
 </definition>
 
 <!-- Profile Pages -->

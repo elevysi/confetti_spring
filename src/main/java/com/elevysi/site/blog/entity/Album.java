@@ -22,6 +22,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -29,6 +30,9 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.FilterDefs;
 import org.hibernate.annotations.Filters;
+
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "albums")
@@ -56,6 +60,7 @@ public class Album implements Serializable {
 	@Column(columnDefinition="INT(1)")
 	private Boolean publicAlbum;
 	
+	@JsonIgnore
 	@OneToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="publication_id")
 	private Publication publication;
@@ -69,27 +74,6 @@ public class Album implements Serializable {
 	
 	@Column(name="count_shares")
 	private Integer shareCount;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "dossier_id", referencedColumnName = "id")
-	private Dossier dossier;
-	
-	public Dossier getDossier() {
-		return dossier;
-	}
-
-
-	public void setDossier(Dossier dossier) {
-		this.dossier = dossier;
-	}
-	
-	public void setDossier(Dossier dossier, boolean add) {
-		this.dossier = dossier;
-		if(dossier != null && add){
-			dossier.addAlbum(this, false);
-		}
-		
-	}
 	
 	
 	public Integer getLikeCount() {
@@ -201,9 +185,10 @@ public class Album implements Serializable {
 	/**
 	 * Cannot make it eager because of link_id is at the same type Profile, Post, ...
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="link_id", nullable = false, insertable = false, updatable = false)
-	private Profile profileOwner;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name="link_id", nullable = false, insertable = false, updatable = false)
+	@Transient
+	private ProfileDTO profileOwner;
 	
 	@Column(name="link_table")
 	private String linkTable;
@@ -287,11 +272,11 @@ public class Album implements Serializable {
 
 	
 
-	public Profile getProfileOwner() {
+	public ProfileDTO getProfileOwner() {
 		return profileOwner;
 	}
 
-	public void setProfileOwner(Profile profileOwner) {
+	public void setProfileOwner(ProfileDTO profileOwner) {
 		this.profileOwner = profileOwner;
 	}
 

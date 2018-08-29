@@ -1,7 +1,6 @@
 package com.elevysi.site.blog.controller;
 
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,15 +20,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.elevysi.site.blog.config.security.ActiveUser;
 import com.elevysi.site.blog.entity.Comment;
+import com.elevysi.site.blog.entity.Comment_;
 import com.elevysi.site.blog.entity.Like;
-import com.elevysi.site.blog.entity.Profile;
 import com.elevysi.site.blog.entity.Share;
-import com.elevysi.site.blog.pojo.ReturnValue;
 import com.elevysi.site.blog.service.CommentService;
 import com.elevysi.site.blog.service.LikeService;
 import com.elevysi.site.blog.service.ShareService;
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.elevysi.site.commons.pojo.ActiveUser;
+import com.elevysi.site.commons.pojo.OffsetPage;
+import com.elevysi.site.commons.pojo.ReturnValue;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 
 @Controller
 @RequestMapping(value = "/comments", method= RequestMethod.GET)
@@ -63,34 +65,44 @@ public class CommentContrroller extends AbstractController{
 		
 		
 		Page<Comment> itemCommentsPage;
-		List<Comment> itemComments = new ArrayList<Comment>();
+//		List<Comment> itemComments = new ArrayList<Comment>();
 		
-		if(objectType.equals("posts")){
-			itemCommentsPage = commentService.findPaginatedPostComments(objectId, pageNumber, NO_POST_COMMENTS, "id", SORT_DIRECTION);
-			allItemComments = commentService.itemComments(objectId, "posts");
-			noComments = allItemComments.size();
-			
-			postLikes = likeService.itemLikes(objectId, "posts");
-			noLikes = postLikes.size();
-			
-			postShares = shareService.itemShares(objectId, "posts");
-			noShares = postShares.size();
-			
-			itemComments = itemCommentsPage.getContent();
-		}else if(objectType.equals("plays")){
-			itemCommentsPage = commentService.findPaginatedPlayComments(objectId, pageNumber, NO_POST_COMMENTS, "id", SORT_DIRECTION);
-			
-			allItemComments = commentService.itemComments(objectId, "plays");
-			noComments = allItemComments.size();
-			
-			postLikes = likeService.itemLikes(objectId, "plays");
-			noLikes = postLikes.size();
-			
-			postShares = shareService.itemShares(objectId, "plays");
-			noShares = postShares.size();
-			
-			itemComments = itemCommentsPage.getContent();
-		}
+		OffsetPage page = commentService.buildOffsetPage(1, DEFAULT_NO_ITEMS, Comment_.created, SortDirection.DESC);
+		List<Comment> itemComments = commentService.getCommentsForPublication(page, objectId);
+		
+//		postLikes = likeService.itemLikes(objectId, "posts");
+//		noLikes = postLikes.size();
+//		
+//		postShares = shareService.itemShares(objectId, "posts");
+//		noShares = postShares.size();
+		
+		
+//		if(objectType.equals("posts")){
+//			itemCommentsPage = commentService.findPaginatedPostComments(objectId, pageNumber, NO_POST_COMMENTS, "id", SORT_DIRECTION);
+//			allItemComments = commentService.itemComments(objectId, "posts");
+//			noComments = allItemComments.size();
+//			
+//			postLikes = likeService.itemLikes(objectId, "posts");
+//			noLikes = postLikes.size();
+//			
+//			postShares = shareService.itemShares(objectId, "posts");
+//			noShares = postShares.size();
+//			
+//			itemComments = itemCommentsPage.getContent();
+//		}else if(objectType.equals("plays")){
+//			itemCommentsPage = commentService.findPaginatedPlayComments(objectId, pageNumber, NO_POST_COMMENTS, "id", SORT_DIRECTION);
+//			
+//			allItemComments = commentService.itemComments(objectId, "plays");
+//			noComments = allItemComments.size();
+//			
+//			postLikes = likeService.itemLikes(objectId, "plays");
+//			noLikes = postLikes.size();
+//			
+//			postShares = shareService.itemShares(objectId, "plays");
+//			noShares = postShares.size();
+//			
+//			itemComments = itemCommentsPage.getContent();
+//		}
 		
 		
 		
@@ -144,15 +156,15 @@ public class CommentContrroller extends AbstractController{
 			ActiveUser activeUser = (ActiveUser)auth.getPrincipal();
 			
 			if(activeUser != null){
-				Profile activeProfile = activeUser.getActiveProfile();
-				commentService.setProfile(comment, activeProfile, true);
-				comment.setProfile(activeProfile);
+				ProfileDTO activeProfile = activeUser.getActiveProfile();
+//				commentService.setProfile(comment, activeProfile, true);
+//				comment.setProfile(activeProfile);
 			}
 		}
 		
 		Comment originalCmt = comment.getOriginalComment();
 		if(originalCmt != null){
-			Comment originalComment = commentService.findOne(originalCmt.getId());
+			Comment originalComment = commentService.findByID(originalCmt.getId());
 			comment.setOriginalComment(originalComment);
 		}
 		

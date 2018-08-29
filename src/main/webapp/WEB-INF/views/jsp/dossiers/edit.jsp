@@ -3,7 +3,7 @@
 
 <%@ include file="../../layout/taglib.jsp"%>
 
-<c:url var="dossier_post_url" value="/dossiers/edit" />
+<c:url var="dossier_post_url" value="/dossiers/edit/${dossier.id}" />
 <c:url var ="tinymceCss" value='/css/tinymce.css'/>
 
 <form:form commandName="dossier" cssClass="sky-form addPostForm" method="post" action="${dossier_post_url}">
@@ -29,7 +29,14 @@
 			</section>
 		</div>
 		
-	
+		<div class="form-item">
+			<section>
+				<label class="label">Choose Category <form:errors path="publication.categories" /></label> <label class="select select-multiple">
+				<form:select path="publication.categories" items="${categories}" itemValue="id" itemLabel="name"/>
+				
+				</label>
+			</section>
+		</div>
 		
 		<div class="form-item">
 			<section>
@@ -59,8 +66,9 @@
 
 	</fieldset>
 	<footer>
-		<button class="btn-u" type="submit" name="action">Publish</button>
-		
+		<button class="btn-u" type="submit" name="action" value="draft"><spring:message code="label.posts.add.saveDraft" /></button>
+		<button class="btn-u" type="submit" name="action" value="publish"><spring:message code="label.posts.add.submitBtn" /></button>
+		<button class="btn-u btn-u-default" name="action" value="cancel" type="button"><spring:message code="label.posts.add.backBtn" /></button>
 	</footer>
 
 

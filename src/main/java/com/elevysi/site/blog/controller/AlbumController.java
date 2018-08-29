@@ -22,14 +22,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.elevysi.site.blog.entity.Album;
 import com.elevysi.site.blog.entity.Dossier;
-import com.elevysi.site.blog.entity.Profile;
 import com.elevysi.site.blog.entity.Upload;
 import com.elevysi.site.blog.form.AlbumEdit;
-import com.elevysi.site.blog.pojo.SessionMessage;
-import com.elevysi.site.blog.pojo.Page.SortDirection;
 import com.elevysi.site.blog.service.AlbumService;
 import com.elevysi.site.blog.service.DossierService;
 import com.elevysi.site.blog.service.UploadService;
+import com.elevysi.site.commons.pojo.SessionMessage;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 import com.elevysi.site.blog.entity.Dossier_;
 
 @Controller
@@ -56,7 +55,7 @@ public class AlbumController extends AbstractController{
 		model.addAttribute("uuid", uuid);
 		model.addAttribute("album", album);
 		
-		com.elevysi.site.blog.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Dossier_.created, SortDirection.DESC);		
+		com.elevysi.site.commons.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_ALL_ITEMS, Dossier_.created, SortDirection.DESC);		
 		List<Dossier> dossiers = dossierService.getDossiers(dossiersPage);
 		model.addAttribute("dossiers", dossiers);
 		
@@ -66,33 +65,33 @@ public class AlbumController extends AbstractController{
 	@RequestMapping(value="/add", method=RequestMethod.POST)
 	public String doAdd(Model model, @ModelAttribute("album")Album album, BindingResult result, RedirectAttributes redirectAttributes){
 		
-		if(result.hasErrors()){
-			return "redirect:/albums/add";
-		}
-		
-		/**
-		 * Record the post to the profile Editing it
-		 */
-		Profile owningProfile = albumService.getActiveProfile();
-		album.setProfileOwner(owningProfile);
-		
-		album.setLinkTable("profiles");
-		album.setLinkId(owningProfile.getId());
-		
-		if(album.getDossier().getId() == null){
-			album.setDossier(null);
-		}
-		
-		Album savedAlbum = albumService.saveAlbum(album);
-		
-		/**
-		 * Find the lists of uploads related to this
-		 */
-		
-		SessionMessage sessionMessage = new SessionMessage("The album was successfully saved!");
-		sessionMessage.setSuccessClass();
-		
-		redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
+//		if(result.hasErrors()){
+//			return "redirect:/albums/add";
+//		}
+//		
+//		/**
+//		 * Record the post to the profile Editing it
+//		 */
+//		Profile owningProfile = albumService.getActiveProfile();
+//		album.setProfileOwner(owningProfile);
+//		
+//		album.setLinkTable("profiles");
+//		album.setLinkId(owningProfile.getId());
+//		
+//		if(album.getDossier().getId() == null){
+//			album.setDossier(null);
+//		}
+//		
+//		Album savedAlbum = albumService.saveAlbum(album);
+//		
+//		/**
+//		 * Find the lists of uploads related to this
+//		 */
+//		
+//		SessionMessage sessionMessage = new SessionMessage("The album was successfully saved!");
+//		sessionMessage.setSuccessClass();
+//		
+//		redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
 		return "redirect:/profile";
 		
 	}
@@ -100,28 +99,30 @@ public class AlbumController extends AbstractController{
 	@RequestMapping(value={"/view/{id}/*", "/view/{id}"})
 	public String view(@PathVariable("id")Integer id, Model model, RedirectAttributes redirectAttributes, @RequestParam(defaultValue="1", required=false, value="page")Integer pageNumber){
 		
-		Album album = albumService.findOne(id);
-		if(album != null){
-			model.addAttribute("album", album);
-			model.addAttribute("pageTitle", album.getName());
-			model.addAttribute("pageDescription", album.getDescription());
-			
-			List<Upload> albumUploads = uploadService.getAllAlbumUploads(album);
-			
-			boolean canEditAlbum = false;
-			Profile albumProfile = album.getProfileOwner();
-			if(albumProfile!= null && albumProfile.equals(albumService.getActiveProfile())) canEditAlbum = true;
-			
-			model.addAttribute("albumUploads", albumUploads);
-			model.addAttribute("canEditAlbum", canEditAlbum);
-			return "albumView";
-		}else{
-			SessionMessage sessionMessage = new SessionMessage("The album was successfully saved!");
-			sessionMessage.setSuccessClass();
-			
-			redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
-			return "redirect:/profile";
-		}
+//		Album album = albumService.findOne(id);
+//		if(album != null){
+//			model.addAttribute("album", album);
+//			model.addAttribute("pageTitle", album.getName());
+//			model.addAttribute("pageDescription", album.getDescription());
+//			
+//			List<Upload> albumUploads = uploadService.getAllAlbumUploads(album);
+//			
+//			boolean canEditAlbum = false;
+//			Profile albumProfile = album.getProfileOwner();
+//			if(albumProfile!= null && albumProfile.equals(albumService.getActiveProfile())) canEditAlbum = true;
+//			
+//			model.addAttribute("albumUploads", albumUploads);
+//			model.addAttribute("canEditAlbum", canEditAlbum);
+//			return "albumView";
+//		}else{
+//			SessionMessage sessionMessage = new SessionMessage("The album was successfully saved!");
+//			sessionMessage.setSuccessClass();
+//			
+//			redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
+//			return "redirect:/profile";
+//		}
+		
+		return "redirect:/profile";
 	}
 	
 	@RequestMapping(value={"/edit/{id}", "/edit/{id}/*"}, method=RequestMethod.GET)
@@ -144,14 +145,14 @@ public class AlbumController extends AbstractController{
 			albumEdit.setDescription(album.getDescription());
 			albumEdit.setPlace(album.getPlace());
 			albumEdit.setPublicAlbum(album.getPublicAlbum());
-			albumEdit.setDossier(album.getDossier());
+//			albumEdit.setDossier(album.getDossier());
 			albumEdit.setUploads(selected);
 			albumEdit.setId(album.getId());
 			albumEdit.setUuid(album.getUuid());
 			
 			model.addAttribute("albumEdit", albumEdit);
 			
-			com.elevysi.site.blog.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Dossier_.created, SortDirection.DESC);		
+			com.elevysi.site.commons.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_ALL_ITEMS, Dossier_.created, SortDirection.DESC);		
 			List<Dossier> dossiers = dossierService.getDossiers(dossiersPage);
 			model.addAttribute("dossiers", dossiers);
 		}
@@ -171,9 +172,9 @@ public class AlbumController extends AbstractController{
 		
 		if(albumEdit.getDossier().getId() == null){
 			albumEdit.setDossier(null);
-			originalAlbum.setDossier(null);
+//			originalAlbum.setDossier(null);
 		}else{
-			originalAlbum.setDossier(albumEdit.getDossier());
+//			originalAlbum.setDossier(albumEdit.getDossier());
 		}
 		
 		/**

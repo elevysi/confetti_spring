@@ -6,23 +6,18 @@ import java.util.List;
 import javax.persistence.metamodel.SingularAttribute;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import com.elevysi.site.blog.dao.PlayDAO;
 import com.elevysi.site.blog.entity.Play;
-import com.elevysi.site.blog.entity.Profile;
 import com.elevysi.site.blog.entity.Publication;
-import com.elevysi.site.blog.pojo.OffsetPage;
-import com.elevysi.site.blog.pojo.Page.SortDirection;
-import com.elevysi.site.blog.repository.PlayDAO;
-import com.elevysi.site.blog.repository.PlayRepository;
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.elevysi.site.commons.pojo.OffsetPage;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 
 @Service
-public class PlayService extends AbstractService{
-
-	@Autowired
-	private PlayRepository playRepository;
+public class PlayService extends BasicService{
 	
 	@Autowired
 	private PlayDAO playDAO;
@@ -32,16 +27,18 @@ public class PlayService extends AbstractService{
 		Date now = new Date();
 		play.setCreated(now);
 		play.setModified(now);
-		
 		play.setFeatured(true);
 		
-		Publication publication = savePublication(play.getPlayProfile(), play.getTitle());
-		if(publication != null){
-			play.setPublication(publication);
+		play.getPublication().setCreated(now);
+		play.getPublication().setModified(now);
+		play.getPublication().setPublicPublication(true);
+		
+		String slug = toSlug(play.getTitle());
+		if(slug != null){
+			play.getPublication().setFriendlyUrl(slug);
 		}
 		
-		
-		return playRepository.save(play);
+		return playDAO.save(play);
 		
 	}
 	
@@ -66,69 +63,52 @@ public class PlayService extends AbstractService{
 		 */
 		saveEditedPublication(play.getPublication().getId(), play.getTitle());
 		
-		return playRepository.save(play);
-	}
-	
-	public List<Play> findLatestFeaturedPlaysByType(Integer playTypeID, Integer pageNumber, Integer limit, String sortField, String sortDirection){
-		return findPaginatedFeaturedPlaysByType(playTypeID, pageNumber, limit, sortField, sortDirection).getContent();
-	}
-	
-	public Page<Play> findPaginatedFeaturedPlaysByType(Integer playTypeID ,Integer pageNumber, Integer limit, String sortField, String sortDirection){
-		Page<Play> requestedPage = playRepository.findFeaturedPlaywithType(playTypeID, constructPageSpecification(pageNumber - 1, limit, sortField, sortDirection));
-		return requestedPage;
+		return playDAO.save(play);
 	}
 
-	public Play loadPlay(Integer id) {
-		
-		return playRepository.loadViewPlay(id);
-	}
-
-	public List<Play> findLatestPlaysForProfile(Profile playOwner, Play play, Integer pageNumber, Integer limit,
+	public List<Play> findLatestPlaysForProfile(ProfileDTO playOwner, Play play, Integer pageNumber, Integer limit,
 			String sortField, String sortDirection) {
 		
-		Page<Play> requestedPage;
-		Integer viewedPlayId = play.getId();
-		if(viewedPlayId != null){
-			requestedPage = playRepository.findAllLatestForProfileExcept(playOwner.getId(), viewedPlayId, constructPageSpecification(pageNumber, limit, sortField, sortDirection));
-		}else{
-			requestedPage = playRepository.findAllLatestForProfile(playOwner.getId(), constructPageSpecification(pageNumber, limit, sortField, sortDirection));
-		}
+//		Page<Play> requestedPage;
+//		Integer viewedPlayId = play.getId();
+//		if(viewedPlayId != null){
+//			requestedPage = playRepository.findAllLatestForProfileExcept(playOwner.getId(), viewedPlayId, constructPageSpecification(pageNumber, limit, sortField, sortDirection));
+//		}else{
+//			requestedPage = playRepository.findAllLatestForProfile(playOwner.getId(), constructPageSpecification(pageNumber, limit, sortField, sortDirection));
+//		}
 		
-		return requestedPage.getContent();
+//		return requestedPage.getContent();
+		
+		return null;
 	}
 	
-	public List<Play> getProfilePlays(Profile profile, com.elevysi.site.blog.pojo.Page page){
+	public List<Play> getProfilePlays(ProfileDTO profile, com.elevysi.site.commons.pojo.Page page){
 		return playDAO.getAllLatestForProfile(profile, page);
 	}
 	
-	public List<Play> getPlays(com.elevysi.site.blog.pojo.Page page){
+	public List<Play> getPlays(com.elevysi.site.commons.pojo.Page page){
 		return playDAO.getPlays(page);
 	}
 
-	public List<Play> findAllPlays() {
-		
-		return playRepository.findAll();
-	}
 	
 	public Play updatePlay(Play play){
-		return playRepository.save(play);
-	}
-	
-	public List<Play> findAllPlaysWithProfile(){
-		return playRepository.findAllPlaysWithProfile();
+		return playDAO.save(play);
 	}
 	
 	public OffsetPage buildOffsetPage(int pageIndex, int size,  SingularAttribute sortField, SortDirection sortDirection){
 		return playDAO.buildOffsetPage(pageIndex, size, sortField, sortDirection);
 	}
 	
-	public Play getPlay(int id){
-		return playDAO.getPlay(id);
+	public Play findByID(int id){
+		return playDAO.findByID(id);
 	}
 	
 	@PreAuthorize("#play.playProfile.id == principal.activeProfile.id || hasRole('ADMIN')")
-	public void deletePlay(Play play){
-		playDAO.deletePlay(play.getId());
+	public void delete(Play play){
+		playDAO.delete(play.getId());
 	}
 
+	public List<Play> findAll(){
+		return playDAO.findAll();
+	}
 }

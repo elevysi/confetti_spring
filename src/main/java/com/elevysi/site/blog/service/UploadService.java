@@ -25,19 +25,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.elevysi.site.blog.config.security.ActiveUser;
+import com.elevysi.site.blog.dao.UploadDAO;
+import com.elevysi.site.blog.dao.UploadRepository;
 import com.elevysi.site.blog.entity.Album;
 import com.elevysi.site.blog.entity.Post;
-import com.elevysi.site.blog.entity.Profile;
 import com.elevysi.site.blog.entity.Upload;
-import com.elevysi.site.blog.pojo.OffsetPage;
-import com.elevysi.site.blog.pojo.Page;
-import com.elevysi.site.blog.pojo.Page.SortDirection;
-import com.elevysi.site.blog.repository.UploadDAO;
-import com.elevysi.site.blog.repository.UploadRepository;
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.elevysi.site.commons.pojo.ActiveUser;
+import com.elevysi.site.commons.pojo.OffsetPage;
+import com.elevysi.site.commons.pojo.Page;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 
 @Service
-public class UploadService extends AbstractService{
+public class UploadService extends BasicService{
 	
 	@Autowired
 	private UploadRepository uploadRepository;
@@ -63,11 +63,11 @@ public class UploadService extends AbstractService{
 		
 		upload.setModified(now);
 		
-		return uploadRepository.save(upload);
+		return uploadDAO.save(upload);
 		
 	}
 
-	public Upload findOne(Integer id) {
+	public Upload findbyID(Integer id) {
 		
 		return uploadRepository.findById(id);
 	}
@@ -100,14 +100,14 @@ public class UploadService extends AbstractService{
 
 	
 	
-	public Upload addItemTable(Upload upload, int id, String linkTable){
+	public Upload addItemTable(Upload upload, Integer id, String linkTable){
 		upload.setLinkId(id);
 		upload.setLinkTable(linkTable);
-		return uploadRepository.save(upload);
+		return uploadDAO.saveEdited(upload);
 	}
 	
 	
-	public Upload addProfileToUpload(Profile profile, Upload upload) {
+	public Upload addProfileToUpload(ProfileDTO profile, Upload upload) {
 		upload.setLinkId(profile.getId());
 		upload.setLinkTable("profiles");
 		return uploadRepository.save(upload);
@@ -118,10 +118,12 @@ public class UploadService extends AbstractService{
 		return uploadRepository.findByUuid(uuid);
 	}
 
-	public List<Upload> findProfileUploads(Profile owningProfile) {
+	public List<Upload> findProfileUploads(ProfileDTO owningProfile) {
 		
-		return uploadRepository.findByUploadOwner(owningProfile);
+//		return uploadRepository.findByUploadOwner(owningProfile);
 //		return uploadRepository.findByUploadOwnerQ(owningProfile.getId());
+		
+		return null;
 		
 	}
 
@@ -130,12 +132,17 @@ public class UploadService extends AbstractService{
 		return uploadRepository.findByKeyIdentification(key);
 	}
 	
-	public Upload getUpload(int id){
-		return uploadDAO.getUpload(id);
+	public Upload getUpload(Integer id){
+		return uploadDAO.findByID(id);
 	}
 
 	public Upload save(Upload upload) {
-		return uploadRepository.save(upload);
+		return uploadDAO.save(upload);
+		
+	}
+	
+	public Upload saveEdited(Upload upload) {
+		return uploadDAO.saveEdited(upload);
 		
 	}
 
@@ -158,12 +165,12 @@ public class UploadService extends AbstractService{
 		return uploadDAO.buildOffsetPage(pageIndex, size, sortField, sortDirection);
 	}
 	
-	public List<Upload> getUploads(com.elevysi.site.blog.pojo.Page page){
+	public List<Upload> getUploads(com.elevysi.site.commons.pojo.Page page){
 		return uploadDAO.getUploads(page);
 	}
 	
-	public List<Upload> findPaginatedProfileUploads(Profile owningProfile, com.elevysi.site.blog.pojo.Page page) {
-		return uploadDAO.findByUploadOwner(owningProfile, page);
+	public List<Upload> findPaginatedProfileUploads(Integer profileID, com.elevysi.site.commons.pojo.Page page) {
+		return uploadDAO.findByUploadOwner(profileID, page);
 		
 	}
 	
@@ -171,7 +178,7 @@ public class UploadService extends AbstractService{
 		return uploadDAO.findAllAbumUploads(album);
 	}
 	
-	public List<Upload> findPaginatedAlbumUploads(Album album, com.elevysi.site.blog.pojo.Page page) {
+	public List<Upload> findPaginatedAlbumUploads(Album album, com.elevysi.site.commons.pojo.Page page) {
 		return uploadDAO.findPaginatedAlbumUploads(album, page);
 		
 	}
@@ -251,9 +258,9 @@ public class UploadService extends AbstractService{
 			String uploadKey = Upload.generateUUID();
 			upload.setKeyIdentification(uploadKey);
 			
-			Profile owningProfile = getActiveProfile();
+			ProfileDTO owningProfile = getActiveProfile();
 			if(owningProfile != null){
-				upload.setUploadOwner(owningProfile);
+				upload.setProfileID(owningProfile.getId());
 			}
 			Long timeofUpload  = System.currentTimeMillis();
 			String originalDirPath = this.avatarUploadPath+"originals"+timeofUpload+ds;
@@ -351,5 +358,9 @@ public class UploadService extends AbstractService{
 	    }
 
 	    return new Dimension(new_width, new_height);
+	}
+	
+	public List<Upload> findByLinkIDAndLinkTable(int linkID, String linkTable){
+		return uploadDAO.findByLinkIDAndLinkTable(linkID, linkTable);
 	}
 }

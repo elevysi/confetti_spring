@@ -7,16 +7,17 @@
 <c:url value="/admin/unfeatureItem" var="unfeatureUrl" />
 <c:url value='/posts/delete/${post.id}' var="deletePostUrl" />
 <security:authorize access="hasRole('ROLE_ADMIN')" var="isAdmin" />
+<spring:eval expression="@environment.getProperty('socialService.url')" var="socialServiceUrl" />
 
 <!-- News v3 -->
 <div class="news-v3 bg-color-white margin-bottom-30" id="blogRead">
 	<c:choose>
-		<c:when test="${not empty post.uploads && fn:length(post.uploads) > 1}">
+		<c:when test="${not empty post.publication.uploads && fn:length(post.publication.uploads) > 1}">
 			<div class="carousel slide carousel-v2" id="portfolio-carousel">
 				<ol class="carousel-indicators">
 					<fmt:parseNumber var="licount" value="1" />
 					<fmt:parseNumber var="activeLiItemIndex" value="1" />
-					<c:forEach items="${post.uploads}" var="upload">
+					<c:forEach items="${post.publication.uploads}" var="upload">
 
 						<c:set var="itemClass" value="rounded-x active" />
 						<c:if test="${licount > activeLiItemIndex}">
@@ -30,7 +31,7 @@
 				<div class="carousel-inner">
 					<fmt:parseNumber var="count" value="1" />
 					<fmt:parseNumber var="activeItemIndex" value="1" />
-					<c:forEach items="${post.uploads}" var="upload">
+					<c:forEach items="${post.publication.uploads}" var="upload">
 
 						<c:set var="itemClass" value="item active" />
 						<c:if test="${count > activeItemIndex}">
@@ -59,23 +60,23 @@
 		</c:when>
 
 
-		<c:when test="${not empty post.uploads && fn:length(post.uploads) == 1}">
+		<c:when test="${not empty post.publication.uploads && fn:length(post.publication.uploads) == 1}">
 			<!-- img-responsive full-width -->
-			<img class="img-responsive full-width" src="<c:url value='/uploads/download?key=${post.uploads.iterator().next().keyIdentification}'/>" alt="${post.uploads.iterator().next().altText}">
+			<img class="img-responsive full-width" src="<c:url value='/uploads/download?key=${post.publication.uploads.iterator().next().keyIdentification}'/>" alt="${post.publication.uploads.iterator().next().altText}">
 		</c:when>
 	</c:choose>
 
 	<div class="news-v3-in">
 		<ul class="list-inline posted-info">
-			<li>By <a href="<c:url value='/profile/${post.profile.id}'/>"><c:out
-						value="${post.profile.name}" /></a></li>
+			<li>By <a href="<c:url value='${socialServiceUrl}/profile/${post.publication.profile.name}'/>"><c:out
+						value="${post.publication.profile.name}" /></a></li>
 
-			<c:if test="${not empty post.categories}">
-				<li>In <c:forEach items="${post.categories}" var="postCategory"
+			<c:if test="${not empty post.publication.categories}">
+				<li>Tags: <c:forEach items="${post.publication.categories}" var="postCategory"
 						varStatus="stat">
 
 
-						<c:url var="itemUrl" value="/categories/view/${postCategory.id}" />
+						<c:url var="itemUrl" value="/public/tag/${postCategory.name}" />
 						<c:set var="itemText" value="${postCategory.name}" />
 
 						<c:set var="itemDisplay"
@@ -85,6 +86,24 @@
 							value="${categoryDisplay}${stat.first ? '' : ', '} ${itemDisplay}" />
 
 					</c:forEach> <c:out value="${categoryDisplay}" escapeXml="false" />
+				</li>
+			</c:if>
+			
+			<c:if test="${not empty post.publication.dossiers}">
+				<li>Folders : <c:forEach items="${post.publication.dossiers}" var="publicationDossier"
+						varStatus="stat">
+
+
+						<c:url var="itemUrl" value="/dossiers/view/${publicationDossier.id}" />
+						<c:set var="itemText" value="${publicationDossier.name}" />
+
+						<c:set var="itemDisplay"
+							value="<a href='${itemUrl}'>${itemText}</a>" />
+
+						<c:set var="publicationDisplay"
+							value="${publicationDisplay}${stat.first ? '' : ', '} ${itemDisplay}" />
+
+					</c:forEach> <c:out value="${publicationDisplay}" escapeXml="false" />
 				</li>
 			</c:if>
 
@@ -149,8 +168,8 @@
 <div class="blog-author margin-bottom-30">
 
 	<c:choose>
-		<c:when test="${not empty post.profile.profilePicture}">
-			<img src="<c:url value='/uploads/download?key=${post.profile.profilePicture.iterator().next().keyIdentification}'/>" alt="${post.profile.profilePicture.iterator().next().altText}">
+		<c:when test="${not empty post.publication.profile.profilePicture}">
+			<img src="<c:url value='${socialServiceUrl}/ui/uploads/download?key=${post.publication.profile.profilePicture.iterator().next().keyIdentification}'/>" alt="${post.publication.profile.profilePicture.iterator().next().altText}">
 
 		</c:when>
 		<c:otherwise>
@@ -163,7 +182,7 @@
 	<div class="blog-author-desc">
 		<div class="overflow-h">
 			<h4>
-				<c:out value="${post.profile.name}" />
+				<c:out value="${post.publication.profile.name}" />
 			</h4>
 			<ul class="list-inline">
 				<li><a href="#"><i class="fa fa-facebook"></i></a></li>
@@ -172,7 +191,7 @@
 			</ul>
 		</div>
 		<p>
-			<c:out value="${post.profile.description}" escapeXml="false"/>
+			<c:out value="${post.publication.profile.description}" escapeXml="false"/>
 		</p>
 	</div>
 </div>
@@ -187,11 +206,12 @@
 	
     
     <c:forEach items="${profileLatestPosts}" var="latestProfilePost">
+    <c:set var="categoryDisplay" value="" />
     	<div class="col-sm-6 sm-margin-bottom-30">
 	        <div class="news-v2-badge">
 	            
-	            	<c:if test="${not empty latestProfilePost.uploads}">
-	            		<img class="img-responsive" src="<c:url value='/uploads/download?key=${latestProfilePost.uploads.iterator().next().keyIdentification}'/>" alt="${latestProfilePost.uploads.iterator().next().altText}">
+	            	<c:if test="${not empty latestProfilePost.publication.uploads}">
+	            		<img class="img-responsive" src="<c:url value='/uploads/download?key=${latestProfilePost.publication.uploads.iterator().next().keyIdentification}'/>" alt="${latestProfilePost.publication.uploads.iterator().next().altText}">
 	            		
 	            	</c:if>
 	            	
@@ -203,28 +223,23 @@
 	        </div>
 	        <div class="news-v2-desc">
 	            <h3><a href="<c:url value='/posts/view/${latestProfilePost.id}/${latestProfilePost.publication.friendlyUrl}'/> "><c:out value="${latestProfilePost.title}" /></a></h3>
-	            <small>By <c:out value="${latestProfilePost.profile.name}"></c:out> | World
-	            
-	            <c:if test="${not empty latestProfilePost.categories}">| In
-				<c:forEach items="${latestProfilePost.categories}" var="postCategory"
-						varStatus="stat">
-
-
-						<c:url var="itemUrl" value="/categories/view/${postCategory.id}" />
-						<c:set var="itemText" value="${postCategory.name}" />
-
-						<c:set var="itemDisplay"
-							value="<a href='${itemUrl}'>${itemText}</a>" />
-
-						<c:set var="categoryDisplay"
-							value="${categoryDisplay}${stat.first ? '' : ', '} ${itemDisplay}" />
-
-					</c:forEach> <c:out value="${categoryDisplay}" escapeXml="false" />
-				
-			</c:if>
-	            
-	             
-	             
+	            <small>By <c:out value="${latestProfilePost.publication.profileName}"></c:out>
+		            <c:if test="${not empty latestProfilePost.publication.categories}"> | In
+						<c:forEach items="${latestProfilePost.publication.categories}" var="postCategory"
+								varStatus="stat">
+		
+		
+								<c:url var="itemUrl" value="/public/tag/${postCategory.name}" />
+								<c:set var="itemText" value="${postCategory.name}" />
+		
+								<c:set var="itemDisplay"
+									value="<a href='${itemUrl}'>${itemText}</a>" />
+		
+								<c:set var="categoryDisplay"
+									value="${categoryDisplay}${stat.first ? '' : ', '} ${itemDisplay}" />
+		
+							</c:forEach> <c:out value="${categoryDisplay}" escapeXml="false" />
+					</c:if>
 	             </small>
 	            <c:out value="${latestProfilePost.description}" escapeXml="false" />
 	        </div>

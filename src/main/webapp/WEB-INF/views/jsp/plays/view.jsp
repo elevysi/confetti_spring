@@ -6,6 +6,7 @@
 <c:url value="/admin/unfeatureItem" var="unfeatureUrl" />
 <c:url value='/plays/delete/${play.id}' var="deletePlayUrl" />
 <security:authorize access="hasRole('ROLE_ADMIN')" var="isAdmin" />
+<spring:eval expression="@environment.getProperty('socialService.url')" var="socialServiceUrl" />
 
 <!-- Blog Posts -->
 <div class="news-v3 bg-color-white margin-bottom-60" id="blogRead">
@@ -14,7 +15,44 @@
 	</div>
 	<div class="news-v3-in">
 		<ul class="list-inline posted-info">
-			<li>By <a href="<c:url value='/profile/${play.playProfile.name}'/>"><c:out value="${play.playProfile.name}"/></a></li>
+			<li>By <a href="<c:url value='${socialServiceUrl}/ui/public/profile/${play.publication.profile.name}'/>"><c:out value="${play.publication.profile.name}"/></a></li>
+			
+			<c:if test="${not empty play.publication.categories}">
+				<li>Tags: <c:forEach items="${play.publication.categories}" var="postCategory"
+						varStatus="stat">
+
+
+						<c:url var="itemUrl" value="/public/tag/${postCategory.name}" />
+						<c:set var="itemText" value="${postCategory.name}" />
+
+						<c:set var="itemDisplay"
+							value="<a href='${itemUrl}'>${itemText}</a>" />
+
+						<c:set var="categoryDisplay"
+							value="${categoryDisplay}${stat.first ? '' : ', '} ${itemDisplay}" />
+
+					</c:forEach> <c:out value="${categoryDisplay}" escapeXml="false" />
+				</li>
+			</c:if>
+			
+			<c:if test="${not empty play.publication.dossiers}">
+				<li>Folders : <c:forEach items="${play.publication.dossiers}" var="publicationDossier"
+						varStatus="stat">
+
+
+						<c:url var="itemUrl" value="/dossiers/view/${publicationDossier.id}" />
+						<c:set var="itemText" value="${publicationDossier.name}" />
+
+						<c:set var="itemDisplay"
+							value="<a href='${itemUrl}'>${itemText}</a>" />
+
+						<c:set var="publicationDisplay"
+							value="${publicationDisplay}${stat.first ? '' : ', '} ${itemDisplay}" />
+
+					</c:forEach> <c:out value="${publicationDisplay}" escapeXml="false" />
+				</li>
+			</c:if>
+			
 			<li>Posted <fmt:formatDate pattern="dd MMMM yyyy" value="${play.created}" />
 			</li>
 		</ul>
@@ -72,8 +110,8 @@
 <div class="blog-author margin-bottom-30">
 	
 	<c:choose>
-		<c:when test="${not empty play.playProfile.profilePicture}">
-			<img src="<c:url value='/uploads/download?key=${play.playProfile.profilePicture.iterator().next().keyIdentification}'/>" alt="${play.playProfile.profilePicture.iterator().next().altText}">
+		<c:when test="${not empty play.publication.profile.profilePicture}">
+			<img src="<c:url value='${socialServiceUrl}/ui/uploads/download?key=${play.publication.profile.profilePicture.iterator().next().keyIdentification}'/>" alt="${play.publication.profile.profilePicture.iterator().next().altText}">
 
 		</c:when>
 		<c:otherwise>
@@ -84,7 +122,7 @@
 	
 	<div class="blog-author-desc">
 			<div class="overflow-h">
-				<h4><c:out value="${play.playProfile.name}" /></h4>
+				<h4><c:out value="${play.publication.profile.name}" /></h4>
 				<ul class="list-inline">
 					<li><a href="#"><i class="fa fa-facebook"></i></a></li>
 					<li><a href="#"><i class="fa fa-twitter"></i></a></li>
@@ -92,8 +130,8 @@
 				</ul>
 			</div>
 			
-			<c:if test="${not empty play.playProfile.description}">
-				<c:out value="${play.playProfile.description}" escapeXml="false" />
+			<c:if test="${not empty play.publication.profile.description}">
+				<c:out value="${play.publication.profile.description}" escapeXml="false" />
 			</c:if>
 			
 			
@@ -124,7 +162,7 @@
 				<h3>
 					<a href='<c:url value='/plays/view/${latestProfilePlay.id}/${latestProfilePlay.publication.friendlyUrl}'/>'><c:out value="${latestProfilePlay.title}" /></a>
 				</h3>
-				<small>By <a href="<c:url value='/profile/${play.playProfile.name}'/>"><c:out value="${play.playProfile.name}" /></a> | In <a href="<c:url value='/playTypes/${play.playType.name}'/>"><c:out value="${play.playType.name}" /></a></small>
+				<small>By <a href="<c:url value='${socialServiceUrl}/ui/public/profile/${play.publication.profile.name}'/>"><c:out value="${play.publication.profile.name}" /></a> | In <a href="<c:url value='/playTypes/${play.playType.name}'/>"><c:out value="${play.playType.name}" /></a></small>
 				
 			</div>
 		

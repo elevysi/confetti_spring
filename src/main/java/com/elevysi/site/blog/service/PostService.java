@@ -1,76 +1,53 @@
 package com.elevysi.site.blog.service;
 
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ListJoin;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.SingularAttribute;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.elevysi.site.blog.entity.Album;
-import com.elevysi.site.blog.entity.Category;
+import com.elevysi.site.blog.dao.PostDAO;
 import com.elevysi.site.blog.entity.Comment;
-import com.elevysi.site.blog.entity.Play;
+import com.elevysi.site.blog.entity.Comment_;
 import com.elevysi.site.blog.entity.Post;
-import com.elevysi.site.blog.entity.Profile;
 import com.elevysi.site.blog.entity.Publication;
 import com.elevysi.site.blog.entity.Upload;
-import com.elevysi.site.blog.entity.User;
-import com.elevysi.site.blog.pojo.OffsetPage;
-import com.elevysi.site.blog.pojo.Page.SortDirection;
-import com.elevysi.site.blog.repository.AlbumRepository;
-import com.elevysi.site.blog.repository.PostDAO;
-import com.elevysi.site.blog.repository.PostRepository;
-import com.elevysi.site.blog.repository.PublicationRepository;
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.elevysi.site.commons.pojo.OffsetPage;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 
 
 @Service
-public class PostService extends AbstractService{
-		
-	@Autowired
-	private PostRepository postRepository;
+public class PostService extends BasicService{
 	
 	@Autowired
-	private UploadService uploadService;
+	private PublicationService publicationService;
 	
-	@PersistenceContext
-	private EntityManager entityManager;
+	private PostDAO postDAO;
 	
 	@Autowired
-	private PostDAO postDao;
+	private CommentService commentService;
 	
-	
-	public List<Post> findAllPosts() {
-		
-		return postRepository.findAll();
+	@Autowired
+	public PostService(PostDAO postDAO) {
+		this.postDAO = postDAO;
 	}
 	
-	public List<Post> findAllPosts2() {
-		
-		return postDao.findAllPosts();
+	public List<Post> findAllPosts() {
+		return postDAO.findAll();
 	}
 	
 	public Page<Post> findPaginatedAllPostsWithOwner(Integer pageNumber, Integer limit, String sortField, String sortDirection) {
-		return postRepository.findAllWithOwner(constructPageSpecification(pageNumber, limit, sortField, sortDirection));
+//		return postRepository.findAllWithOwner(constructPageSpecification(pageNumber, limit, sortField, sortDirection));
+		return null;
 	}
 	
 	public Post savePost(Post post){
@@ -78,12 +55,20 @@ public class PostService extends AbstractService{
 		Date now = new Date();
 		post.setCreated(now);
 		post.setModified(now);
-		Publication publication = savePublication(post.getProfile(), post.getTitle());
-		if(publication != null){
-			post.setPublication(publication);
+		
+		Publication publication = post.getPublication();
+		publication.setCreated(now);
+		publication.setModified(now);
+		publication.setPublicPublication(true);
+		String slug = toSlug(post.getTitle());
+		if(slug != null){
+			publication.setFriendlyUrl(slug);
 		}
-		Post savedPost = postRepository.save(post);
-		saveRelated(savedPost);
+		
+		Post savedPost = postDAO.save(post);
+		if(savedPost != null){
+			publicationService.saveRelated(savedPost.getPublication().getId().intValue(), savedPost.getUuid());
+		}
 		
 		return savedPost;
 	}
@@ -93,102 +78,48 @@ public class PostService extends AbstractService{
 	public Post saveEditedPost(Post post){
 		Date now = new Date();
 		post.setModified(now);
+		post.getPublication().setModified(now);
+		
+		String slug = toSlug(post.getTitle());
+		if(slug != null){
+			post.getPublication().setFriendlyUrl(slug);
+		}
 		
 		if(post.getCreated() == null){
 			post.setCreated(now);
 		}
 		
-		return this.doSaveEditedPost(post);
-		
-	}
-	
-	
-	public Post doSaveEditedPost(Post post){
-		
-		/**
-		 * Save edited slug
-		 */
-		saveEditedPublication(post.getPublication().getId(), post.getTitle());
-		
-		/**
-		 * Retrieve all the uploads related to this post
-		 */
-		Post savedPost = postRepository.save(post);
-		saveRelated(savedPost);
+		Post savedPost = postDAO.save(post);
+		if(savedPost != null){
+			publicationService.saveRelated(savedPost.getPublication().getId().intValue(), savedPost.getUuid());
+		}
 		
 		return savedPost;
 	}
 	
-	public void saveRelated(Post savedPost){
-		String uuid = savedPost.getUuid();
-		if(savedPost != null){
-			if(uuid != null){
-				List<Upload> relatedUploads = uploadService.findByUuidAndDisplay(uuid, true);
-				
-				if(relatedUploads != null){
-					for (Upload upload : relatedUploads) {
-						uploadService.addItemTable(upload, savedPost.getId(), "posts");
-					}
-				}				
-			}
-		}
-	}
 
-	public Post findOne(int id) {
-		return postRepository.findOne(id);
+	public Post findByID(int id) {
+		return postDAO.findByID(id);
 	}
-
 	
 	public List<Post> findMatching(String term) {
-		return postDao.searchFor(term);
+		return postDAO.searchFor(term);
 	}
 
-	public List<Post> findLatestPosts(Integer pageNumber, Integer limit, String sortField, String sortDirection) {
-		
-		Page<Post> requestedPage = postRepository.findAllLatest(constructPageSpecification(pageNumber, limit, sortField, sortDirection));
-		return requestedPage.getContent();
-	}
 	
-	public List<Post> findLatestPostsForProfile(Profile profile, Post post, Integer pageNumber, Integer limit, String sortField, String sortDirection){
-		Page<Post> requestedPage;
-		Integer viewedPostId = post.getId();
-		if(viewedPostId != null){
-			requestedPage = postRepository.findAllLatestForProfileExcept(profile.getId(), viewedPostId, constructPageSpecification(pageNumber, limit, sortField, sortDirection));
-		}else{
-			requestedPage = postRepository.findAllLatestForProfile(profile.getId(), constructPageSpecification(pageNumber, limit, sortField, sortDirection));
-		}
-		
-		return requestedPage.getContent();
-	}
 	
-	public List<Post> getLatestPostsForProfile(Profile profile, Post post, com.elevysi.site.blog.pojo.Page page){
-		
+	public List<Post> getLatestPostsForProfile(ProfileDTO profile, Post post, com.elevysi.site.commons.pojo.Page page){
 		if(post != null){
-			return postDao.getAllLatestForProfileExcept(profile, post.getId(), page);
+			return postDAO.getAllLatestForProfileExcept(profile, post.getId(), page);
 		}else{
-			return postDao.getAllLatestForProfile(profile, page);
+			return postDAO.getAllLatestForProfile(profile, page);
 		}
-	}
-	
-	
-
-	public List<Post> findByProfile(Profile profile) {
-		
-		return postRepository.findByProfile(profile);
-	}
-	
-	public List<Post> findProfilePosts(Profile profile, Integer pageNubmer, Integer limit, String sortField, String sortDirection) {
-		
-		return postRepository.findProfilePosts(profile.getId(), constructPageSpecification(pageNubmer - 1, limit, sortField, sortDirection)).getContent();
 	}
 	
 	
 	public void addComment(Post post, Comment comment){
 		this.addComment(post, comment, true);
 	}
-	
-	@Autowired
-	private CommentService commentService;
 	
 	
 	/**
@@ -205,8 +136,8 @@ public class PostService extends AbstractService{
 			 * Using this approach because fecth type is lazy
 			 * Eager would explode latency
 			 */
-			Set<Comment> postComments = commentService.findByPostComment(post);
-			
+			com.elevysi.site.commons.pojo.Page commentPage = commentService.buildOffsetPage(1, DEFAULT_NO_COMMENTS, Comment_.created , SortDirection.DESC);
+			Set<Comment> postComments = new HashSet<Comment>(commentService.getCommentsForPublication(commentPage, post.getPublication().getId()));
 			post.setComments(postComments);
 			
 			if(post.getComments().contains(comment)){
@@ -223,61 +154,25 @@ public class PostService extends AbstractService{
 			}
 		}
 	}
-	
-	public Post loadFullPost(Integer id){
-		
-		
-//		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-//		CriteriaQuery<Post> cq = cb.createQuery(Post.class);		
-//		
-//		ListJoin<Post, Category> postJoins = cq.from(Post.class).join(Post_.categories);
-//		
-//		
-//		
-//		Root<Post> post = cq.from(Post.class);
-//		cq.multiselect(postJoins).where( cb.equal(post.get(Post_.id), id )).distinct(true);
-//		
-//		
-//		TypedQuery<Post> typedQuery = entityManager.createQuery(cq);
-//		Post resultPost = typedQuery.getSingleResult();
-		
-//		resultPost
-//		Root<Category> from = criteriaQuery.from(Category.class);
-//		Path<Object> path = from.join("product").get("category");
-//		 
-//		CriteriaQuery<Object> select = criteriaQuery.select(from);
-//		select.where(criteriaBuilder.equal(path, category));
-//		 
-//		TypedQuery<Object> typedQuery = entityManager.createQuery(select);
-		
-//		return resultPost;
-		
-		
-		return postDao.loadPostForView(id);
-		
-	}
 
-	
 	
 	public String truncate(String content, int lastIndex){
 		String result = content.substring(0, lastIndex);
-	    if (content.charAt(lastIndex) != ' ') {
+	    if (content.charAt(lastIndex) != ' ' && content.contains(" ")) {
 	        result = result.substring(0, result.lastIndexOf(" "));
 	    }
 	    return result;
 	}
 
-	
-
 	public Post updatePost(Post post) {
-		return postRepository.save(post);
+		return postDAO.save(post);
 	}
 	
 	public List<Post> findAllPostsWithProfile(){
 		return null;
 	}
 	
-	public boolean canEditPost(Profile profileOwner, Profile profile){
+	public boolean canEditPost(ProfileDTO profileOwner, ProfileDTO profile){
 		if(profileOwner != null && profile != null){
 			if(profileOwner.equals(profile)){
 				return true;
@@ -300,20 +195,16 @@ public class PostService extends AbstractService{
 //	}
 	
 	public OffsetPage buildOffsetPage(int pageIndex, int size,  SingularAttribute sortField, SortDirection sortDirection){
-		return postDao.buildOffsetPage(pageIndex, size, sortField, sortDirection);
+		return postDAO.buildOffsetPage(pageIndex, size, sortField, sortDirection);
 	}
 	
-	public List<Post> getAllPosts(com.elevysi.site.blog.pojo.Page page){
-		return postDao.getPosts(page);
-	}
-	
-	public Post getPost(int id){
-		return postDao.getPost(id);
+	public List<Post> getAllPosts(com.elevysi.site.commons.pojo.Page page){
+		return postDAO.getPosts(page);
 	}
 	
 	@PreAuthorize("#post.profile.id == principal.activeProfile.id || hasRole('ADMIN')")
-	public void deletePost(Post post){
-		postDao.deletePost(post.getId());
+	public void delete(Post post){
+		postDAO.delete(post.getId());
 	}
 
 }

@@ -2,13 +2,19 @@ package com.elevysi.site.blog.service;
 
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.persistence.metamodel.SingularAttribute;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
+import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,64 +22,73 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.elevysi.site.blog.dao.PublicationDAO;
+import com.elevysi.site.blog.dao.PublicationDAOImplement;
+import com.elevysi.site.blog.dao.PublicationRepository;
 import com.elevysi.site.blog.entity.Album;
 import com.elevysi.site.blog.entity.Dossier;
 import com.elevysi.site.blog.entity.Play;
 import com.elevysi.site.blog.entity.Post;
-import com.elevysi.site.blog.entity.Profile;
 import com.elevysi.site.blog.entity.Publication;
-import com.elevysi.site.blog.pojo.OffsetPage;
-import com.elevysi.site.blog.pojo.Page.SortDirection;
-import com.elevysi.site.blog.repository.PublicationDAO;
-import com.elevysi.site.blog.repository.PublicationDAOImplement;
-import com.elevysi.site.blog.repository.PublicationRepository;
+import com.elevysi.site.blog.entity.Upload;
+import com.elevysi.site.commons.dto.DossierDTO;
+import com.elevysi.site.commons.dto.PlayDTO;
+import com.elevysi.site.commons.dto.PostDTO;
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.elevysi.site.commons.dto.PublicationDTO;
+import com.elevysi.site.commons.dto.UploadDTO;
+import com.elevysi.site.commons.pojo.OffsetPage;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 
 @Service
-public class PublicationService{
+public class PublicationService extends BasicService{
 	
-	@Autowired
-	private PublicationRepository publicationRepository;
+//	@Autowired
+//	private PublicationRepository publicationRepository;
 	
-	@Autowired
+	
 	private PublicationDAO publicationDAO;
+	private ModelMapper modelMapper;
 	
-	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
-	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
+	@Autowired
+	private UploadService uploadService;
 	
-	public Publication findOne(Integer id){
-		return publicationRepository.findOne(id);
+	@Autowired
+	public PublicationService(PublicationDAO publicationDAO, ModelMapper modelMapper){
+		this.publicationDAO = publicationDAO;
+		this.modelMapper = modelMapper;
+	}
+	
+	public Publication findByID(Long id){
+		return publicationDAO.findByID(id);
 	}
 	
 
-	public Publication findPlayPublication(Play play){
-		return publicationRepository.findPlayPublication(play.getId());
-	}
+//	public Publication findPlayPublication(Play play){
+//		return publicationRepository.findPlayPublication(play.getId());
+//	}
+//	
+//	public Publication findPostPublication(Post post){
+//		return publicationRepository.findPostPublication(post.getId());
+//	}
+//	
+//	public Publication findAlbumPublication(Album album){
+//		return publicationRepository.findAlbumPublication(album.getId());
+//	}
 	
-	public Publication findPostPublication(Post post){
-		return publicationRepository.findPostPublication(post.getId());
-	}
-	
-	public Publication findAlbumPublication(Album album){
-		return publicationRepository.findAlbumPublication(album.getId());
-	}
-	
-	public Publication findProfilePublication(Profile profile){
-		return publicationRepository.findProfilePublication(profile.getId());
-	}
-	
-	public Publication findDossierPublication(Dossier dossier){
-		return publicationRepository.findDossierPublication(dossier.getId());
-	}
-	
-	public Publication saveRemotePublication(Publication publication){
-		return publicationRepository.save(publication);
-	}
-
-
-	public Page<Publication> findProfilePublications(Profile actingProfile, Integer pageNumber, Integer limit, String sortField, String sortDirection) {
-		 return publicationRepository.findProfilePublications(actingProfile.getId(), constructPageSpecification(pageNumber, limit, sortField, sortDirection));
+	public Publication findProfilePublication(ProfileDTO profile){
+//		return publicationRepository.findProfilePublication(profile.getId());
 		
+		return null;
 	}
+	
+//	public Publication findDossierPublication(Dossier dossier){
+//		return publicationRepository.findDossierPublication(dossier.getId());
+//	}
+//	
+//	public Publication saveRemotePublication(Publication publication){
+//		return publicationRepository.save(publication);
+//	}
 	
 	/**
      * Returns a Sort object which sorts persons in ascending order by using the last name.
@@ -87,73 +102,75 @@ public class PublicationService{
         
     }
 	
-    private Pageable constructPageSpecification(int pageIndex, int limit,  String sortField, String sortDirection) {
-    	Pageable pageSpecification = new PageRequest(pageIndex, limit, sortByField(sortField, sortDirection));
-        return pageSpecification;
-    }
-	
-	public Publication savePublication(Publication publication){
-		Date now = new Date();
-		publication.setCreated(now);
-		publication.setModified(now);
-		return publicationRepository.save(publication);
-	}
-	
-	public Publication saveEditedPublication(Publication publication){
-		Date now = new Date();
-		publication.setModified(now);
-		return this.doSaveEditedPublication(publication);
-	}
-	
-	public Publication doSaveEditedPublication(Publication publication){
-		return publicationRepository.save(publication);
-	}
-	
 	public OffsetPage buildOffsetPage(int pageIndex, int size,  SingularAttribute sortField, SortDirection sortDirection){
 		return publicationDAO.buildOffsetPage(pageIndex, size, sortField, sortDirection);
 	}
 	
-	public List<Publication> getAllPublications(com.elevysi.site.blog.pojo.Page page){
+	public List<Publication> getAllPublications(com.elevysi.site.commons.pojo.Page page){
 		return publicationDAO.getPublications(page);
 	}
 
-	public List<Publication> getProfilePublications(Profile profile, com.elevysi.site.blog.pojo.Page page){
-		return publicationDAO.getProfilePublications(profile, page);
+	public List<Publication> getProfilePublications(Integer profileID, com.elevysi.site.commons.pojo.Page page){
+		return publicationDAO.getProfilePublications(profileID, page);
+	}
+	
+	public List<PublicationDTO> getProfilePublicationsDTO(Integer profileID, com.elevysi.site.commons.pojo.Page page){
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		List<Publication> publications = getProfilePublications(profileID, page);
+		java.lang.reflect.Type targetListType = new TypeToken<ArrayList<PublicationDTO>>() {}.getType();
+		List<PublicationDTO> publicationsDTO = modelMapper.map(publications, targetListType);
+				
+		return publicationsDTO;
 	}
 	
 	public List<Publication> searchByTerm(String term){
 		return publicationDAO.searchByTerm(term);
 	}
 	
-	public Publication getPublication(int id){
-		return publicationDAO.getPublication(id);
+	public Publication getPublication(Long id){
+		return publicationDAO.findByID(id);
 	}
 	
-	public List<Publication> getFeaturedPublications(com.elevysi.site.blog.pojo.Page page){
+	public List<Publication> getFeaturedPublications(com.elevysi.site.commons.pojo.Page page){
 		return publicationDAO.getFeaturedPublications(page);
 	}
 	
-	/**
-	 * http://stackoverflow.com/questions/1657193/java-code-library-for-generating-slugs-for-use-in-pretty-urls
-	 * @param input
-	 * @return
-	 */
-	public String toSlug(String input) {
-	    String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
-	    String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
-	    String slug = NONLATIN.matcher(normalized).replaceAll("");
-	    return slug.toLowerCase(Locale.ENGLISH);
-    }
-	
-	public Publication updateItemPublicationWithSlug(int id, String toSlug){
+	public Publication updateItemPublicationWithSlug(Long id, String toSlug){
 		Publication publication = getPublication(id);
 		if(publication != null){
 			Date now = new Date();
 			publication.setModified(now);
 			String slug = toSlug(toSlug);
 			publication.setFriendlyUrl(slug);
-			return publicationRepository.save(publication);
+			return publicationDAO.save(publication);
 		}
 		return null;
+	}
+	
+	public Publication saveEditedPublication(Publication publication){
+		Date now = new Date();
+		publication.setModified(now);
+		return publicationDAO.saveEdited(publication);
+	}
+	
+	public Publication save(Publication publication){
+		Date now = new Date();
+		publication.setCreated(now);
+		publication.setModified(now);
+		return publicationDAO.save(publication);
+	}
+	
+	public List<Publication> findAll(){
+		return publicationDAO.findAll();
+	}
+	
+	public void saveRelated(Integer itemID, String UUID){
+		List<Upload> relatedUploads = uploadService.findByUuidAndDisplay(UUID, true);
+		
+		if(relatedUploads != null){
+			for (Upload upload : relatedUploads) {
+				uploadService.addItemTable(upload, itemID, "publication");
+			}
+		}		
 	}
 }

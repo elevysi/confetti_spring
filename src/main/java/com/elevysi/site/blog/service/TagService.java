@@ -2,8 +2,8 @@ package com.elevysi.site.blog.service;
 
 import org.springframework.stereotype.Service;
 
+import com.elevysi.site.blog.dao.TagRepository;
 import com.elevysi.site.blog.entity.Tag;
-import com.elevysi.site.blog.repository.TagRepository;
 
 @Service
 public class TagService {

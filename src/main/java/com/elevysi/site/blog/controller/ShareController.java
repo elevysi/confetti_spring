@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.elevysi.site.blog.config.security.ActiveUser;
-import com.elevysi.site.blog.entity.Profile;
 import com.elevysi.site.blog.entity.Share;
-import com.elevysi.site.blog.pojo.ReturnValue;
 import com.elevysi.site.blog.service.ShareService;
+import com.elevysi.site.commons.pojo.ActiveUser;
+import com.elevysi.site.commons.pojo.ReturnValue;
 
 @Controller
 @RequestMapping(value="/shares/")
@@ -41,26 +40,26 @@ public class ShareController {
 		if (!(auth instanceof AnonymousAuthenticationToken)){
 			ActiveUser activeUser = (ActiveUser)auth.getPrincipal();
 			
-			if(activeUser != null){
-				Profile activeProfile = activeUser.getActiveProfile();
-				share.setShareOwner(activeProfile);
-				
-				//Check if this profile has not liked the post yet
-				boolean hasProfileShared =  shareService.hasAlreadyShared(share);
-				
-				if(! hasProfileShared){
-					
-					Share savedShare = shareService.saveShare(share);
-					if(savedShare != null){
-						returnValue.setCode(1);
-						returnValue.setMessage("Successfully shared the item!");
-					}
-					
-				}else{
-					returnValue.setCode(2);
-					returnValue.setMessage("You have already liked this item!");
-				}
-			}
+//			if(activeUser != null){
+//				Profile activeProfile = activeUser.getActiveProfile();
+//				share.setShareOwner(activeProfile);
+//				
+//				//Check if this profile has not liked the post yet
+//				boolean hasProfileShared =  shareService.hasAlreadyShared(share);
+//				
+//				if(! hasProfileShared){
+//					
+//					Share savedShare = shareService.saveShare(share);
+//					if(savedShare != null){
+//						returnValue.setCode(1);
+//						returnValue.setMessage("Successfully shared the item!");
+//					}
+//					
+//				}else{
+//					returnValue.setCode(2);
+//					returnValue.setMessage("You have already liked this item!");
+//				}
+//			}
 		}
 		
 		return returnValue;

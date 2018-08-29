@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -26,18 +27,20 @@ import com.elevysi.site.blog.entity.Category;
 import com.elevysi.site.blog.entity.Comment;
 import com.elevysi.site.blog.entity.Dossier;
 import com.elevysi.site.blog.entity.Play;
+import com.elevysi.site.blog.entity.Play_;
 import com.elevysi.site.blog.entity.Post;
 import com.elevysi.site.blog.entity.Publication;
 import com.elevysi.site.blog.entity.Upload;
-import com.elevysi.site.blog.pojo.Page;
-import com.elevysi.site.blog.pojo.PostHighlight;
-import com.elevysi.site.blog.pojo.SessionMessage;
-import com.elevysi.site.blog.pojo.Page.SortDirection;
 import com.elevysi.site.blog.service.AlbumService;
 import com.elevysi.site.blog.service.DossierService;
 import com.elevysi.site.blog.service.PlayService;
 import com.elevysi.site.blog.service.PostService;
 import com.elevysi.site.blog.service.PublicationService;
+import com.elevysi.site.commons.pojo.Page;
+import com.elevysi.site.commons.pojo.PostHighlight;
+import com.elevysi.site.commons.pojo.ReturnValue;
+import com.elevysi.site.commons.pojo.SessionMessage;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 import com.elevysi.site.blog.entity.Post_;
 import com.elevysi.site.blog.entity.Publication_;
 import com.elevysi.site.blog.entity.Dossier_;
@@ -63,13 +66,6 @@ public class HomeController extends AbstractController{
 	@Autowired
 	private PublicationService publicationService;
 	
-	
-	@Value("${relativePathToDefaultAvatar}")
-	private String relativePathToDefaultAvatar;
-	
-	@Value("${fullPathToDefaultAvatar}")
-	private String fullPathToDefaultAvatar;
-	
 	private static final int NO_FEATURED = 4;
 	private static final int NO_SLIDER_POSTS= 3;
 	private static final int NO_RESUME_CHARS = 50;
@@ -86,7 +82,35 @@ public class HomeController extends AbstractController{
 		return "showroom";
 	}
 	
+	
 	@RequestMapping(value = {"/", "/index.html"}, method = RequestMethod.GET)
+	public String homeMinimal(
+			@ModelAttribute("sessionMessage") 
+			SessionMessage sessionMessage, 
+			@RequestParam(value = "message", required = false)String message, 
+			@RequestParam(value = "messageType", required = false)String messageType,
+			Locale locale,
+			Model model,
+			@RequestParam(value="page", defaultValue="1", required=false)int pageIndex
+			){
+		
+		//Find Featured Publications
+		Page page = publicationService.buildOffsetPage(pageIndex, DEFAULT_NO_ITEMS, Publication_.modified, SortDirection.DESC);
+		List<Publication> publications = publicationService.getFeaturedPublications(page);
+//		List<Publication> publications = new ArrayList<Publication>();
+		
+		double totalRecords = page.getTotalRecords();
+		int totalPages = (int)Math.ceil(totalRecords / DEFAULT_NO_ITEMS);
+		model.addAttribute("page", page);
+		model.addAttribute("totalPages", totalPages);
+		
+		model.addAttribute("publications", publications);
+		
+		return "homeMinimal";
+	}
+	
+	
+	@RequestMapping(value = {"/ui/public/trial"}, method = RequestMethod.GET)
 	public String homeBlog(
 			@ModelAttribute("sessionMessage") 
 			SessionMessage sessionMessage, 
@@ -111,10 +135,10 @@ public class HomeController extends AbstractController{
 			Play play = publication.getPlay();
 			Album album = publication.getAlbum();
 			if(post != null){
-				publication.setPost(postService.getPost(post.getId()));
+				publication.setPost(postService.findByID(post.getId()));
 				
 			}else if(play != null){
-				publication.setPlay(playService.getPlay(play.getId()));
+				publication.setPlay(playService.findByID(play.getId()));
 			}else if(album != null){
 				publication.setAlbum(albumService.findById(album.getId()));
 			}
@@ -130,7 +154,7 @@ public class HomeController extends AbstractController{
 		List<Post> posts = postService.getAllPosts(page);
 		
 		
-		List<Play> videoPlays = playService.findLatestFeaturedPlaysByType(1, 1, NO_FEATURED_PLAYS_VIDEO, SORT_FIELD, SORT_DIRECTION);
+		List<Play> videoPlays = playService.getPlays(playService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Play_.created, SortDirection.DESC));
 		List<Dossier> dossiers = dossierService.getDossiers(dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Dossier_.created, SortDirection.DESC));		
 		for (Post post : posts) {
 			
@@ -138,7 +162,7 @@ public class HomeController extends AbstractController{
 			
 			String imageKey = "";
 			
-			Set<Upload> postUploads = post.getUploads();
+			Set<Upload> postUploads = post.getPublication().getUploads();
 			if(postUploads != null && postUploads.size() > 0){
 				/**
 				 * Only images to be shown should be considered
@@ -154,7 +178,7 @@ public class HomeController extends AbstractController{
 			}			
 						
 			String postCat = null;
-			Set<Category> postCategories = post.getCategories();
+			Set<Category> postCategories = post.getPublication().getCategories();
 			
 			if(postCategories != null){
 				Iterator<Category> iterator = postCategories.iterator();
@@ -167,14 +191,14 @@ public class HomeController extends AbstractController{
 				
 			}
 			
-			
 			PostHighlight posted = new PostHighlight(
 					post.getId(),
 					post.getTitle(),
 					imageKey,
 					new SimpleDateFormat("EEE, d MMMMM yyyy HH:mm").format(post.getCreated()), 
-					post.getProfile().getName(),
+					post.getPublication().getProfileName(),
 					postService.truncate(post.getContent(), post.getContent().length() > NO_RESUME_CHARS? NO_RESUME_CHARS : post.getContent().length()-1),
+//					"Dummy Text",
 					postCat,
 					post.getPublication().getFriendlyUrl()
 					);
@@ -202,4 +226,17 @@ public class HomeController extends AbstractController{
 		return "homeBlog";
 	}
 	
+	@RequestMapping("/login/issessionvalid")
+	public @ResponseBody boolean isSessionValid(){
+		return postService.isAuthed();
+	}
+	
+	@RequestMapping(value = "/logout/ajax/success")
+	public @ResponseBody ReturnValue ajaxLogout(){
+		ReturnValue returnValue = new ReturnValue();
+		returnValue.setCode(1);
+		returnValue.setMessage("Successfully logged out");
+		return returnValue;
+		
+	}
 }

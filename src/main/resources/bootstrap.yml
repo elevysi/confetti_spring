@@ -1,5 +1,9 @@
 server:
   port: 8400
+#  context-path: /blog
+  session:
+    cookie:
+      name: ELBLSESSION
 spring:
   application:
     name: blogservice
@@ -10,3 +14,17 @@ spring:
     config:
       uri: http://localhost:8888
       enabled: true
+
+security:
+  basic:
+    enabled: false
+  oauth2:
+    client:
+      clientId: clienty
+      clientSecret: Fields2017
+      scope:
+        read
+      accessTokenUri: http://localhost:8100/oauth/token
+      userAuthorizationUri: http://localhost:8100/oauth/authorize
+    resource:
+      userInfoUri: http://localhost:8100/api/user

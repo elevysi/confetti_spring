@@ -18,15 +18,24 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "plays")
-public class Play {
+public class Play extends AbstractEntity{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -37,9 +46,24 @@ public class Play {
 	
 	private String embeddedUrl;
 
-	@OneToOne(fetch=FetchType.LAZY)
+	@JsonIgnore
+	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinColumn(name="publication_id")
 	private Publication publication;
+	
+	private String description;
+	
+	@Size(min=3, message="URL must be at least 3 characters")
+	@Column(nullable = false)
+	private String title;
+	
+	@OneToMany(mappedBy = "play", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+	@Fetch(FetchMode.SUBSELECT)
+	@org.hibernate.annotations.Filter(name="commentItemIs", condition="item_type=:item_typeValue")
+	private Set<Comment> comments = new HashSet<Comment>();
+	
+	@Column(name="profile_id")
+	private long profileID;
 	
 	@Column(name="count_comments")
 	private Integer commentCount;
@@ -50,27 +74,7 @@ public class Play {
 	
 	@Column(name="count_shares")
 	private Integer shareCount;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "dossier_id", referencedColumnName = "id")
-	private Dossier dossier;
-	
-	public Dossier getDossier() {
-		return dossier;
-	}
 
-
-	public void setDossier(Dossier dossier) {
-		this.dossier = dossier;
-	}
-	
-	public void setDossier(Dossier dossier, boolean add) {
-		this.dossier = dossier;
-		if(dossier != null && add){
-			dossier.addPlay(this, false);
-		}
-		
-	}
 	
 	public Integer getLikeCount() {
 		return likeCount;
@@ -117,17 +121,6 @@ public class Play {
 	public void setEmbeddedUrl(String embeddedUrl) {
 		this.embeddedUrl = embeddedUrl;
 	}
-
-	private String description;
-	
-	@Size(min=3, message="URL must be at least 3 characters")
-	@Column(nullable = false)
-	private String title;
-	
-	@OneToMany(mappedBy = "play", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-	@Fetch(FetchMode.SUBSELECT)
-	@org.hibernate.annotations.Filter(name="commentItemIs", condition="item_type=:item_typeValue")
-	private Set<Comment> comments = new HashSet<Comment>();
 	
 	public Set<Comment> getComments() {
 		return comments;
@@ -186,19 +179,18 @@ public class Play {
 		this.playType = playType;
 	}
 
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="profile_id", referencedColumnName="id")
-	private Profile playProfile;
+	@Transient
+	private ProfileDTO playProfile;
 	
 	@ManyToOne
 	@JoinColumn(name="type", referencedColumnName="id")
 	private PlayType playType;
 	
-	public Profile getPlayProfile() {
+	public ProfileDTO getPlayProfile() {
 		return playProfile;
 	}
 
-	public void setPlayProfile(Profile playProfile) {
+	public void setPlayProfile(ProfileDTO playProfile) {
 		this.playProfile = playProfile;
 	}
 
@@ -228,8 +220,15 @@ public class Play {
 	public void setFeatured(Boolean featured){
 		this.featured = featured;
 	}
+	
+	public long getProfileID() {
+		return profileID;
+	}
 
 
+	public void setProfileID(long profileID) {
+		this.profileID = profileID;
+	}
 	
 
 }

@@ -6,7 +6,7 @@
 <fmt:parseNumber var="unit" value="1" />
 <fmt:parseNumber var="even" value="2" />
 <fmt:parseNumber var="postsSize" value="${fn:length(posts)}" />
-
+<spring:eval expression="@environment.getProperty('socialService.url')" var="socialServiceUrl" />
 
 <div class="margin-bottom-50"></div>
 <c:forEach items="${posts}" var="post">
@@ -25,9 +25,9 @@
 				<div class="thumbnail-img">
 					
 					<c:choose>
-						<c:when test="${not empty post.uploads && fn:length(post.uploads) >= 1}">
+						<c:when test="${not empty post.publication.uploads && fn:length(post.publication.uploads) >= 1}">
 							<div class="overflow-hidden">
-								<img class="img-responsive" src="<c:url value='/uploads/download?key=${post.uploads.iterator().next().keyIdentification}'/>" alt="">
+								<img class="img-responsive" src="<c:url value='/uploads/download?key=${post.publication.uploads.iterator().next().keyIdentification}'/>" alt="">
 							</div>
 						</c:when>
 						<c:otherwise>
@@ -42,7 +42,7 @@
 				</div>
 				<div class="caption">
 					<h3><a class="hover-effect" href="<c:url value='/posts/view/${post.id}/${post.publication.friendlyUrl}'/>"><c:out value="${post.title}" /></a></h3>
-					<small>By <a href="<c:url value='/public/profile/${post.profile.name}' />" ><c:out value="${post.profile.name}" /></a> | <fmt:formatDate pattern="dd MMMM yy" value="${post.created}" /></small>
+					<small>By <a href="<c:url value='${socialServiceUrl}/ui/public/profile/${post.publication.profileName}' />" ><c:out value="${post.publication.profileName}" /></a> | <fmt:formatDate pattern="dd MMMM yy" value="${post.created}" /></small>
 					<p><c:out value="${post.description}" /></p>
 				</div>
 			</div>

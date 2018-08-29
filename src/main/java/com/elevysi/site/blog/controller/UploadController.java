@@ -40,23 +40,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.elevysi.site.blog.config.security.ActiveUser;
 import com.elevysi.site.blog.entity.MediaKind;
-import com.elevysi.site.blog.entity.Profile;
-import com.elevysi.site.blog.entity.ProfileType;
 import com.elevysi.site.blog.entity.Upload;
-import com.elevysi.site.blog.entity.User;
+import com.elevysi.site.blog.entity.Upload_;
 import com.elevysi.site.blog.form.EmbeddedMedia;
 import com.elevysi.site.blog.form.SavedMedia;
-import com.elevysi.site.blog.pojo.OffsetPage;
-import com.elevysi.site.blog.pojo.ReturnValue;
-import com.elevysi.site.blog.pojo.Page.SortDirection;
 import com.elevysi.site.blog.service.MediaKindService;
-import com.elevysi.site.blog.service.ProfileService;
-import com.elevysi.site.blog.service.ProfileTypeService;
 import com.elevysi.site.blog.service.UploadService;
-import com.elevysi.site.blog.service.UserService;
-import com.elevysi.site.blog.entity.Upload_;
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.elevysi.site.commons.pojo.ActiveUser;
+import com.elevysi.site.commons.pojo.OffsetPage;
+import com.elevysi.site.commons.pojo.ReturnValue;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 
 @Controller
 @RequestMapping("/uploads")
@@ -64,15 +59,6 @@ public class UploadController extends AbstractController{
 	
 	@Autowired
 	private UploadService uploadService;
-	
-	@Autowired
-	private UserService userService;
-	
-	@Autowired
-	private ProfileService profileService;
-	
-	@Autowired
-	private ProfileTypeService profileTypeService;
 	
 	@Autowired
 	private MediaKindService mediaKindService;
@@ -91,12 +77,12 @@ public class UploadController extends AbstractController{
 	@RequestMapping(value="/profile", method= RequestMethod.GET)
 	public String profilePic(Model model){
 		
-		Profile actingProfile = userService.getActiveProfile();
-		model.addAttribute("actingProfile", actingProfile);
-		model.addAttribute("profile", actingProfile);
-		
-		Profile requestingProfile = userService.getActiveProfile();
-		model.addAttribute("requestingProfile", requestingProfile);
+//		Profile actingProfile = userService.getActiveProfile();
+//		model.addAttribute("actingProfile", actingProfile);
+//		model.addAttribute("profile", actingProfile);
+//		
+//		Profile requestingProfile = userService.getActiveProfile();
+//		model.addAttribute("requestingProfile", requestingProfile);
 		
 		return "profilePicUpload";
 	}
@@ -108,93 +94,93 @@ public class UploadController extends AbstractController{
 		returnValue.setCode(0);
 		returnValue.setMessage("Failed to Upload the file.");
 		
-		Upload upload = null;
-		
-	    //1. Build an Iterator
-		Iterator<String> itr = request.getFileNames();
-		MultipartFile mpf = null;
-		
-		//2. get each file
-		while(itr.hasNext()){
-			//2.1 Get Next Multipart File
-			mpf = request.getFile(itr.next());
-			
-			
-			
-			//2.3 Create new Upload
-			
-			/**
-			 * Check if Profile has a profile Picture Already
-			 */
-			
-			Profile requestedProfile = userService.getActiveProfile();
-			String fileName = mpf.getOriginalFilename();
-			
-			if(requestedProfile.getProfilePicture().iterator().hasNext()){
-				upload = requestedProfile.getProfilePicture().iterator().next();
-			}
-			
-			
-			
-			if(upload == null){
-				upload = new Upload();				
-			}
-			
-			upload.setFilename(fileName);
-			upload.setFilesize((int)mpf.getSize());
-			upload.setFilemine(mpf.getContentType());
-			upload.setOwningProfilePicture(requestedProfile);
-			upload.setLinkTable("profilePicture");
-			
-			String uploadKey = this.generateUUID();
-			upload.setKeyIdentification(uploadKey);
-			
-			upload.setAltText("profilePicture");
-			
-			Long timeofUpload  = System.currentTimeMillis();
-			
-			
-			
-			try{
-				
-				
-				String avatarDirPath = this.avatarUploadPath+"profiles"+this.ds+requestedProfile.getId()+this.ds+"avatar"+this.ds+timeofUpload+this.ds;
-				File avatarDir = new File(avatarDirPath);
-				if (!avatarDir.exists()) {
-					if (avatarDir.mkdirs()) {
-						
-						String saveRelativePath = "profiles"+this.ds+requestedProfile.getId()+this.ds+"avatar"+this.ds+timeofUpload+this.ds+fileName;
-						upload.setPath(saveRelativePath);
-						uploadService.saveImage(mpf, avatarDirPath+fileName);
-					} else {
-						
-					}
-				}
-				
-				
-				
-				uploadService.saveUpload(upload);
-				
-				upload.setOwningProfilePicture(requestedProfile);
-				upload.setLinkTable("profilePicture");
-				uploadService.saveUpload(upload);
-				
-				returnValue.setCode(1);
-				returnValue.setMessage("The file was successfully uploaded.");
-				returnValue.setExtra("");
-				
-				
-				/**
-				 * Reload the Profile User to display data
-				 */
-				userService.reloadCurrentProfile();
-				
-			}catch(Exception e){
-				throw e;
-			}			
-			
-			
-		}
+//		Upload upload = null;
+//		
+//	    //1. Build an Iterator
+//		Iterator<String> itr = request.getFileNames();
+//		MultipartFile mpf = null;
+//		
+//		//2. get each file
+//		while(itr.hasNext()){
+//			//2.1 Get Next Multipart File
+//			mpf = request.getFile(itr.next());
+//			
+//			
+//			
+//			//2.3 Create new Upload
+//			
+//			/**
+//			 * Check if Profile has a profile Picture Already
+//			 */
+//			
+//			Profile requestedProfile = userService.getActiveProfile();
+//			String fileName = mpf.getOriginalFilename();
+//			
+//			if(requestedProfile.getProfilePicture().iterator().hasNext()){
+//				upload = requestedProfile.getProfilePicture().iterator().next();
+//			}
+//			
+//			
+//			
+//			if(upload == null){
+//				upload = new Upload();				
+//			}
+//			
+//			upload.setFilename(fileName);
+//			upload.setFilesize((int)mpf.getSize());
+//			upload.setFilemine(mpf.getContentType());
+//			upload.setOwningProfilePicture(requestedProfile);
+//			upload.setLinkTable("profilePicture");
+//			
+//			String uploadKey = this.generateUUID();
+//			upload.setKeyIdentification(uploadKey);
+//			
+//			upload.setAltText("profilePicture");
+//			
+//			Long timeofUpload  = System.currentTimeMillis();
+//			
+//			
+//			
+//			try{
+//				
+//				
+//				String avatarDirPath = this.avatarUploadPath+"profiles"+this.ds+requestedProfile.getId()+this.ds+"avatar"+this.ds+timeofUpload+this.ds;
+//				File avatarDir = new File(avatarDirPath);
+//				if (!avatarDir.exists()) {
+//					if (avatarDir.mkdirs()) {
+//						
+//						String saveRelativePath = "profiles"+this.ds+requestedProfile.getId()+this.ds+"avatar"+this.ds+timeofUpload+this.ds+fileName;
+//						upload.setPath(saveRelativePath);
+//						uploadService.saveImage(mpf, avatarDirPath+fileName);
+//					} else {
+//						
+//					}
+//				}
+//				
+//				
+//				
+//				uploadService.saveUpload(upload);
+//				
+//				upload.setOwningProfilePicture(requestedProfile);
+//				upload.setLinkTable("profilePicture");
+//				uploadService.saveUpload(upload);
+//				
+//				returnValue.setCode(1);
+//				returnValue.setMessage("The file was successfully uploaded.");
+//				returnValue.setExtra("");
+//				
+//				
+//				/**
+//				 * Reload the Profile User to display data
+//				 */
+//				userService.reloadCurrentProfile();
+//				
+//			}catch(Exception e){
+//				throw e;
+//			}			
+//			
+//			
+//		}
 		
 		return returnValue;
 	}
@@ -231,8 +217,8 @@ public class UploadController extends AbstractController{
 			
 			if(auth != null && isAuthenticated){
 				ActiveUser activeUser = (ActiveUser)auth.getPrincipal();
-				Profile owningProfile = activeUser.getActiveProfile();
-				upload.setUploadOwner(owningProfile);
+//				Profile owningProfile = activeUser.getActiveProfile();
+//				upload.setUploadOwner(owningProfile);
 			}
 			
 			
@@ -413,8 +399,8 @@ public class UploadController extends AbstractController{
 		 * Record the upload to the profile and User creating it
 		 */
 		
-		Profile owningProfile = userService.getActiveProfile();
-		upload.setUploadOwner(owningProfile);
+		ProfileDTO owningProfile = uploadService.getActiveProfile();
+		upload.setProfileID(owningProfile.getId());
 		
 		uploadService.saveUpload(upload);
 		
@@ -429,7 +415,12 @@ public class UploadController extends AbstractController{
 	}
 	
 	@RequestMapping(value="savedMedia/{uuid}", method=RequestMethod.GET)
-	public String savedMedia(@RequestParam(value="page", defaultValue="1", required=false)int pageIndex, @PathVariable("uuid") String uuid, Model model, @RequestParam(required = false) String message, @RequestParam(value="type", required=false, defaultValue="posts")String type){
+	public String savedMedia(
+			@RequestParam(value="page", defaultValue="1", required=false)int pageIndex, 
+			@PathVariable("uuid") String uuid, 
+			Model model, 
+			@RequestParam(required = false) String message, 
+			@RequestParam(value="type", required=false, defaultValue="posts")String type){
 		/**
 		 * Find all uploads related to post
 		 */
@@ -458,10 +449,10 @@ public class UploadController extends AbstractController{
 		 * Find all uploads owned by profile
 		 */
 		
-		Profile owningProfile = userService.getActiveProfile();
+		ProfileDTO owningProfile = uploadService.getActiveProfile();
 		
 		OffsetPage page = uploadService.buildOffsetPage(pageIndex, DEFAULT_NO_ITEMS, Upload_.created, SortDirection.DESC);
-		List<Upload> profileUploads = uploadService.findPaginatedProfileUploads(owningProfile, page);
+		List<Upload> profileUploads = uploadService.findPaginatedProfileUploads(owningProfile.getId(), page);
 		long totalRecords = page.getTotalRecords();
 		int totalPages = Math.round(totalRecords / DEFAULT_NO_ITEMS);
 		
@@ -503,7 +494,7 @@ public class UploadController extends AbstractController{
 	}
 	
 	@RequestMapping(value="savedMedia", method=RequestMethod.POST)
-	public @ResponseBody ReturnValue doSavedMediaForm(@ModelAttribute("savedMedia") SavedMedia savedMedia, @RequestParam(value="type", required=false, defaultValue="posts")String type){
+	public @ResponseBody ReturnValue doSavedMediaForm(@ModelAttribute("savedMedia") SavedMedia savedMedia, @RequestParam(value="type", required=false, defaultValue="publication")String type){
 		
 		ReturnValue returnValue = new ReturnValue();
 		returnValue.setCode(1);
@@ -517,7 +508,7 @@ public class UploadController extends AbstractController{
 			foundOneToAdd = true;
 			
 			for (Integer upload_id : selectedUploads) {
-				Upload concernedUpload = uploadService.findOne(upload_id);
+				Upload concernedUpload = uploadService.findbyID(upload_id);
 				concernedUpload.setDisplay(true);
 				concernedUpload.setLinkTable(type);
 				uploadService.saveUpload(concernedUpload);
@@ -529,14 +520,14 @@ public class UploadController extends AbstractController{
 			foundOneToAdd = true;
 			
 			for (Integer upload_id : selectedoldUploads) {
-				Upload concernedUpload = uploadService.findOne(upload_id);
-				concernedUpload.setLinkTable(type);
+				Upload concernedUpload = uploadService.findbyID(upload_id);
 				/**
 				 * Remove ID, uuid and keyIdentification to set as a fresh copy
 				 */
-				Upload newUploadValue = concernedUpload.createDuplicate();
+				Upload newUploadValue = (Upload)concernedUpload.clone();
 				
 				newUploadValue.setUuid(savedMedia.getUuid());
+				newUploadValue.setKeyIdentification(this.generateUUID());
 				newUploadValue.setDisplay(true);
 				uploadService.saveUpload(newUploadValue);
 			}
@@ -663,10 +654,10 @@ public class UploadController extends AbstractController{
 	@RequestMapping(value="media")
 	public String listProfileMedia(Model model){
 		
-		Profile owningProfile = userService.getActiveProfile();
-		List<Upload> profileUploads = uploadService.findProfileUploads(owningProfile);
-		
-		model.addAttribute("profileUploads", profileUploads);
+//		Profile owningProfile = userService.getActiveProfile();
+//		List<Upload> profileUploads = uploadService.findProfileUploads(owningProfile);
+//		
+//		model.addAttribute("profileUploads", profileUploads);
 		
 		return "profileMediaList";
 	}

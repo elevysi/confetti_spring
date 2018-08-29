@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Fetch;
@@ -26,6 +27,8 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.FilterDefs;
 import org.hibernate.validator.constraints.Email;
+
+import com.elevysi.site.commons.dto.ProfileDTO;
 
 @Entity
 @Table(name = "comments")
@@ -36,7 +39,8 @@ import org.hibernate.validator.constraints.Email;
 			@org.hibernate.annotations.ParamDef(name="item_typeValue", type = "java.lang.String")
 	}),
 	@FilterDef(name="postComment", defaultCondition="item_type = 'posts'"),
-	@FilterDef(name="playComment", defaultCondition="item_type = plays")
+	@FilterDef(name="playComment", defaultCondition="item_type = plays"),
+	@FilterDef(name="publicationComment", defaultCondition="item_type = publications")
 	
 })
 //@org.hibernate.annotations.Filter(name="commentItemIs", condition="item_type=:item_typeValue")
@@ -121,6 +125,12 @@ public class Comment extends AbstractEntity{
 	@JoinColumn(name="item_id", nullable = false, insertable = false, updatable = false)
 	private Play play;
 	
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+	@JoinColumn(name="item_id", nullable = false, insertable = false, updatable = false)
+	private Publication publication;
+	
+	
 	public Play getPlay() {
 		return play;
 	}
@@ -131,9 +141,10 @@ public class Comment extends AbstractEntity{
 
 
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name="profile_id")
-	private Profile profile;
+//	@ManyToOne(fetch = FetchType.EAGER)
+//	@JoinColumn(name="profile_id")
+	@Transient
+	private ProfileDTO profile;
 	
 	@Column(nullable = false)
 	@Size(min=1, message ="Comment cannot be left empty")
@@ -218,11 +229,11 @@ public class Comment extends AbstractEntity{
 		this.post = post;
 	}	
 
-	public Profile getProfile() {
+	public ProfileDTO getProfile() {
 		return profile;
 	}
 
-	public void setProfile(Profile profile) {
+	public void setProfile(ProfileDTO profile) {
 		this.profile = profile;
 	}
 
@@ -240,6 +251,14 @@ public class Comment extends AbstractEntity{
         }
         return false;
     }
+
+	public Publication getPublication() {
+		return publication;
+	}
+
+	public void setPublication(Publication publication) {
+		this.publication = publication;
+	}
 	
 	
 

@@ -14,6 +14,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import com.elevysi.site.commons.dto.ProfileDTO;
 
 @Entity
 @Table(name="shares")
@@ -49,16 +52,17 @@ public class Share {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modified;
 	
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="profile_id")
-	private Profile shareOwner;
+//	@OneToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name="profile_id")
+	@Transient
+	private ProfileDTO shareOwner;
 	
 
-	public Profile getShareOwner() {
+	public ProfileDTO getShareOwner() {
 		return shareOwner;
 	}
 
-	public void setShareOwner(Profile shareOwner) {
+	public void setShareOwner(ProfileDTO shareOwner) {
 		this.shareOwner = shareOwner;
 	}
 

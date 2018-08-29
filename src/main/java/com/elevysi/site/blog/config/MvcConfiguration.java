@@ -3,11 +3,13 @@ package com.elevysi.site.blog.config;
 import java.util.Locale;
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -22,6 +24,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesView;
 
+import com.elevysi.site.blog.converter.StringToDossierConverter;
 import com.elevysi.site.blog.interceptor.AbstractInterceptor;
 import com.elevysi.site.blog.interceptor.ResourceInterceptor;
 
@@ -29,6 +32,9 @@ import com.elevysi.site.blog.interceptor.ResourceInterceptor;
 @EnableWebMvc
 @ComponentScan(basePackages="com.elevysi.site.blog.controller")
 public class MvcConfiguration extends WebMvcConfigurerAdapter{
+	
+	@Value("${upload.meanFormatted}")
+	private static String MEAN_UPLOAD_FOLDER;
 	
 	@Bean
     public UrlBasedViewResolver urlViewResolver(){
@@ -67,6 +73,15 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
 	    registry.addResourceHandler("/css/**").addResourceLocations("/resources/css/");
 	    registry.addResourceHandler("/ng/**").addResourceLocations("/resources/ng/");
 	    registry.addResourceHandler("/assests/**").addResourceLocations("/resources/assets1.8/");
+	    
+	    registry.addResourceHandler("/resources_2_5/**").addResourceLocations("/resources/assets2.5/");
+	    
+	    //Add Folder for the mean uploads
+	    registry.addResourceHandler("/meanUploads/**").addResourceLocations("file:/home/elvis/Desktop/sliders/");
+	    /**
+	     * Not working on mounted drive
+	     */
+//	    registry.addResourceHandler("/meanUploads/**").addResourceLocations("file:/media/elvis/DataHDD1/Projects/NodeJSProjectsGit/NodeJSProjects/laLifeApp/client");
 	}
 	
 //	https://stackoverflow.com/questions/29953245/configure-viewresolver-with-spring-boot-and-annotations-gives-no-mapping-found-f , http://www.baeldung.com/spring-mvc-view-resolver-tutorial
@@ -131,5 +146,11 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
 	    
 	    return resolver;
 	}
+	
+	
+//	@Override
+//    public void addFormatters (FormatterRegistry registry) {
+//        registry.addConverter(new StringToDossierConverter());
+//    }
 	
 }

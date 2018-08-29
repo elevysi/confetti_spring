@@ -9,24 +9,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import com.elevysi.site.blog.dao.DossierDAO;
 import com.elevysi.site.blog.entity.Dossier;
 import com.elevysi.site.blog.entity.Post;
-import com.elevysi.site.blog.entity.Profile;
 import com.elevysi.site.blog.entity.Publication;
 import com.elevysi.site.blog.entity.Upload;
-import com.elevysi.site.blog.pojo.OffsetPage;
-import com.elevysi.site.blog.pojo.Page;
-import com.elevysi.site.blog.pojo.Page.SortDirection;
-import com.elevysi.site.blog.repository.DossierDAO;
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.elevysi.site.commons.pojo.OffsetPage;
+import com.elevysi.site.commons.pojo.Page;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 
 @Service
-public class DossierService extends AbstractService{
+public class DossierService extends BasicService{
 	
 	@Autowired
 	private DossierDAO dossierDAO;
 	
+	
 	@Autowired
-	private UploadService uploadService;
+	private PublicationService publicationService;
 	
 	public Dossier save(Dossier dossier){
 		Date now = new Date();
@@ -34,13 +35,20 @@ public class DossierService extends AbstractService{
 		dossier.setModified(now);
 		dossier.setIsFeatured(false);
 		
-		Publication publication = savePublication(dossier.getProfile(), dossier.getName());
-		if(publication != null){
-			dossier.setPublication(publication);
+		Publication publication = dossier.getPublication();
+		publication.setCreated(now);
+		publication.setModified(now);
+		publication.setPublicPublication(true);
+		publication.setProfileID(dossier.getProfileID());
+		String slug = toSlug(dossier.getName());
+		if(slug != null){
+			publication.setFriendlyUrl(slug);
 		}
 		
-		Dossier savedDossier =  dossierDAO.saveDossier(dossier);
-		saveRelated(savedDossier);
+		Dossier savedDossier =  dossierDAO.save(dossier);
+		if(savedDossier != null){
+			publicationService.saveRelated(savedDossier.getPublication().getId().intValue(), savedDossier.getUuid());
+		}
 		
 		return savedDossier;
 	}
@@ -49,31 +57,20 @@ public class DossierService extends AbstractService{
 	public Dossier saveEdited(Dossier dossier){
 		Date now = new Date();
 		dossier.setModified(now);
+		dossier.getPublication().setModified(now);
 		
-		Dossier savedDossier =  dossierDAO.saveEditedDossier(dossier);
-		saveRelated(savedDossier);
+		Dossier savedDossier =  dossierDAO.saveEdited(dossier);
+		if(savedDossier != null){
+			publicationService.saveRelated(savedDossier.getPublication().getId().intValue(), savedDossier.getUuid());
+		}
 		
 		return savedDossier;
 	}
 	
-	public void saveRelated(Dossier savedDossier){
-		String uuid = savedDossier.getUuid();
-		if(savedDossier != null){
-			if(uuid != null){
-				List<Upload> relatedUploads = uploadService.findByUuidAndDisplay(uuid, true);
-				
-				if(relatedUploads != null){
-					for (Upload upload : relatedUploads) {
-						uploadService.addItemTable(upload, savedDossier.getId(), "dossiers");
-					}
-				}				
-			}
-		}
-	}
 	
-	public Dossier findById(int id){
-		return dossierDAO.getDossier(id);
-		
+	
+	public Dossier findByID(int id){
+		return dossierDAO.findByID(id);
 	}
 	
 	public OffsetPage buildOffsetPage(int pageIndex, int size,  SingularAttribute sortField, SortDirection sortDirection){
@@ -85,12 +82,16 @@ public class DossierService extends AbstractService{
 	}
 	
 	@PreAuthorize("#dossier.profile.id == principal.activeProfile.id || hasRole('ADMIN')")
-	public void deleteDossier(Dossier dossier){
-		dossierDAO.deleteDossier(dossier.getId());
+	public void delete(Dossier dossier){
+		dossierDAO.delete(dossier.getId());
 	}
 	
-	public List<Dossier> getDossiersForProfile(Profile profile, Page page){
+	public List<Dossier> getDossiersForProfile(ProfileDTO profile, Page page){
 		return dossierDAO.getDossiersForProfile(profile, page);
+	}
+	
+	public List<Dossier> findAll(){
+		return dossierDAO.findAll();
 	}
 
 }

@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.elevysi.site.blog.ws.soap.consumer.client.ArticleClient;
 
-@Controller
-@RequestMapping("/ws/soap")
+//@Controller
+//@RequestMapping("/ws/soap")
 public class ShopSOAPClientController {
 	
-	ArticleClient articleClient;
-	
-	@Autowired
-	public ShopSOAPClientController(ArticleClient articleClient){
-		this.articleClient= articleClient;
-	}
+//	ArticleClient articleClient;
+//	
+//	@Autowired
+//	public ShopSOAPClientController(ArticleClient articleClient){
+//		this.articleClient= articleClient;
+//	}
 	
 //	@RequestMapping("/article/{id}")
 //	public @ResponseBody com.elevysi.site.ws.shop.soap.consumer.Article getArticle(@PathVariable("id")String id){

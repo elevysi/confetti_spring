@@ -1,6 +1,7 @@
 package com.elevysi.site.blog.controller;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,17 +21,24 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.elevysi.site.blog.entity.Category;
 import com.elevysi.site.blog.entity.Dossier;
 import com.elevysi.site.blog.entity.Play;
 import com.elevysi.site.blog.entity.PlayType;
-import com.elevysi.site.blog.entity.Profile;
-import com.elevysi.site.blog.pojo.SessionMessage;
-import com.elevysi.site.blog.pojo.Page.SortDirection;
+import com.elevysi.site.blog.entity.Publication;
+import com.elevysi.site.blog.entity.PublicationStatus;
+import com.elevysi.site.blog.entity.PublicationType;
+import com.elevysi.site.blog.service.CategoryService;
 import com.elevysi.site.blog.service.DossierService;
 import com.elevysi.site.blog.service.PlayService;
 import com.elevysi.site.blog.service.PlayTypeService;
+import com.elevysi.site.blog.service.PublicationTypeService;
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.elevysi.site.commons.pojo.SessionMessage;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 import com.elevysi.site.blog.entity.Dossier_;
 
 @Controller
@@ -38,60 +46,40 @@ import com.elevysi.site.blog.entity.Dossier_;
 public class PlayController extends AbstractController{
 	
 	@Autowired
-	private PlayTypeService playTypeService;
-	
-	@Autowired
 	private PlayService playService;
 	
 	@Autowired
 	private DossierService dossierService;
 	
+	@Autowired
+	private CategoryService categoryService;
+	
+	@Autowired
+	private PublicationTypeService publicationTypeService;
+	
 	private final static int NO_LATEST_OWN_PLAYS = 3;
 	private final static int NO_LATEST_PLAYS = 3;
 	
-	@InitBinder
-    protected void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(Set.class, "playType", new CustomCollectionEditor(Set.class)
-          {
-            @Override
-            protected Object convertElement(Object element)
-            {
-            	System.out.println("called!");
-                Integer id = null;
-
-                if(element instanceof String && !((String)element).equals("")){
-                    //From the JSP 'element' will be a String
-                    try{
-                        id = Integer.parseInt((String) element);
-                    }
-                    catch (NumberFormatException e) {
-//                        System.out.println("Element was " + ((String) element));
-                        e.printStackTrace();
-                    }
-                }
-                else if(element instanceof Integer) {
-                    //From the database 'element' will be an Integer
-                    id = (Integer) element;
-                }
-
-                return id != null ? playTypeService.findOne(id) : null;
-            }
-          });
-    }
 	
 	@RequestMapping(value="/add", method=RequestMethod.GET)
 	public String add(Model model){
 		
 		Play play = new Play();
+		Publication publication = new Publication();
+		play.setPublication(publication);
+		
+		/**
+		 * Find the Lists
+		 */
+		List<Category> categories = categoryService.findAll();
+		List<Dossier> dossiers = dossierService.findAll();
 		List<PlayType> foundPlayTypes = playTypeService.findAll();
 		
-		
-		model.addAttribute("play", play);
+		model.addAttribute("categories", categories);
+		model.addAttribute("dossiers", dossiers);
 		model.addAttribute("playTypes", foundPlayTypes);
 		
-		com.elevysi.site.blog.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Dossier_.created, SortDirection.DESC);		
-		List<Dossier> dossiers = dossierService.getDossiers(dossiersPage);
-		model.addAttribute("dossiers", dossiers);
+		model.addAttribute("play", play);
 		
 		return "playAdd";
 	}
@@ -99,19 +87,19 @@ public class PlayController extends AbstractController{
 	
 	@RequestMapping(value={"/view/{id}/*", "/view/{id}"})
 	public String view(Model model, @PathVariable("id")Integer id, @ModelAttribute("sessionMessage")SessionMessage sessionMessage) throws Exception{
-		Play play = playService.getPlay(id);
+		Play play = playService.findByID(id);
 		
 		if(play == null){
 			throw new Exception("The play was not found!");
 		}
 		boolean canEditPlay = false;
-		Profile playProfile = play.getPlayProfile();
+		ProfileDTO playProfile = play.getPlayProfile();
 		if(playProfile!= null && playProfile.equals(playService.getActiveProfile())) canEditPlay = true;
 		
 		model.addAttribute("play", play);
 		model.addAttribute("canEditPlay", canEditPlay);
 		
-		Profile playOwner = play.getPlayProfile();
+		ProfileDTO playOwner = play.getPlayProfile();
 		List<Play> latestProfilePlays = playService.findLatestPlaysForProfile(playOwner, play, 0, NO_LATEST_OWN_PLAYS, SORT_FIELD, SORT_DIRECTION);
 		model.addAttribute("latestProfilePlays", latestProfilePlays);
 		model.addAttribute("title", "Play - "+play.getId());
@@ -121,89 +109,149 @@ public class PlayController extends AbstractController{
 	}
 	
 	@RequestMapping(value="/add", method = RequestMethod.POST)
-	public String doAdd(Model model, @Valid @ModelAttribute("play") Play play, BindingResult result, RedirectAttributes redirectAttributes){
+	public String doAdd(Model model, @Valid @ModelAttribute("play") Play play, BindingResult result, RedirectAttributes redirectAttributes, @RequestParam("action") String action){
 		
 		if(result.hasErrors()){
+			
+			List<Category> categories = categoryService.findAll();
+			List<Dossier> dossiers = dossierService.findAll();
+			List<PlayType> foundPlayTypes = playTypeService.findAll();
+			
+			model.addAttribute("categories", categories);
+			model.addAttribute("dossiers", dossiers);
+			model.addAttribute("playTypes", foundPlayTypes);
+			
+			SessionMessage dangerMsg = new SessionMessage();
+			dangerMsg.setDangerClass();
+			
+			dangerMsg.setMsgText("Please address the errors before saving.");
+			model.addAttribute("sessionMessage", dangerMsg);
+			
 			return "playAdd";
 		}
 		
-		/**
-		 * Record the post to the profile Editing it
-		 */
-		Profile owningProfile = playService.getActiveProfile();
-		
-		play.setPlayProfile(owningProfile);
-		
-		if(play.getDossier().getId() == null){
-			play.setDossier(null);
+		PublicationStatus postStatus;
+		if(action.equals("draft")){
+			postStatus = poublicationStatusService.findDraftPostStatus();
+			
+		}else if(action.equals("publish")){
+			postStatus = poublicationStatusService.findPublishedPostStatus();
+		}else if(action.equals("findToBePublishedPostStatus")){
+			postStatus = poublicationStatusService.findToBePublishedPostStatus();
+		}else{
+			
+			/**
+			 * Cancel Button
+			 */
+			
+			return "redirect:/";
 		}
+		
+		
+		
+		ProfileDTO owningProfile = playService.getActiveProfile();
+		play.setProfileID(owningProfile.getId());
+		play.setPlayProfile(owningProfile);
+		play.getPublication().setPublicationStatus(postStatus);
+		play.getPublication().setProfileName(owningProfile.getName());
+		play.getPublication().setProfileID(owningProfile.getId());
+		PublicationType type = publicationTypeService.findByID(new Integer(2));
+		play.getPublication().setType(type);
 		
 		Play savedPlay = playService.savePlay(play);
 		
 		SessionMessage sessionMessage = new SessionMessage("The play was successfully saved!");
 		sessionMessage.setSuccessClass();
-		
 		redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
 		
-		return "redirect:/plays/view/"+savedPlay.getId()+"/";
+		return "redirect:/plays/view/"+savedPlay.getId()+"/"+savedPlay.getPublication().getFriendlyUrl();
+		
 	}
 	
 	@RequestMapping(value={"/edit/{id}", "/edit/{id}/*"})
 	public String edit(Model model, @PathVariable("id")Integer id, @ModelAttribute("sessionMessage")SessionMessage sessionMessage){
-		Play play = playService.getPlay(id);
+		Play play = playService.findByID(id);
+		
+		play.getPublication().setDossiers(new HashSet<Dossier>()); //Because failed to bind on the form
+		
+		List<Category> categories = categoryService.findAll();
+		List<Dossier> dossiers = dossierService.findAll();
+		List<PlayType> foundPlayTypes = playTypeService.findAll();
+		
 		model.addAttribute("play", play);
-		List<PlayType> foundPlayTypes = playTypeService.findAll();		
-		model.addAttribute("playTypes", foundPlayTypes);
-		com.elevysi.site.blog.pojo.Page dossiersPage = dossierService.buildOffsetPage(FIRST_PAGE, DEFAULT_NO_DOSSIERS, Dossier_.created, SortDirection.DESC);		
-		List<Dossier> dossiers = dossierService.getDossiers(dossiersPage);
+		model.addAttribute("categories", categories);
 		model.addAttribute("dossiers", dossiers);
+		model.addAttribute("playTypes", foundPlayTypes);
 		
 		return "editplay";
 	}
 	
 	@RequestMapping(value="/edit/{id}", method = RequestMethod.POST)
-	public String doEdit(Model model, @PathVariable("id")Integer id, @Valid @ModelAttribute("play") Play play, BindingResult result, RedirectAttributes redirectAttributes){
+	public String doEdit(Model model, @PathVariable("id")Integer id, @Valid @ModelAttribute("play") Play play, BindingResult result, RedirectAttributes redirectAttributes, @RequestParam("action") String action){
+		
+		SessionMessage dangerMsg = new SessionMessage();
+		dangerMsg.setDangerClass();
 		
 		if(result.hasErrors()){
-			return "redirect:edit/"+id;
+			
+			List<Category> categories = categoryService.findAll();
+			List<Dossier> dossiers = dossierService.findAll();
+			List<PlayType> foundPlayTypes = playTypeService.findAll();
+			
+			model.addAttribute("categories", categories);
+			model.addAttribute("dossiers", dossiers);
+			model.addAttribute("playTypes", foundPlayTypes);
+			
+			
+			dangerMsg.setMsgText("Please address the errors before saving.");
+			model.addAttribute("sessionMessage", dangerMsg);
+			
+			return "editplay";
 		}
 		
-		/**
-		 * Record the post to the profile Editing it
-		 */
-		Play dbPlay = playService.getPlay(id);
-		Profile owningProfile = playService.getActiveProfile();
+		PublicationStatus postStatus;
+		if(action.equals("draft")){
+			postStatus = poublicationStatusService.findDraftPostStatus();
+			
+		}else if(action.equals("publish")){
+			postStatus = poublicationStatusService.findPublishedPostStatus();
+		}else if(action.equals("findToBePublishedPostStatus")){
+			postStatus = poublicationStatusService.findToBePublishedPostStatus();
+		}else{
+			
+			/**
+			 * Cancel Button
+			 */
+			
+			return "redirect:/plays/view/"+play.getId()+"/"+play.getPublication().getFriendlyUrl();
+		}
+		
+		Play dbPlay = playService.findByID(id);
 		if(dbPlay != null){
 			dbPlay.setTitle(play.getTitle());
-			dbPlay.setPlayProfile(owningProfile);
 			dbPlay.setUrl(play.getUrl());
 			dbPlay.setEmbeddedUrl(play.getEmbeddedUrl());
 			dbPlay.setDescription(play.getDescription());
 			dbPlay.setPlayType(play.getPlayType());
-			
-			if(play.getDossier().getId() == null){
-				dbPlay.setDossier(null);
-			}else{
-				dbPlay.setDossier(play.getDossier());
-			}
+			dbPlay.getPublication().setPublicationStatus(postStatus);
+			dbPlay.getPublication().setCategories(play.getPublication().getCategories());
+			dbPlay.getPublication().setDossiers(play.getPublication().getDossiers());
 			
 			Play savedPlay = playService.saveEditedPlay(dbPlay);
-			Play reloadPlay = playService.getPlay(savedPlay.getId());
 			
 			SessionMessage sessionMessage = new SessionMessage("The play was successfully saved!");
 			sessionMessage.setSuccessClass();
 			
 			redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
 			
-			return "redirect:/plays/view/"+savedPlay.getId()+"/"+reloadPlay.getPublication().getFriendlyUrl();
+			return "redirect:/plays/view/"+savedPlay.getId()+"/"+savedPlay.getPublication().getFriendlyUrl();
 		}
 		
-		SessionMessage sessionMessage = new SessionMessage("Failed to edit the play!");
-		sessionMessage.setDangerClass();
+		dangerMsg.setMsgText("Failed to edit the play!");
+		dangerMsg.setDangerClass();
 		
-		redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
-		
-		return "redirect:edit/"+id;
+		redirectAttributes.addFlashAttribute("sessionMessage", dangerMsg);
+		return "editplay";
 		
 	}
 	
@@ -211,9 +259,9 @@ public class PlayController extends AbstractController{
 	public String doDeletePlay(@PathVariable("id")Integer id, Model model, RedirectAttributes redirectAttributes){
 		SessionMessage sessionMessage;
 		
-		Play play = playService.getPlay(id);
+		Play play = playService.findByID(id);
 		if(play != null){
-			playService.deletePlay(play);
+			playService.delete(play);
 			sessionMessage = new SessionMessage("The play was successfully deleted.");
 			sessionMessage.setSuccessClass();
 		}else{

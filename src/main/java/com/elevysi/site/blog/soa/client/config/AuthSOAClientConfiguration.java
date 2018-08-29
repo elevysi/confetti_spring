@@ -1,5 +1,6 @@
 package com.elevysi.site.blog.soa.client.config;
 
+import org.springframework.context.annotation.Bean;
 //import java.util.Arrays;
 //
 //import org.springframework.cloud.security.oauth2.client.feign.OAuth2FeignRequestInterceptor;
@@ -10,15 +11,15 @@ import org.springframework.context.annotation.Configuration;
 //import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
 //
 //import feign.RequestInterceptor;
-//import feign.auth.BasicAuthRequestInterceptor;
+import feign.auth.BasicAuthRequestInterceptor;
 
-//@Configuration
+@Configuration
 public class AuthSOAClientConfiguration {
 	
-//	@Bean
-//    public BasicAuthRequestInterceptor basicAuthRequestInterceptor() {
-//         return new BasicAuthRequestInterceptor("clienty", "Fields2017");
-//    }
+	@Bean
+    public BasicAuthRequestInterceptor basicAuthRequestInterceptor() {
+         return new BasicAuthRequestInterceptor("clienty", "Fields2017");
+    }
 	
 //	@Bean
 //	Logger.Level feignLoggerLevel() {

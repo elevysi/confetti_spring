@@ -26,28 +26,28 @@ public class ShopRestClientController {
 //		return response.getBody();
 //	}
 	
-	@RequestMapping("/article/{id}")
-	public ResponseEntity<Object> getArticle(@PathVariable("id")String id) {
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<Object> response = restTemplate.getForEntity("http://localhost:8000/api/article/"+id, Object.class);
-		
-		if(response.getStatusCode() != HttpStatus.OK) return new ResponseEntity<Object>(response.getBody(), HttpStatus.FORBIDDEN);
-		
-		return new ResponseEntity<Object>(response.getBody(), HttpStatus.OK);
-	}
-	
-	@RequestMapping("/doArticle")
-	public ResponseEntity<Object> postArticle() {
-		RestTemplate restTemplate = new RestTemplate();
-		Article article = new Article();
-		article.setName("Bodak");
-		article.setDescription("Yellow");
-		article.setPrice(new Double(2018));
-		
-		ResponseEntity<Object> response = restTemplate.postForEntity("http://localhost:8000/api/article/", article, Object.class);
-		
-		if(response.getStatusCode() != HttpStatus.OK) return new ResponseEntity<Object>(response.getBody(), HttpStatus.FORBIDDEN);
-		
-		return new ResponseEntity<Object>(response.getBody(), HttpStatus.OK);
-	}
+//	@RequestMapping("/article/{id}")
+//	public ResponseEntity<Object> getArticle(@PathVariable("id")String id) {
+//		RestTemplate restTemplate = new RestTemplate();
+//		ResponseEntity<Object> response = restTemplate.getForEntity("http://localhost:8000/api/article/"+id, Object.class);
+//		
+//		if(response.getStatusCode() != HttpStatus.OK) return new ResponseEntity<Object>(response.getBody(), HttpStatus.FORBIDDEN);
+//		
+//		return new ResponseEntity<Object>(response.getBody(), HttpStatus.OK);
+//	}
+//	
+//	@RequestMapping("/doArticle")
+//	public ResponseEntity<Object> postArticle() {
+//		RestTemplate restTemplate = new RestTemplate();
+//		Article article = new Article();
+//		article.setName("Bodak");
+//		article.setDescription("Yellow");
+//		article.setPrice(new Double(2018));
+//		
+//		ResponseEntity<Object> response = restTemplate.postForEntity("http://localhost:8000/api/article/", article, Object.class);
+//		
+//		if(response.getStatusCode() != HttpStatus.OK) return new ResponseEntity<Object>(response.getBody(), HttpStatus.FORBIDDEN);
+//		
+//		return new ResponseEntity<Object>(response.getBody(), HttpStatus.OK);
+//	}
 }

@@ -12,15 +12,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="dossiers")
@@ -35,10 +38,6 @@ public class Dossier extends AbstractEntity{
 	private Integer id;
 	private String name;
 	private String description;
-	
-	@OneToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="publication_id")
-	private Publication publication;
 	
 	
 	public String getDescription() {
@@ -63,38 +62,18 @@ public class Dossier extends AbstractEntity{
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modified;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
-	private Profile profile;
+	@Transient
+	private ProfileDTO profile;
 	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "dossier", fetch = FetchType.LAZY)
+	@JsonIgnore
+	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@JoinColumn(name="publication_id")
+	private Publication publication;
+	
+	@JsonIgnore
+	@ManyToMany(mappedBy = "dossiers", fetch = FetchType.LAZY)
 	@Fetch(FetchMode.SUBSELECT)
-	private Set<Post> posts = new HashSet<Post>();
-	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "dossier", fetch = FetchType.LAZY)
-	@Fetch(FetchMode.SUBSELECT)
-	private Set<Play> plays = new HashSet<Play>();
-	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "dossier", fetch = FetchType.LAZY)
-	@Fetch(FetchMode.SUBSELECT)
-	private Set<Album> albums = new HashSet<Album>();
-	
-	/**
-	 * Cascade is set to merge so as when i create a dossier, i have already created the images
-	 * So I need to merge (i.e. update) only rather than creating new persistence
-	 * http://stackoverflow.com/questions/13370221/jpa-hibernate-detached-entity-passed-to-persist
-	 */
-	@OneToMany(cascade = CascadeType.MERGE, mappedBy="dossier", fetch = FetchType.LAZY)
-	@Fetch(FetchMode.SUBSELECT)
-	@org.hibernate.annotations.Filter(name="itemTableIs", condition="link_table=:link_tableValue and display=:displayValue")
-	private Set<Upload> uploads = new HashSet<Upload>();
-	
-	public Set<Upload> getUploads() {
-		return uploads;
-	}
-
-	public void setUploads(Set<Upload> uploads) {
-		this.uploads = uploads;
-	}
+	private Set<Publication> publications = new HashSet<Publication>();
 
 	private String uuid;
 	
@@ -108,31 +87,7 @@ public class Dossier extends AbstractEntity{
 		this.uuid = uuid;
 	}
 
-	public Set<Play> getPlays() {
-		return plays;
-	}
-
-	public void setPlays(Set<Play> plays) {
-		this.plays = plays;
-	}
-
-	public Set<Album> getAlbums() {
-		return albums;
-	}
-
-	public void setAlbums(Set<Album> albums) {
-		this.albums = albums;
-	}
-
 	
-
-	public Set<Post> getPosts() {
-		return posts;
-	}
-
-	public void setPosts(Set<Post> posts) {
-		this.posts = posts;
-	}
 
 	public Integer getId() {
 		return id;
@@ -182,11 +137,11 @@ public class Dossier extends AbstractEntity{
 		this.modified = modified;
 	}
 
-	public Profile getProfile() {
+	public ProfileDTO getProfile() {
 		return profile;
 	}
 
-	public void setProfile(Profile profile) {
+	public void setProfile(ProfileDTO profile) {
 		this.profile = profile;
 	}
 	
@@ -204,114 +159,33 @@ public class Dossier extends AbstractEntity{
         return false;
     }
 	
-	public void addUpload(Upload upload){
-		addUpload(upload, true);
-	}
-	
-	public void addUpload(Upload upload, boolean set){
-		if(upload != null){
-			
-			if(this.getUploads().contains(upload)){
-				this.getUploads().remove(upload);
-				this.getUploads().add(upload);
-				
-			}else{
-				getUploads().add(upload);
-			}
-			
-			if(set){
-				upload.setDossier(this, false);
-			}
-		}
-	}
-	
-	public void removeUpload(Upload upload){
-		getUploads().remove(upload);
-	}
-	
-	public void addPlay(Play play){
-		addPlay(play, true);
-	}
-	
-	public void addPlay(Play play, boolean set){
-		if(play != null){
-			
-			if(this.getPlays().contains(play)){
-				this.getPlays().remove(play);
-				this.getPlays().add(play);
-				
-			}else{
-				getPlays().add(play);
-			}
-			
-			if(set){
-				play.setDossier(this, false);
-			}
-		}
-	}
-	
-	public void removePlay(Play play){
-		getPlays().remove(play);
-	}
-	
-	public void addPost(Post post){
-		addPost(post, true);
-	}
-	
-	public void addPost(Post post, boolean set){
-		if(post != null){
-			
-			if(this.getPosts().contains(post)){
-				this.getPosts().remove(post);
-				this.getPosts().add(post);
-				
-			}else{
-				getPosts().add(post);
-			}
-			
-			if(set){
-				post.setDossier(this, false);
-			}
-		}
-	}
-	
-	public void removePost(Post post){
-		getPosts().remove(post);
-	}
-	
-	public void addAlbum(Album album){
-		addAlbum(album, true);
-	}
-	
-	
-	
-	public void addAlbum(Album album, boolean set){
-		if(album != null){
-			
-			if(this.getAlbums().contains(album)){
-				this.getAlbums().remove(album);
-				this.getAlbums().add(album);
-				
-			}else{
-				getAlbums().add(album);
-			}
-			
-			if(set){
-				album.setDossier(this, false);
-			}
-		}
-	}
-	
-	public void removeAlbum(Album album){
-		getAlbums().remove(album);
-	}
-
 	public Publication getPublication() {
 		return publication;
 	}
 
 	public void setPublication(Publication publication) {
 		this.publication = publication;
+	}
+	
+	@Column(name="profile_id")
+	private long profileID;
+	
+	public long getProfileID() {
+		return profileID;
+	}
+
+
+	public void setProfileID(long profileID) {
+		this.profileID = profileID;
+	}
+	
+	public Set<Publication> getPublications() {
+		return publications;
+	}
+
+
+	public void setPublications(Set<Publication> publications) {
+		this.publications = publications;
 	}
 	
 }

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.elevysi.site.blog.soa.client.entity.dto.ArticleAddDTO;
-import com.elevysi.site.blog.pojo.Article;
+import com.elevysi.site.commons.pojo.Article;
 
 @FeignClient("shopservice")
 public interface ShopFeignClient {

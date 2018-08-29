@@ -1,26 +1,26 @@
 package com.elevysi.site.blog.service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+
+import javax.persistence.metamodel.SingularAttribute;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.elevysi.site.blog.dao.LikeDAO;
+import com.elevysi.site.blog.dao.LikeRepository;
 import com.elevysi.site.blog.entity.Like;
-import com.elevysi.site.blog.repository.LikeRepository;
+import com.elevysi.site.blog.entity.Like_;
+import com.elevysi.site.commons.pojo.OffsetPage;
+import com.elevysi.site.commons.pojo.Page.SortDirection;
 
 @Service
-public class LikeService extends AbstractService{
+public class LikeService extends BasicService{
 	
 	@Autowired
-	private LikeRepository likeRepository;
-
-//	public Like saveLike(Integer itemId, String itemType) {
-//		
-//		Like like = new Like(itemId, itemType);
-//		Like savedLiked = likeRepository.save(like);
-//		return savedLiked;
-//	}
+	private LikeDAO likeDAO;
 	
 	public Like saveLike(Like like){
 		
@@ -28,29 +28,28 @@ public class LikeService extends AbstractService{
 		like.setCreated(now);
 		like.setModified(now);
 		
-		return likeRepository.save(like);
+		return likeDAO.save(like);
 	}
 
 	public boolean isAlreadyLiked(Like like) {
 		// TODO Auto-generated method stub
-		Like savedLike = likeRepository.findLikedItem(like.getItemId(), like.getItemType(), like.getLikeOwner().getId());
-		if(savedLike != null){
-			return true;
-		}
+//		Like savedLike = likeRepository.findLikedItem(like.getItemId(), like.getItemType(), like.getLikeOwner().getId());
+//		if(savedLike != null){
+//			return true;
+//		}
 		
 		return false;
 	}
 	
-	public Set<Like> itemLikes(Integer itemId, String itemType){
-		Set<Like> itemLikes = likeRepository.findByItemIdAndItemType(itemId, itemType);
+	public List<Like> itemLikes(Integer itemId, String itemType){
+		com.elevysi.site.commons.pojo.Page page = buildOffsetPage(1, 200, Like_.created, com.elevysi.site.commons.pojo.Page.SortDirection.DESC);
+		List<Like> itemLikes = likeDAO.itemLikes(page, itemId, itemType);
 		
 		return itemLikes;
 	}
 	
-	public Set<Like> itemFullLikes(Integer itemId, String itemType){
-		Set<Like> itemLikes = likeRepository.findItemLikes(itemId, itemType);
-		
-		return itemLikes;
-		
+	public OffsetPage buildOffsetPage(int pageIndex, int size,  SingularAttribute sortField, SortDirection sortDirection){
+		return likeDAO.buildOffsetPage(pageIndex, size, sortField, sortDirection);
 	}
+	
 }

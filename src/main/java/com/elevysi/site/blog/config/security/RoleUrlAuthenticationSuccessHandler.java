@@ -16,6 +16,8 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.elevysi.site.commons.pojo.ActiveUser;
+
 @Component
 public class RoleUrlAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler{
 //	protected Log logger = LogFactory.getLog(this.getClass());

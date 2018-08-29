@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,18 +11,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.FilterDefs;
-import org.hibernate.annotations.FilterJoinTable;
-import org.hibernate.annotations.Where;
-import org.hibernate.annotations.WhereJoinTable;
+
+import com.elevysi.site.commons.dto.ProfileDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 //Hibernate pp337 Filtering Data
 @Entity
@@ -40,7 +38,7 @@ import org.hibernate.annotations.WhereJoinTable;
 			)
 })
 
-public class Upload implements Serializable{
+public class Upload implements Serializable, Cloneable{
 
 	/**
 	 * 
@@ -110,65 +108,49 @@ public class Upload implements Serializable{
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modified;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumns({
-		@JoinColumn(name="link_id", referencedColumnName="id", nullable = false, insertable = false, updatable = false)
-	})
-	@Where(clause="link_table='profilePicture'")
-	private Profile owningProfilePicture;
+	@Transient
+	private ProfileDTO owningProfilePicture;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumns({
-		@JoinColumn(name="link_id", referencedColumnName="id", nullable = false, insertable = false, updatable = false)
-	})
-	@Where(clause="link_table='articles'")
-	private Profile owningAvatar;
+	@Transient
+	private ProfileDTO owningAvatar;
 	
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="link_id", nullable = false, insertable = false, updatable = false)
-	private Post post;
+	private Publication publication;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="link_id", nullable = false, insertable = false, updatable = false)
 	private Dossier dossier;
 	
 	
-	public Post getPost() {
-		return post;
+	public Publication getPublication() {
+		return publication;
 	}
 
-	public void setPost(Post post) {
-		this.post = post;
+	public void setPost(Publication publication) {
+		this.publication = publication;
 	}
-	public void setPost(Post post, boolean add){
-		this.post = post;
-		if(post != null && add){
-			post.addUpload(this, false);
+	public void setPublication(Publication publication, boolean add){
+		this.publication = publication;
+		if(publication != null && add){
+			publication.addUpload(this, false);
 		}
 	}
 	
-	public void setDossier(Dossier dossier) {
-		this.dossier = dossier;
-	}
-	public void setDossier(Dossier dossier, boolean add){
-		this.dossier = dossier;
-		if(dossier != null && add){
-			dossier.addUpload(this, false);
-		}
-	}
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="profile_id")
-	private Profile uploadOwner;
 	
-	public Profile getUploadOwner() {
-		return uploadOwner;
+	@Column(name="profile_id")
+	private Integer profileID;
+	
+	public Integer getProfileID() {
+		return profileID;
 	}
 
-	public void setUploadOwner(Profile uploadOwner) {
-		this.uploadOwner = uploadOwner;
+	public void setProfileID(Integer profileID) {
+		this.profileID = profileID;
 	}
+
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "album_id", referencedColumnName = "id")
@@ -248,11 +230,11 @@ public class Upload implements Serializable{
 		this.uuid = uuid;
 	}
 
-	public Profile getOwningProfilePicture() {
+	public ProfileDTO getOwningProfilePicture() {
 		return owningProfilePicture;
 	}
 
-	public void setOwningProfilePicture(Profile owningProfilePicture) {
+	public void setOwningProfilePicture(ProfileDTO owningProfilePicture) {
 		this.owningProfilePicture = owningProfilePicture;
 	}
 
@@ -371,19 +353,7 @@ public class Upload implements Serializable{
 	    return id != null ? id.hashCode() : 0; //https://stackoverflow.com/questions/21535029/what-must-be-hashcode-of-null-objects-in-java
 	}
 	
-	public Upload createDuplicate(){
-		
-		Upload newUpload = this;
-		newUpload.setId(null);
-		newUpload.setUuid(null);
-		newUpload.setAlbum(null);
-		
-		UUID uniqueKey = UUID.randomUUID();   
-		newUpload.setKeyIdentification(uniqueKey.toString());
-		
-		return newUpload;
-		
-	}
+	
 	
 	public static String generateUUID(){
 		 UUID uniqueKey = UUID.randomUUID();   
@@ -391,6 +361,22 @@ public class Upload implements Serializable{
 		 
 	}
 	
+	public Object clone() {
+		Upload upload = new Upload();
+		
+		upload.setUrl(this.url);
+		upload.setMediaType(this.mediaType);
+		upload.setFilename(this.filename);
+		upload.setTitle(this.title);
+		upload.setDescription(this.description);
+		upload.setFilemine(this.filemine);
+		upload.setFilename(this.filename);
+		upload.setFilesize(this.filesize);
+		upload.setPath(this.path);
+		upload.setAltText(this.altText);
+		
+		return upload;
+	}
 	
 
 }

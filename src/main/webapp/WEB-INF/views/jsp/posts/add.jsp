@@ -3,7 +3,7 @@
 
 <%@ include file="../../layout/taglib.jsp"%>
 
-<c:url var="post_url" value="/posts/addSimple" />
+<c:url var="post_url" value="/posts/add" />
 
 <c:url var="uploadLink" value="/uploads/post" />
 <c:url var="uploadDeleteLink" value="/uploads/profileDelete" />
@@ -24,11 +24,9 @@
 	
    <div class="form-item">
 		<section>
-			<label class="label">Choose Dossier <form:errors path="dossier" /></label> <label class="select">
-			<form:select path="dossier.id">
-				<form:option  value="">--Select one--</form:option>
+			<label class="label">Choose Dossier <form:errors path="publication.dossiers" /></label> <label class="select select-multiple">
+			<form:select path="publication.dossiers">
 				<form:options items="${dossiers}" itemValue="id" itemLabel="name"/>
-				<form:errors path="dossier"/>
 			</form:select>
 			
 			</label>
@@ -37,39 +35,37 @@
 
 	<div class="form-item">
 		<section>
-			<label class="label">Choose Category <form:errors path="categories" /></label> <label class="select select-multiple">
-			<form:select path="categories" items="${categories}" />
+			<label class="label">Choose Category <form:errors path="publication.categories" /></label> <label class="select select-multiple">
+			<form:select path="publication.categories" items="${categories}" itemValue="id" itemLabel="name"/>
 			
 			</label>
 		</section>
 	</div>
-	
-		
-		<div class="form-item">
-			<section>
-				<label class="label"><spring:message code="label.posts.add.title" /> <span class="color-red">*</span> <form:errors path="title" /></label> <label class="input"> <form:input
-						path="title" />
-				</label>
-			</section>
+	<div class="form-item">
+		<section>
+			<label class="label"><spring:message code="label.posts.add.title" /> <span class="color-red">*</span> <form:errors path="title" /></label> <label class="input"> <form:input
+					path="title" />
+			</label>
+		</section>
+	</div>
+
+	<section class="form-item">
+		<label class="label"><spring:message code="label.posts.add.description" /></label> <label class="textarea">
+			<form:textarea path="description" />
+			
+		</label>
+		<div class="note">
+			<strong>Note:</strong> A small description or a subtitle to your post
 		</div>
-
-		<section class="form-item">
-			<label class="label"><spring:message code="label.posts.add.description" /></label> <label class="textarea">
-				<form:textarea path="description" />
-				
-			</label>
-			<div class="note">
-				<strong>Note:</strong> A small description or a subtitle to your post
-			</div>
-		</section>
+	</section>
 
 
 
-		<section class="form-item">
-			<label class="label"><spring:message code="label.posts.add.content" /> <span class="color-red">*</span> <form:errors path="content" /></label><label class="textarea">
-				<form:textarea path="content" cssClass="editorTextarea" />
-			</label>
-		</section>
+	<section class="form-item">
+		<label class="label"><spring:message code="label.posts.add.content" /> <span class="color-red">*</span> <form:errors path="content" /></label><label class="textarea">
+			<form:textarea path="content" cssClass="editorTextarea" />
+		</label>
+	</section>
 
 
 	</fieldset>
@@ -77,7 +73,6 @@
 		<button class="btn-u" type="submit" name="action" value="draft"><spring:message code="label.posts.add.saveDraft" /></button>
 		<button class="btn-u" type="submit" name="action" value="publish"><spring:message code="label.posts.add.submitBtn" /></button>
 		<button class="btn-u btn-u-default" name="action" value="cancel" type="button"><spring:message code="label.posts.add.backBtn" /></button>
-		
 	</footer>
 
 
