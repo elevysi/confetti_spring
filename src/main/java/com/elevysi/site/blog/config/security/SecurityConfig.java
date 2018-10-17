@@ -2,6 +2,7 @@ package com.elevysi.site.blog.config.security;
  
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.elevysi.site.blog.soa.client.AuthFeignClient;
 import com.elevysi.site.blog.soa.client.SocialFeignClient;
 import com.elevysi.site.commons.dto.ProfileDTO;
+import com.elevysi.site.commons.dto.RoleDTO;
 import com.elevysi.site.commons.dto.UserDTO;
 import com.elevysi.site.commons.pojo.ActiveUser;
 
@@ -48,11 +51,8 @@ If you do not need interaction with the browser (e.g. Client Credentials Flow) o
 //@EnableWebSecurity //Need to declare this application context for it to work so the other beans knoow
 //@EnableGlobalMethodSecurity(securedEnabled=true, jsr250Enabled=true, prePostEnabled=true)
 @Configuration
-@EnableOAuth2Sso
+@EnableOAuth2Sso //https://stackoverflow.com/questions/42938782/spring-enableresourceserver-vs-enableoauth2sso
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-	
-	@Autowired
-    MySavedUrlAuthenticationSuccessHandler mySavedUrlAuthenticationSuccessHandler;
 	
 	@Autowired
 	SocialFeignClient socialFeignClient;
@@ -66,11 +66,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    @Override
 	    protected void configure(HttpSecurity http) throws Exception {
 	        http
-	        
 	        .requestMatchers()
-    		.antMatchers("/login/**", "/logout/**", "/ui/**", "/public/**", "/publication/**", "/restricted/**", "/uploads/**",
+    			.antMatchers("/login/**", "/logout/**", "/ui/**", "/public/**", "/publication/**", "/restricted/**", "/uploads/**",
     				"/item/**", "/posts/**", "/plays/**", "/dossiers/**", "/comments/**", "/dba/**", "/admin/**")
-    		.and()
+    			.and()
 	        	.authorizeRequests()
 	        		.antMatchers("/").permitAll()
 					.antMatchers("/restricted/**").access("hasRole('USER')")
@@ -83,16 +82,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.antMatchers("/comments/public/**").permitAll()
 					.antMatchers("/uploads/download/**").permitAll()
 					
-					.antMatchers("/login/**").permitAll()
-					.antMatchers("/logout/ajax/**").permitAll()
+//					.antMatchers("/login/**").permitAll()
+//					.antMatchers("/logout/ajax/**").permitAll()
 					
 					.antMatchers("/dba/**").access("hasRole('ADMIN') or hasRole('DBA')")
 					.antMatchers("/admin/**").access("hasRole('ADMIN') or hasRole('DBA')")
 					
 					.anyRequest().authenticated()
-					.and()
-					.formLogin()
-						.loginPage("/login")
+//					.and()
+//					.formLogin()
+//						.loginPage("/login")
 //					.and()
 //					 .logout()
 //		            	.logoutSuccessUrl("/logout/ajax/success")
@@ -120,35 +119,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	            .antMatchers("/thematic_1_9/**");
 	        
 	    }
+	    
 //	    https://stackoverflow.com/questions/30545067/spring-security-oauth2-default-login-success-url
 	
     
-	@Configuration
-    @Order(4)
-    public static class ModalWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-    	
-    	@Autowired
-        ModalUrlAuthenticationSuccessHandler modalUrlAuthenticationSuccessHandler;
-    	
-    	 protected void configure(HttpSecurity http) throws Exception {
-    		 http
-         	.antMatcher("/modal/**")
-         	.authorizeRequests()
- 				.antMatchers("/modal/login").permitAll()
- 				.antMatchers("/modal/**").authenticated()
- 				;
-    	 }
-    }
+	
 	
 	//http://mmkay.pl/2017/03/19/spring-boot-saving-oauth2-login-data-in-db-using-principalextractor/
 	@Bean
     public PrincipalExtractor principalExtractor() {
         return map -> {
-        	String principalUsername = (String) map.get("user");
+//        	String principalUsername = (String) map.get("user");
+        	
+        	String principalUsername = (String) map.get("name");
+        	
+        	System.out.println("The user is "+principalUsername);
+//        	System.out.println("Authorities are "+map.get("authorities"));
         	
         	UserDTO user = authFeignClient.getUserByUsername(principalUsername);
         	
-        	List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        	boolean enabled = user.isActive();
+        boolean accountNonExpired = user.isActive();
+        boolean credentialsNonExpired = user.isActive();
+        boolean accountNonLocked = user.isActive();
+        
+        Set<RoleDTO> roles = user.getRoles();
+        
+        List<String> springSecurityRoles = treatRoles(roles);
+        List<GrantedAuthority> authList = getGrantedAuthorities(springSecurityRoles);
+//        	
+//        	List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         	
         	
         	//Get the user's profile
@@ -158,15 +158,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         	 ActiveUser activeUser = new ActiveUser(
         			 user.getUsername(),
 	            	 	"dummyPassword",
-	            		true,
-	            		true,
-	            		true,
-	            		true,
-	            		authorities,
+	            	 	enabled, 
+                    accountNonExpired, 
+                    credentialsNonExpired, 
+                    accountNonLocked,
+                    authList,
 	            		user.getFirst_name(),
-	            		null,
-	            		null,
-	            		null
+	            		null, // ProfileDTO userProfile,
+	            		null, // ProfileDTO activeProfile,
+	            		null // List<ProfileDTO> profiles
      		);
         	 
         	 activeUser.setUserProfile(profile);
@@ -175,5 +175,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         	 
         	return activeUser;
         };
+    }
+	
+	
+	/**
+	 * Converts a numerical role to an equivalent list of roles
+	 * @param role the numerical role
+	 * @return list of roles as as a list of {@link String}
+	 */
+    public List<String> treatRoles(Set<RoleDTO> roles) {
+    	List<String> security_roles = new ArrayList<String>();
+    	
+    	for (RoleDTO userRole : roles) {
+    		security_roles.add(userRole.getName());
+		}
+    	
+    	return security_roles;
+    }
+    
+    /**
+	 * Wraps {@link String} roles to {@link SimpleGrantedAuthority} objects
+	 * @param roles {@link String} of roles
+	 * @return list of granted authorities
+	 */
+    public static List<GrantedAuthority> getGrantedAuthorities(List<String> roles) {
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+         
+        for (String role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role));
+        }
+        return authorities;
     }
 }

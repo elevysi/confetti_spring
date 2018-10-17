@@ -138,10 +138,11 @@ public class PostDAOImplement extends AbstractDAOImpl<Post, Integer> implements 
 			/**
 			 * Look for the post profile information
 			 */
-			post.setProfile(getProfile(post.getProfileID()));
+			
 			ProfileDTO profile = getProfile(post.getProfileID());
-			post.getPublication().setProfile(profile);
 			post.setProfile(profile);
+			post.getPublication().setProfile(profile);
+			
 		}
 		
 		return post;

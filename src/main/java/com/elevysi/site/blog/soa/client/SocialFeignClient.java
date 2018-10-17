@@ -16,7 +16,7 @@ public interface SocialFeignClient {
 //	@RequestMapping(method= RequestMethod.GET, value="/api/profile/profile/{profileID}")
 //	ProfileDTO getProfileByID(@PathVariable("profileID") long profileID);
 	
-//	@RequestMapping(method= RequestMethod.GET, value="/api/public/profile/{profileID}")
+//	@RequestMapping(method= RequestMethod.GET, value="/api/public/profile/{profileID}") //Use the publicly available end-point to avoid users being requested login to view item
 	@RequestMapping(method= RequestMethod.GET, value="/ui/public/profile/profileID/{profileID}")
 	ProfileDTO getProfileByID(@PathVariable("profileID") long profileID);
 

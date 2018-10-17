@@ -20,8 +20,10 @@ security:
     enabled: false
   oauth2:
     client:
-      clientId: clienty
-      clientSecret: Fields2017
+#      clientId: clienty
+#      clientSecret: Fields2017
+      clientId: web
+      clientSecret: secret
       scope:
         read
       accessTokenUri: http://localhost:8100/oauth/token

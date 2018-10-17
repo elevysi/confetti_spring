@@ -36,6 +36,7 @@ public interface AuthFeignClient {
 	Map<String, Object> getUser();
 	
 	
-	@RequestMapping(method= RequestMethod.GET, value="/api/public/user/{username}")
+//	@RequestMapping(method= RequestMethod.GET, value="/api/public/user/{username}")
+	@RequestMapping(method= RequestMethod.GET, value="/api/user/{username}")
 	UserDTO getUserByUsername(@PathVariable("username") String username);
 }
